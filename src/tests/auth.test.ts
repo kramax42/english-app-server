@@ -1,7 +1,7 @@
 import request from 'supertest';
 import App from '@/app';
 import { CreateUserDto } from '@dtos/users.dto';
-import AuthRoute from '@routes/auth.route';
+import AuthController from '@controllers/auth.controller';
 
 afterAll(async () => {
   await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
@@ -14,8 +14,8 @@ describe('Testing Auth', () => {
         email: 'test@email.com',
         password: 'q1w2e3r4',
       };
-      const authRoute = new AuthRoute();
-      const app = new App([authRoute]);
+      const authContoller = new AuthController();
+      const app = new App([authContoller]);
 
       return request(app.getServer()).post('/signup').send(userData);
     });
@@ -24,12 +24,12 @@ describe('Testing Auth', () => {
   describe('[POST] /login', () => {
     it('response should have the Set-Cookie header with the Authorization token', async () => {
       const userData: CreateUserDto = {
-        email: 'test@email.com',
+        email: 'lim@gmail.com',
         password: 'q1w2e3r4',
       };
 
-      const authRoute = new AuthRoute();
-      const app = new App([authRoute]);
+      const authContoller = new AuthController();
+      const app = new App([authContoller]);
 
       return request(app.getServer())
         .post('/login')
@@ -41,8 +41,8 @@ describe('Testing Auth', () => {
   // error: StatusCode : 404, Message : Authentication token missing
   // describe('[POST] /logout', () => {
   //   it('logout Set-Cookie Authorization=; Max-age=0', () => {
-  //     const authRoute = new AuthRoute();
-  //     const app = new App([authRoute]);
+  //     const authContoller = new AuthController();
+  //     const app = new App([authContoller]);
 
   //     return request(app.getServer())
   //       .post('/logout')

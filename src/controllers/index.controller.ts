@@ -1,7 +1,23 @@
-import { NextFunction, Request, Response } from 'express';
+import { Controller } from '@/interfaces/contoller.interface';
+import { NextFunction, Request, Response, Router } from 'express';
 
-class IndexController {
-  public index = (req: Request, res: Response, next: NextFunction): void => {
+class IndexController implements Controller {
+  public path = '/';
+  public router = Router();
+  // private post = postModel;
+
+
+  constructor() {
+    this.initializeRoutes();
+  }
+
+  private initializeRoutes() {
+    this.router.get(this.path, this.getOk);
+  }
+
+
+
+  public getOk = (req: Request, res: Response, next: NextFunction): void => {
     try {
       res.sendStatus(200);
     } catch (error) {

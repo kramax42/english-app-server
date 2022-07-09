@@ -1,65 +1,113 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { CreateUserDto } from '@dtos/users.dto';
 import { User } from '@interfaces/users.interface';
 import userService from '@services/users.service';
+import validationMiddleware from '@middlewares/validation.middleware';
+import { Controller } from '@interfaces/contoller.interface';
 
-class UsersController {
-  public userService = new userService();
+class UsersController implements Controller {
+	public path = '/users';
+	public router = Router();
 
-  public getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const findAllUsersData: User[] = await this.userService.findAllUser();
+	public userService = new userService();
 
-      res.status(200).json({ data: findAllUsersData, message: 'findAll' });
-    } catch (error) {
-      next(error);
-    }
-  };
+	constructor() {
+		this.initializeRoutes();
+	}
 
-  public getUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const userId = Number(req.params.id);
-      const findOneUserData: User = await this.userService.findUserById(userId);
+	private initializeRoutes() {
+		this.router.get(`${this.path}`, this.getUsers);
+		this.router.get(`${this.path}/:id(\\d+)`, this.getUserById);
+		this.router.post(
+			`${this.path}`,
+			validationMiddleware(CreateUserDto, 'body'),
+			this.createUser
+		);
+		this.router.put(
+			`${this.path}/:id(\\d+)`,
+			validationMiddleware(CreateUserDto, 'body', true),
+			this.updateUser
+		);
+		this.router.delete(`${this.path}/:id(\\d+)`, this.deleteUser);
+	}
 
-      res.status(200).json({ data: findOneUserData, message: 'findOne' });
-    } catch (error) {
-      next(error);
-    }
-  };
+	private getUsers = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			const findAllUsersData: User[] = await this.userService.findAllUser();
 
-  public createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const userData: CreateUserDto = req.body;
-      const createUserData: User = await this.userService.createUser(userData);
+			res.status(200).json({ data: findAllUsersData, message: 'findAll' });
+		} catch (error) {
+			next(error);
+		}
+	};
 
-      res.status(201).json({ data: createUserData, message: 'created' });
-    } catch (error) {
-      next(error);
-    }
-  };
+	private getUserById = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			const userId = Number(req.params.id);
+			const findOneUserData: User = await this.userService.findUserById(userId);
 
-  public updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const userId = Number(req.params.id);
-      const userData: CreateUserDto = req.body;
-      const updateUserData: User[] = await this.userService.updateUser(userId, userData);
+			res.status(200).json({ data: findOneUserData, message: 'findOne' });
+		} catch (error) {
+			next(error);
+		}
+	};
 
-      res.status(200).json({ data: updateUserData, message: 'updated' });
-    } catch (error) {
-      next(error);
-    }
-  };
+	private createUser = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			const userData: CreateUserDto = req.body;
+			const createUserData: User = await this.userService.createUser(userData);
 
-  public deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const userId = Number(req.params.id);
-      const deleteUserData: User[] = await this.userService.deleteUser(userId);
+			res.status(201).json({ data: createUserData, message: 'created' });
+		} catch (error) {
+			next(error);
+		}
+	};
 
-      res.status(200).json({ data: deleteUserData, message: 'deleted' });
-    } catch (error) {
-      next(error);
-    }
-  };
+	private updateUser = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			const userId = Number(req.params.id);
+			const userData: CreateUserDto = req.body;
+			const updateUserData: User[] = await this.userService.updateUser(
+				userId,
+				userData
+			);
+
+			res.status(200).json({ data: updateUserData, message: 'updated' });
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	private deleteUser = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			const userId = Number(req.params.id);
+			const deleteUserData: User[] = await this.userService.deleteUser(userId);
+
+			res.status(200).json({ data: deleteUserData, message: 'deleted' });
+		} catch (error) {
+			next(error);
+		}
+	};
 }
 
 export default UsersController;

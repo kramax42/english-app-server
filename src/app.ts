@@ -12,6 +12,7 @@ import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Routes } from '@interfaces/routes.interface';
+import { Controller } from '@interfaces/contoller.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
 
@@ -20,13 +21,13 @@ class App {
   public port: string | number;
   public env: string;
 
-  constructor(routes: Routes[]) {
+  constructor(controllers: Controller[]) {
     this.app = express();
     this.port = process.env.PORT || 5000;
     this.env = process.env.NODE_ENV || 'development';
 
     this.initializeMiddlewares();
-    this.initializeRoutes(routes);
+    this.initializeContollers(controllers);
     this.initializeSwagger();
     this.initializeErrorHandling();
   }
@@ -55,9 +56,9 @@ class App {
     this.app.use(cookieParser());
   }
 
-  private initializeRoutes(routes: Routes[]) {
-    routes.forEach(route => {
-      this.app.use('/', route.router);
+  private initializeContollers(contollers: Controller[]) {
+    contollers.forEach(controller => {
+      this.app.use('/', controller.router);
     });
   }
 
