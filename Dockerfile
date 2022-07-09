@@ -14,7 +14,7 @@ EXPOSE 5000
 FROM common-build-stage as production-build-stage
 
 ENV NODE_ENV production
-ENV PORT 3000
+ENV PORT 5000
 
 RUN chown -R 1000:1000 /app/dist
 USER 1000
