@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { CreateUserDto } from '@dtos/users.dto';
+import { UpdateUserDto } from '@dtos/users.dto';
 import { User } from '@interfaces/users.interface';
-import userService from '@services/users.service';
+import userService from './users.service';
 import validationMiddleware from '@middlewares/validation.middleware';
 import { Controller } from '@interfaces/contoller.interface';
 
@@ -18,14 +18,9 @@ class UsersController implements Controller {
 	private initializeRoutes() {
 		this.router.get(`${this.path}`, this.getUsers);
 		this.router.get(`${this.path}/:id`, this.getUserById);
-		this.router.post(
-			`${this.path}`,
-			validationMiddleware(CreateUserDto, 'body'),
-			this.createUser
-		);
 		this.router.put(
 			`${this.path}/:id`,
-			validationMiddleware(CreateUserDto, 'body', true),
+			validationMiddleware(UpdateUserDto, 'body', true),
 			this.updateUser
 		);
 		this.router.delete(`${this.path}/:id`, this.deleteUser);
@@ -60,21 +55,6 @@ class UsersController implements Controller {
 		}
 	};
 
-	private createUser = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	): Promise<void> => {
-		try {
-			const userData: CreateUserDto = req.body;
-			const createUserData: User = await this.userService.createUser(userData);
-
-			res.status(201).json({ data: createUserData, message: 'created' });
-		} catch (error) {
-			next(error);
-		}
-	};
-
 	private updateUser = async (
 		req: Request,
 		res: Response,
@@ -82,7 +62,7 @@ class UsersController implements Controller {
 	): Promise<void> => {
 		try {
 			const userId = req.params.id;
-			const userData: CreateUserDto = req.body;
+			const userData: UpdateUserDto = req.body;
 			const updatedUser: User = await this.userService.updateUser(
 				userId,
 				userData

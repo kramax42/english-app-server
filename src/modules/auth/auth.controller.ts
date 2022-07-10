@@ -2,10 +2,11 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { CreateUserDto } from '@dtos/users.dto';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { User } from '@interfaces/users.interface';
-import AuthService from '@services/auth.service';
+import AuthService from './auth.service';
 import { Controller } from '@interfaces/contoller.interface';
 import validationMiddleware from '@middlewares/validation.middleware';
 import authMiddleware from '@middlewares/auth.middleware';
+import { LoginDto } from '@/dtos/auth.dto';
 
 class AuthController implements Controller {
 
@@ -21,7 +22,7 @@ class AuthController implements Controller {
 
   private initializeRoutes() {
     this.router.post(`${this.path}signup`, validationMiddleware(CreateUserDto, 'body'), this.signUp);
-    this.router.post(`${this.path}login`, validationMiddleware(CreateUserDto, 'body'), this.logIn);
+    this.router.post(`${this.path}login`, validationMiddleware(LoginDto, 'body'), this.logIn);
     this.router.post(`${this.path}logout`, authMiddleware, this.logOut);
     this.router.get(`${this.path}me`, authMiddleware, this.me);
   }

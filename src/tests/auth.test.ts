@@ -1,10 +1,10 @@
 import request from 'supertest';
 import App from '@/app';
 import { CreateUserDto } from '@dtos/users.dto';
-import AuthController from '@controllers/auth.controller';
+import AuthController from '@modules/auth/auth.controller';
 import mongoose from 'mongoose';
 import { LoginDto } from '@dtos/auth.dto';
-import UsersController from '@controllers/users.controller';
+import UsersController from '@modules/users/users.controller';
 
 const userDto: CreateUserDto = {
 	name: 'max',
