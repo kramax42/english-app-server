@@ -56,14 +56,22 @@ class App {
 			'mongodb://uziajrrhzhimybwszyvs:LCPM3KnIVZIofvAXEXV9@n1-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017,n2-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017/b1g912bljqgjmpu?replicaSet=rs0';
 
 		// Connect to MongoDB
+
+		try{
+
+		}catch(error){
+			if(error instanceof Error){
+				logger.error(error);
+			}
+				process.exit(1);
+		}
 		mongoose
 			.connect(mongoUrlProd)
 			.then(() => {
 				logger.info('MongoDB Connected');
 			})
 			.catch((err: any) => {
-				logger.error(err);
-				process.exit(1);
+				
 			});
 
 		// mongoose
