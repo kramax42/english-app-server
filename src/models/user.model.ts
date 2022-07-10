@@ -7,9 +7,9 @@ const userSchema = new mongoose.Schema({
 	password: String,
 });
 
-const userRepository = mongoose.model<User & mongoose.Document>(
+const UserModel = mongoose.model<User & mongoose.Document>(
 	'User',
 	userSchema
 );
 
-export default userRepository;
+export default UserModel;

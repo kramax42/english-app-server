@@ -49,14 +49,9 @@ class App {
 	}
 
 	private connectToTheDatabase() {
-		
-		const {
-      MONGO_USER,
-      MONGO_PASSWORD,
-      MONGO_PATH,
-    } = process.env;
-    const mongoUrl = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_PATH}`;
-		
+		const { MONGO_USER, MONGO_PASSWORD, MONGO_PATH } = process.env;
+		const mongoUrl = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_PATH}`;
+
 		// Connect to MongoDB
 		mongoose
 			.connect(mongoUrl)

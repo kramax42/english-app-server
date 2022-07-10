@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { UpdateUserDto } from '@dtos/users.dto';
 import { User } from '@interfaces/users.interface';
-import userService from './users.service';
+import UsersService from './users.service';
 import validationMiddleware from '@middlewares/validation.middleware';
 import { Controller } from '@interfaces/contoller.interface';
 
@@ -9,7 +9,7 @@ class UsersController implements Controller {
 	public path = '/users';
 	public router = Router();
 
-	public userService = new userService();
+	public userService = new UsersService();
 
 	constructor() {
 		this.initializeRoutes();
@@ -32,9 +32,9 @@ class UsersController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const findAllUsersData: User[] = await this.userService.findAllUser();
+			const getAllUsersData: User[] = await this.userService.getAllUsers();
 
-			res.status(200).json({ data: findAllUsersData, message: 'findAll' });
+			res.status(200).json({ data: getAllUsersData, message: 'Get all users.' });
 		} catch (error) {
 			next(error);
 		}
