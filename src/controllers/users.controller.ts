@@ -17,18 +17,18 @@ class UsersController implements Controller {
 
 	private initializeRoutes() {
 		this.router.get(`${this.path}`, this.getUsers);
-		this.router.get(`${this.path}/:id(\\d+)`, this.getUserById);
+		this.router.get(`${this.path}/:id`, this.getUserById);
 		this.router.post(
 			`${this.path}`,
 			validationMiddleware(CreateUserDto, 'body'),
 			this.createUser
 		);
 		this.router.put(
-			`${this.path}/:id(\\d+)`,
+			`${this.path}/:id`,
 			validationMiddleware(CreateUserDto, 'body', true),
 			this.updateUser
 		);
-		this.router.delete(`${this.path}/:id(\\d+)`, this.deleteUser);
+		this.router.delete(`${this.path}/:id`, this.deleteUser);
 	}
 
 	private getUsers = async (
@@ -51,7 +51,7 @@ class UsersController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const userId = Number(req.params.id);
+			const userId = req.params.id;
 			const findOneUserData: User = await this.userService.findUserById(userId);
 
 			res.status(200).json({ data: findOneUserData, message: 'findOne' });
@@ -81,14 +81,14 @@ class UsersController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const userId = Number(req.params.id);
+			const userId = req.params.id;
 			const userData: CreateUserDto = req.body;
-			const updateUserData: User[] = await this.userService.updateUser(
+			const updatedUser: User = await this.userService.updateUser(
 				userId,
 				userData
 			);
 
-			res.status(200).json({ data: updateUserData, message: 'updated' });
+			res.status(200).json({ data: updatedUser, message: 'updated' });
 		} catch (error) {
 			next(error);
 		}
@@ -100,10 +100,10 @@ class UsersController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const userId = Number(req.params.id);
-			const deleteUserData: User[] = await this.userService.deleteUser(userId);
+			const userId = req.params.id;
+			const deletedUser: User = await this.userService.deleteUser(userId);
 
-			res.status(200).json({ data: deleteUserData, message: 'deleted' });
+			res.status(200).json({ data: deletedUser, message: 'deleted' });
 		} catch (error) {
 			next(error);
 		}

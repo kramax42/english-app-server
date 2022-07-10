@@ -2,58 +2,69 @@ import bcrypt from 'bcrypt';
 import { CreateUserDto } from '@dtos/users.dto';
 import { HttpException } from '@exceptions/HttpException';
 import { User } from '@interfaces/users.interface';
-import userModel from '@models/users.model';
+import userRepository from '@models/user.model';
 import { isEmpty } from '@utils/util';
 
 class UserService {
-  public users = userModel;
 
   public async findAllUser(): Promise<User[]> {
-    const users: User[] = this.users;
+    const users = await userRepository.find();
+    
     return users;
   }
 
-  public async findUserById(userId: number): Promise<User> {
-    const findUser: User = this.users.find(user => user.id === userId);
-    if (!findUser) throw new HttpException(409, "You're not user");
+  public async findUserById(userId: string): Promise<User> {
 
-    return findUser;
+    const user = await userRepository.findOne({ id: userId })
+    
+    if (!user) throw new HttpException(409, "You're not user");
+
+    return user;
   }
 
   public async createUser(userData: CreateUserDto): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
-    const findUser: User = this.users.find(user => user.email === userData.email);
+
+    const findUser: User = await userRepository.findOne({ email: userData.email })
     if (findUser) throw new HttpException(409, `Your email ${userData.email} already exists`);
 
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const createUserData: User = { id: this.users.length + 1, ...userData, password: hashedPassword };
-    this.users = [...this.users, createUserData];
+    
 
-    return createUserData;
+    const newUser = await userRepository.create({
+      email: userData.email,
+      name: userData.name,
+      password: hashedPassword,
+    });
+    newUser.password = null;
+  
+
+
+    return newUser;
   }
 
-  public async updateUser(userId: number, userData: CreateUserDto): Promise<User[]> {
+  public async updateUser(userId: string, userData: CreateUserDto): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
-    const findUser: User = this.users.find(user => user.id === userId);
+    const findUser: User = await userRepository.findOne({ id: userId })
     if (!findUser) throw new HttpException(409, "You're not user");
 
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const updateUserData: User[] = this.users.map((user: User) => {
-      if (user.id === findUser.id) user = { id: userId, ...userData, password: hashedPassword };
-      return user;
-    });
 
-    return updateUserData;
+    const updatedUser = await userRepository.findByIdAndUpdate(userId, userData, { new: true }).exec();
+
+
+    return updatedUser;
   }
 
-  public async deleteUser(userId: number): Promise<User[]> {
-    const findUser: User = this.users.find(user => user.id === userId);
+  public async deleteUser(userId: string): Promise<User> {
+
+    const findUser: User = await userRepository.findOne({ id: userId })
     if (!findUser) throw new HttpException(409, "You're not user");
 
-    const deleteUserData: User[] = this.users.filter(user => user.id !== findUser.id);
-    return deleteUserData;
+  
+    const deletedWord = await userRepository.findByIdAndDelete(userId).exec();
+    return  deletedWord;
   }
 }
 

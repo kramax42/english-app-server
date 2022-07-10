@@ -67,7 +67,7 @@ paths:
         in: path
         description: user Id
         required: true
-        type: integer
+        type: string
       - name: body
         in: body
         description: user Data
@@ -94,7 +94,7 @@ paths:
         in: path
         description: user Id
         required: true
-        type: integer
+        type: string
       responses:
         200:
           description: 'OK'
@@ -110,13 +110,17 @@ definitions:
     required:
         - email
         - password
+        - name
     properties:
-      id:
-        type: integer
+      _id:
+        type: string
         description: user Id
       email:
         type: string
         description: user Email
+      name:
+        type: string
+        description: user Name
       password:
         type: string
         description: user Password

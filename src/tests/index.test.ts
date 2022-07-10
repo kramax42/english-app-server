@@ -1,18 +1,33 @@
 import request from 'supertest';
 import App from '@/app';
 import IndexController from '@controllers/index.controller';
-
-afterAll(async () => {
-  await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
-});
+import mongoose from 'mongoose';
 
 describe('Testing Index', () => {
-  describe('[GET] /', () => {
-    it('response statusCode 200', () => {
-      const indexContoller = new IndexController();
-      const app = new App([indexContoller]);
+	beforeAll(async () => {
+		try {
+			await mongoose.disconnect();
+			await mongoose.connection.close();
+		} catch (err) {
+			console.log(err);
+		}
+	});
 
-      return request(app.getServer()).get(`${indexContoller.path}`).expect(200);
-    });
-  });
+	describe('[GET] /', () => {
+		it('response statusCode 200', () => {
+			const indexContoller = new IndexController();
+			const app = new App([indexContoller]);
+
+			return request(app.getServer()).get(`${indexContoller.path}`).expect(200);
+		});
+	});
+
+	afterAll(async () => {
+		try {
+			await mongoose.disconnect();
+			await mongoose.connection.close();
+		} catch (err) {
+			console.log(err);
+		}
+	});
 });

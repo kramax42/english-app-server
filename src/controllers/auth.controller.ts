@@ -11,7 +11,6 @@ class AuthController implements Controller {
 
   public path = '/';
   public router = Router();
-  
   public authService = new AuthService();
 
 
@@ -24,6 +23,7 @@ class AuthController implements Controller {
     this.router.post(`${this.path}signup`, validationMiddleware(CreateUserDto, 'body'), this.signUp);
     this.router.post(`${this.path}login`, validationMiddleware(CreateUserDto, 'body'), this.logIn);
     this.router.post(`${this.path}logout`, authMiddleware, this.logOut);
+    this.router.get(`${this.path}me`, authMiddleware, this.me);
   }
 
 
@@ -38,6 +38,7 @@ class AuthController implements Controller {
     }
   };
 
+
   private logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: CreateUserDto = req.body;
@@ -50,6 +51,7 @@ class AuthController implements Controller {
     }
   };
 
+
   private logOut = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: User = req.user;
@@ -57,6 +59,17 @@ class AuthController implements Controller {
 
       res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
       res.status(200).json({ data: logOutUserData, message: 'logout' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+
+  private me = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const user: User = req.user;
+  
+      res.status(200).json({ data: user, message: 'me' });
     } catch (error) {
       next(error);
     }

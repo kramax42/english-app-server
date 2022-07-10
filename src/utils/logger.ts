@@ -4,7 +4,7 @@ import path from 'path';
 import winston from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
 
-// Logs directory
+// Logs directory.
 const logDir: string = path.join(__dirname, config.get('log.dir'));
 
 if (!fs.existsSync(logDir)) {
@@ -49,7 +49,7 @@ const logger = winston.createLogger({
 			datePattern: 'YYYY-MM-DD',
 			dirname: logDir + '/error', // log file /logs/error/*.log in save
 			filename: `%DATE%.log`,
-			maxFiles: 30, // 30 Days saved
+			maxFiles: 30, // 30 Days saved.
 			handleExceptions: true,
 			json: false,
 			zippedArchive: true,
