@@ -20,6 +20,7 @@ class UsersService {
 
 		return findedUser;
 	}
+	
 
 	public async updateUser(
 		userId: string,

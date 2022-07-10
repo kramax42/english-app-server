@@ -43,10 +43,10 @@ class AuthController implements Controller {
   private logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: CreateUserDto = req.body;
-      const { cookie, findUser } = await this.authService.login(userData);
+      const { cookie, findedUser } = await this.authService.login(userData);
 
       res.setHeader('Set-Cookie', [cookie]);
-      res.status(200).json({ data: findUser, message: 'login' });
+      res.status(200).json({ data: findedUser, message: 'login' });
     } catch (error) {
       next(error);
     }
@@ -56,7 +56,7 @@ class AuthController implements Controller {
   private logOut = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: User = req.user;
-      const logOutUserData: User = await this.authService.logout(userData);
+      const logOutUserData: User = await this.authService.logout(userData.email);
 
       res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
       res.status(200).json({ data: logOutUserData, message: 'logout' });

@@ -10,12 +10,25 @@ class UsersRepository {
 		return users;
 	}
 
+	public async createUser({
+		email,
+		name,
+		password,
+	}: CreateUserDto): Promise<User> {
+		const user = await this.userModel.create({
+			email,
+			name,
+			password,
+		});
+		return user;
+	}
+
 	public async findUserById(userId: string): Promise<User | null> {
 		const user = await this.userModel.findOne({ id: userId }).exec();
 		return user || null;
 	}
 
-  async findUserByEmail(email: string) {
+	async findUserByEmail(email: string) {
 		return this.userModel.findOne({ email }).exec();
 	}
 

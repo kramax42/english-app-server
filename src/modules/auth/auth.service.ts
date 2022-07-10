@@ -7,25 +7,21 @@ import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { User } from '@interfaces/users.interface';
 import { isEmpty } from '@utils/util';
 import userRepository from '@models/user.model';
-import { LoginDto } from '@/dtos/auth.dto';
+import { LoginDto } from '@dtos/auth.dto';
+import UsersRepository from '@modules/users/users.repository';
 class AuthService {
-	public async signup(userData: CreateUserDto): Promise<User> {
-		if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
+	private readonly usersRepository = new UsersRepository();
 
-		const findUser: User = await userRepository.findOne({
-			email: userData.email,
-		});
-		if (findUser)
-			throw new HttpException(
-				409,
-				`Your email ${userData.email} already exists`
-			);
+	public async signup({ email, password, name }: CreateUserDto): Promise<User> {
+		const existedUser = await this.usersRepository.findUserByEmail(email);
+		if (existedUser)
+			throw new HttpException(409, 'User with this email alredy exist');
 
-		const hashedPassword = await bcrypt.hash(userData.password, 10);
+		const hashedPassword = await bcrypt.hash(password, 10);
 
-		const newUser = await userRepository.create({
-			email: userData.email,
-			name: userData.name,
+		const newUser = await this.usersRepository.createUser({
+			email,
+			name,
 			password: hashedPassword,
 		});
 		newUser.password = null;
@@ -34,38 +30,31 @@ class AuthService {
 	}
 
 	public async login(
-		userData: LoginDto
-	): Promise<{ cookie: string; findUser: User }> {
-		if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
+		{ email, password}: LoginDto
+	): Promise<{ cookie: string; findedUser: User }> {
 
-		const findUser: User = await userRepository.findOne({
-			email: userData.email,
-		});
-		if (!findUser) throw new HttpException(403, `Incorrect credentials`);
+		const findedUser = await this.usersRepository.findUserByEmail(email);
+		if (!findedUser) throw new HttpException(403, `Incorrect credentials`);
 
 		const isPasswordMatching: boolean = await bcrypt.compare(
-			userData.password,
-			findUser.password
+			password,
+			findedUser.password
 		);
-		if (!isPasswordMatching)
+		if (!isPasswordMatching){
 			throw new HttpException(409, "You're password not matching");
-
-		const tokenData = this.createToken(findUser);
+		}
+		const tokenData = this.createToken(findedUser);
 		const cookie = this.createCookie(tokenData);
 
-		return { cookie, findUser };
+		return { cookie, findedUser };
 	}
 
-	public async logout(userData: User): Promise<User> {
-		if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
+	public async logout(email: string): Promise<User> {
 
-		const findUser: User = await userRepository.findOne({
-			email: userData.email,
-			password: userData.password,
-		});
-		if (!findUser) throw new HttpException(409, "You're not user");
+		const findedUser = await this.usersRepository.findUserByEmail(email);
+		if (!findedUser) throw new HttpException(403, `Incorrect credentials`);
 
-		return findUser;
+		return findedUser;
 	}
 
 	public createToken(user: User): TokenData {
