@@ -16,10 +16,7 @@ import swaggerUi from 'swagger-ui-express';
 import { Controller } from '@interfaces/contoller.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
-
 import mongoose from 'mongoose';
-// import mongoose from 'mongoose';
-// const mongoose = require('mongoose');
 
 class App {
 	public app: express.Application;
@@ -52,23 +49,15 @@ class App {
 		return this.app;
 	}
 
-
-
 	private connectToTheDatabase() {
 		// ! TODO: get params from config file.
 		const mongoUrl = 'mongodb://admin:pass@localhost:27017/dictionary';
+		const mongoUrlProd =
+			'mongodb://uziajrrhzhimybwszyvs:LCPM3KnIVZIofvAXEXV9@n1-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017,n2-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017/b1g912bljqgjmpu?replicaSet=rs0';
 
 		// Connect to MongoDB
 		mongoose
-			.connect(mongoUrl, {
-				serverSelectionTimeoutMS: 5000,
-				authSource: 'admin',
-				user: 'admin',
-				pass: 'pass',
-				// useCreateIndex: true,
-				// useNewUrlParser: true,
-				// useUnifiedTopology: true
-			})
+			.connect(mongoUrlProd)
 			.then(() => {
 				logger.info('MongoDB Connected');
 			})
@@ -76,6 +65,24 @@ class App {
 				logger.error(err);
 				process.exit(1);
 			});
+
+		// mongoose
+		// 	.connect(mongoUrl, {
+		// 		serverSelectionTimeoutMS: 5000,
+		// 		authSource: 'admin',
+		// 		user: 'admin',
+		// 		pass: 'pass',
+		// 		// useCreateIndex: true,
+		// 		// useNewUrlParser: true,
+		// 		// useUnifiedTopology: true
+		// 	})
+		// 	.then(() => {
+		// 		logger.info('MongoDB Connected');
+		// 	})
+		// 	.catch((err: any) => {
+		// 		logger.error(err);
+		// 		process.exit(1);
+		// 	});
 	}
 
 	private initializeMiddlewares() {
