@@ -49,14 +49,17 @@ class App {
 	}
 
 	private connectToTheDatabase() {
-		// ! TODO: get params from config file.
-		const mongoUrl = 'mongodb://admin:pass@localhost:27017/dictionary';
-		const mongoUrlProd =
-			'mongodb://uziajrrhzhimybwszyvs:LCPM3KnIVZIofvAXEXV9@n1-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017,n2-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017/b1g912bljqgjmpu?replicaSet=rs0';
-
+		
+		const {
+      MONGO_USER,
+      MONGO_PASSWORD,
+      MONGO_PATH,
+    } = process.env;
+    const mongoUrl = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_PATH}`;
+		
 		// Connect to MongoDB
 		mongoose
-			.connect(mongoUrlProd)
+			.connect(mongoUrl)
 			.then(() => {
 				logger.info(`====== MongoDB Connected ======`);
 			})
@@ -64,24 +67,6 @@ class App {
 				logger.error(err);
 				process.exit(1);
 			});
-
-		// mongoose
-		// 	.connect(mongoUrl, {
-		// 		serverSelectionTimeoutMS: 5000,
-		// 		authSource: 'admin',
-		// 		user: 'admin',
-		// 		pass: 'pass',
-		// 		// useCreateIndex: true,
-		// 		// useNewUrlParser: true,
-		// 		// useUnifiedTopology: true
-		// 	})
-		// 	.then(() => {
-		// 		logger.info('MongoDB Connected');
-		// 	})
-		// 	.catch((err: any) => {
-		// 		logger.error(err);
-		// 		process.exit(1);
-		// 	});
 	}
 
 	private initializeMiddlewares() {
