@@ -26,15 +26,6 @@ services:
     networks:
       - backend
 
-  mongo-express:
-    container_name: mongo-express
-    image: mongo-express
-    environment:
-      - ME_CONFIG_MONGODB_URL=mongodb://uziajrrhzhimybwszyvs:LCPM3KnIVZIofvAXEXV9@n1-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017,n2-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017/b1g912bljqgjmpu?replicaSet=rs0
-    ports:
-      - '8081:8081'
-    volumes: 
-      - /data/db:/data/db     
 networks:
   backend:
     driver: bridge
