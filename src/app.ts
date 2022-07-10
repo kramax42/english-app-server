@@ -1,6 +1,6 @@
 process.env['NODE_CONFIG_DIR'] = __dirname + '/configs';
 
-import {} from 'dotenv/config';
+import 'dotenv/config';
 import { Server } from 'http';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
@@ -12,7 +12,6 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-
 import { Controller } from '@interfaces/contoller.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
@@ -59,7 +58,7 @@ class App {
 		mongoose
 			.connect(mongoUrlProd)
 			.then(() => {
-				logger.info('MongoDB Connected');
+				logger.info(`====== MongoDB Connected ======`);
 			})
 			.catch((err: any) => {
 				logger.error(err);
