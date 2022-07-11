@@ -1,124 +1,82 @@
-process.env['NODE_CONFIG_DIR'] = __dirname + '/configs';
-
-import 'dotenv/config';
-import { Server } from 'http';
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import config from 'config';
 import express from 'express';
+import http from 'http';
 import helmet from 'helmet';
-import hpp from 'hpp';
-import morgan from 'morgan';
-import swaggerJSDoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
-import { Controller } from '@interfaces/contoller.interface';
-import errorMiddleware from '@middlewares/error.middleware';
-import { logger, stream } from '@utils/logger';
-import mongoose from 'mongoose';
+import registerRoutes from 'routes';
+import addErrorHandler from '@middlewares/error-handler';
+import cookieParser from 'cookie-parser';  
 
-class App {
-	public app: express.Application;
-	public port: string | number;
-	public env: string;
-	public server: Server;
+let corsOptions = {
+    credentials: true,
+    origin: ["http://localhost:3000"]
+  };
 
-	constructor(controllers: Controller[]) {
-		this.app = express();
-		this.port = process.env.PORT || 5000;
-		this.env = process.env.NODE_ENV || 'development';
 
-		this.connectToTheDatabase();
-		this.initializeMiddlewares();
-		this.initializeContollers(controllers);
-		this.initializeSwagger();
-		this.initializeErrorHandling();
-	}
+// import * as mongoose from 'mongoose';
+const mongoose = require("mongoose");
 
-	public listen() {
-		this.server = this.app.listen(this.port, () => {
-			logger.info(`=================================`);
-			logger.info(`******* ENV: ${this.env} ********`);
-			logger.info(`🚀 App listening on the port ${this.port}`);
-			logger.info(`=================================`);
-		});
-	}
+export default class App {
+    public express: express.Application;
 
-	public getServer() {
-		return this.app;
-	}
+    public httpServer: http.Server;
 
-	private connectToTheDatabase() {
-		const { MONGO_USER, MONGO_PASSWORD, MONGO_PATH } = process.env;
-		const mongoUrl = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_PATH}`;
+    public async init(): Promise<void> {
+        this.express = express();
+        this.httpServer = http.createServer(this.express);
+        this.middleware();
+        this.routes();
+        this.addErrorHandler();
+        this.connectToTheDatabase();
+    }
 
-		// Connect to MongoDB
-		mongoose
-			.connect(mongoUrl)
-			.then(() => {
-				logger.info(`====== MongoDB Connected ======`);
-			})
-			.catch((err: any) => {
-				logger.error(err);
-				process.exit(1);
-			});
-	}
+    private connectToTheDatabase() {
 
-	private initializeMiddlewares() {
-		this.app.use(morgan(config.get('log.format'), { stream }));
-		this.app.use(
-			cors({
-				origin: config.get('cors.origin'),
-				credentials: config.get('cors.credentials'),
-			})
-		);
-		this.app.use(hpp());
-		this.app.use(helmet());
-		this.app.use(compression());
-		this.app.use(express.json());
-		this.app.use(express.urlencoded({ extended: true }));
-		this.app.use(cookieParser());
-	}
+        // ! TODO: get params from config file.
+        const mongoUrl = 'mongodb://admin:pass@localhost:27017/dictionary';
 
-	private initializeContollers(contollers: Controller[]) {
-		contollers.forEach((controller) => {
-			this.app.use('/', controller.router);
-		});
-	}
+        // Connect to MongoDB
+        mongoose.connect(mongoUrl, {
+            authSource: 'admin',
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            // useCreateIndex: true,
+            user: "admin",
+            pass: "pass",
+            serverSelectionTimeoutMS: 5000,
+          })
+            .then(() => {
+                console.log("MongoDB Connected");
+            })
+            .catch((err: any) => console.log(err));
+        }
 
-	private initializeSwagger() {
-		const options = {
-			swaggerDefinition: {
-				info: {
-					title: 'REST API',
-					version: '1.0.1',
-					description: 'Example docs',
-				},
-			},
-			components: {
-				securitySchemes: {
-					bearerAuth: {
-						type: 'http',
-						scheme: 'bearer',
-						bearerFormat: 'JWT',
-					},
-				},
-			},
-			security: [
-				{
-					bearerAuth: [],
-				},
-			],
-			apis: ['swagger.yaml'],
-		};
 
-		const specs = swaggerJSDoc(options);
-		this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-	}
+    // Routes registration.
+    private routes(): void {
+        this.express.get('/', this.basePathRoute);
+        this.express.get('/web', this.basePathRoute);
+        registerRoutes(this.express);
+    }
 
-	private initializeErrorHandling() {
-		this.app.use(errorMiddleware);
-	}
+
+    // Middlewares registration.
+    private middleware(): void {
+        // support application/json type post data
+        // support application/x-www-form-urlencoded post data
+        // Helmet can help protect your app from some well-known web vulnerabilities by setting HTTP headers appropriately.
+        this.express.use(helmet({ contentSecurityPolicy: false }));
+        this.express.use(express.json({ limit: '100mb' }));
+        this.express.use(express.urlencoded({ limit: '100mb', extended: true }));
+        this.express.use(cors(corsOptions));
+        this.express.use(cookieParser());
+
+    }
+
+    private basePathRoute(request: express.Request, response: express.Response): void {
+        response.json({ message : 'base path' });
+    }
+
+    private addErrorHandler(): void {
+        this.express.use(addErrorHandler);
+    }
 }
-
-export default App;

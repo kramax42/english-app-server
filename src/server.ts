@@ -1,18 +1,45 @@
-process.env['NODE_CONFIG_DIR'] = __dirname + '/configs';
+import * as http from 'http';
+import { AddressInfo } from 'net';
+import { setGlobalEnvironment } from './global';
+import App  from './app';
+import Environment from './environments/environment';
+import logger from './lib/logger';
 
-import 'dotenv/config';
-import App from '@/app';
-import validateEnv from '@utils/validateEnv';
-import IndexController from '@/modules/index/index.controller';
-import AuthController from '@modules/auth/auth.controller';
-import UsersController from '@modules/users/users.controller';
+const env: Environment = new Environment();
+setGlobalEnvironment(env);
+const app: App = new App();
+let server: http.Server;
 
-validateEnv();
+function serverError(error: NodeJS.ErrnoException): void {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+   
+    throw error;
+}
 
-const app = new App([
-	new IndexController(),
-	new AuthController(),
-	new UsersController(),
-]);
+function serverListening(): void {
+    const addressInfo: AddressInfo = <AddressInfo>server.address();
+    logger.info(`Listening on ${addressInfo.address}:${env.port}`);
+}
 
-app.listen();
+app.init().then(() => {
+    app.express.set('port', env.port);
+
+    server = app.httpServer; // http.createServer(App);
+    server.on('error', serverError);
+    server.on('listening', serverListening);
+    server.listen(env.port);
+}).catch((err: Error) => {
+    logger.info('app.init error');
+    logger.error(err.name);
+    logger.error(err.message);
+    logger.error(err.stack);
+});
+
+process.on('unhandledRejection', (reason: Error) => {
+    logger.error('Unhandled Promise Rejection: reason:', reason.message);
+    logger.error(reason.stack);
+});
+
+

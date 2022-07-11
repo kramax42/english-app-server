@@ -1,32 +1,36 @@
-import config from 'config';
 import { NextFunction, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { HttpException } from '@exceptions/http.exception';
-import { DataStoredInToken, RequestWithUser } from '@interfaces/auth.interface';
-import userRepository from '@/models/user.model';
+import * as jwt from 'jsonwebtoken';
+import RequestWithUser from '../interfaces/request-with-user.interface';
+import userModel from '../modules/user/model/user.model';
+import DataStoredInToken from '../interfaces/data-stored-in-token.interface';
+import AuthenticationTokenMissingException from '../exceptions/authentication-token-missing-exception';
+import WrongAuthenticationTokenException from '../exceptions/wrong-authentication-token.exception';
+ 
+async function authMiddleware(request: RequestWithUser, response: Response, next: NextFunction) {
+  const { cookies } = request;
+  if (cookies && cookies.Authorization) {
+    // const secret = process.env.JWT_SECRET;
+    const secret = "process.env.JWT_SECRET";
+    try {
+      const verificationResponse = jwt.verify(cookies.Authorization, secret) as DataStoredInToken;
+      const id = verificationResponse._id;
+      const user = await userModel.findById(id);
 
-const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFunction) => {
-  try {
-    const Authorization = req.cookies['Authorization'] || req.header('Authorization').split('Bearer ')[1] || null;
-
-    if (Authorization) {
-      const secretKey: string = config.get('secretKey');
-      const verificationResponse = (await jwt.verify(Authorization, secretKey)) as DataStoredInToken;
-      const userId = verificationResponse.id;
-      const findUser = await userRepository.findOne({ id: userId })
-
-      if (findUser) {
-        req.user = findUser;
+      if (user) {
+ 
+        request.user = user;
         next();
       } else {
-        next(new HttpException(401, 'Wrong authentication token'));
+        
+        next(new WrongAuthenticationTokenException());
       }
-    } else {
-      next(new HttpException(404, 'Authentication token missing'));
+    } catch (error) {
+     
+      next(new WrongAuthenticationTokenException());
     }
-  } catch (error) {
-    next(new HttpException(401, 'Wrong authentication token'));
+  } else {
+    next(new AuthenticationTokenMissingException());
   }
-};
-
+}
+ 
 export default authMiddleware;
