@@ -4,6 +4,7 @@ import { User } from '@interfaces/users.interface';
 import UsersService from './users.service';
 import validationMiddleware from '@middlewares/validation.middleware';
 import { Controller } from '@interfaces/contoller.interface';
+import authMiddleware from '@/middlewares/auth.middleware';
 
 class UsersController implements Controller {
 	public path = '/users';
@@ -16,14 +17,15 @@ class UsersController implements Controller {
 	}
 
 	private initializeRoutes() {
-		this.router.get(`${this.path}`, this.getUsers);
-		this.router.get(`${this.path}/:id`, this.getUserById);
+		this.router.get(`${this.path}`, authMiddleware, this.getUsers);
+		this.router.get(`${this.path}/:id`, authMiddleware, this.getUserById);
 		this.router.put(
 			`${this.path}/:id`,
+			authMiddleware,
 			validationMiddleware(UpdateUserDto, 'body', true),
 			this.updateUser
 		);
-		this.router.delete(`${this.path}/:id`, this.deleteUser);
+		this.router.delete(`${this.path}/:id`, authMiddleware, this.deleteUser);
 	}
 
 	private getUsers = async (
@@ -34,7 +36,9 @@ class UsersController implements Controller {
 		try {
 			const getAllUsersData: User[] = await this.userService.getAllUsers();
 
-			res.status(200).json({ data: getAllUsersData, message: 'Get all users.' });
+			res
+				.status(200)
+				.json({ data: getAllUsersData, message: 'Get all users.' });
 		} catch (error) {
 			next(error);
 		}
@@ -67,7 +71,7 @@ class UsersController implements Controller {
 				userId,
 				userData
 			);
-				
+
 			res.status(200).json({ data: updatedUser, message: 'updated' });
 		} catch (error) {
 			next(error);

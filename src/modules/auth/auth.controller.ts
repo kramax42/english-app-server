@@ -57,7 +57,8 @@ class AuthController implements Controller {
 			const { cookie, findedUser } = await this.authService.login(userData);
 
 			res.setHeader('Set-Cookie', [cookie]);
-			res.status(200).json({ data: findedUser, message: 'login' });
+			// Set cookie in body for e2e test.
+			res.status(200).json({ data: {...findedUser, cookie}, message: 'login' });
 		} catch (error) {
 			next(error);
 		}
