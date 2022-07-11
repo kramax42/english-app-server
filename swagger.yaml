@@ -1,8 +1,33 @@
 tags:
 - name: users
   description: users API
+- name: login
+  description: login
 
 paths:
+# [POST] login
+  /login:
+    post:
+      tags:
+      - login
+      summary: login
+      parameters:
+      - name: body
+        in: body
+        description: user Data
+        required: true
+        schema:
+          $ref: '#/definitions/login'
+      responses:
+        200:
+          description: 'OK'
+        400:
+          description: 'Bad Request'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
 # [GET] users
   /users:
     get:
@@ -62,6 +87,8 @@ paths:
         500:
           description: 'Server Error'
 
+
+
 # [DELETE] users/id
     delete:
       tags:
@@ -99,6 +126,18 @@ definitions:
       name:
         type: string
         description: user Name
+      password:
+        type: string
+        description: user Password
+  login:
+    type: object
+    required:
+        - email
+        - password
+    properties:
+      email:
+        type: string
+        description: user Email
       password:
         type: string
         description: user Password
