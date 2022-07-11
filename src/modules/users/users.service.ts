@@ -3,6 +3,7 @@ import { CreateUserDto } from '@dtos/users.dto';
 import { User } from '@interfaces/users.interface';
 import userRepository from '@models/user.model';
 import UsersRepository from './users.repository';
+import bcrypt from 'bcrypt';
 
 class UsersService {
 	private readonly usersRepository = new UsersRepository();
@@ -26,7 +27,13 @@ class UsersService {
 		const findedUser = await this.usersRepository.findUserById(userId);
 		if (!findedUser) throw new UserNotFoundException();
 
-		const updatedUser = await this.usersRepository.updateUser(userId, userDto);
+		const { name, email, password } = userDto;
+		const hashedPassword = await bcrypt.hash(password, 10);
+		const updatedUser = await this.usersRepository.updateUser(userId, {
+			name,
+			email,
+			password: hashedPassword,
+		});
 
 		return updatedUser;
 	}

@@ -1,26 +1,26 @@
 import request from 'supertest';
 import App from '@/app';
-import { CreateUserDto } from '@dtos/users.dto';
 import AuthController from '@modules/auth/auth.controller';
 import mongoose from 'mongoose';
 import { LoginDto } from '@dtos/auth.dto';
 import UsersController from '@modules/users/users.controller';
 import { logger } from '@utils/logger';
+import { User } from '@interfaces/users.interface';
 
-const userDto: CreateUserDto = {
-	name: 'max',
-	email: 'exampl34@mail.com',
-	password: 'q1w2e3r4',
+const userExample: User = {
+	_id: '62cc527749f7a5864b076412',
+	name: 'Jimbo',
+	email: 'user@user.com',
+	password: 'qwe123',
 };
 
 const loginDto: LoginDto = {
-	email: 'exampl34@mail.com',
-	password: 'q1w2e3r4',
+	email: 'user@user.com',
+	password: 'qwe123',
 };
 
-describe('AuthController (e2e)', () => {
+describe('UsersController (e2e)', () => {
 	let app: App;
-	let createdUserId: string;
 	let authTokenCookie: string;
 
 	beforeAll(async () => {
@@ -34,24 +34,8 @@ describe('AuthController (e2e)', () => {
 		app = new App([new AuthController(), new UsersController()]);
 	});
 
-	it('/signup (POST) - success', async () => {
-		return request(app.getServer())
-			.post('/signup')
-			.send(userDto)
-			.expect(201)
-			.then(({ body }: request.Response) => {
-				createdUserId = body.data._id;
-				expect(createdUserId).toBeDefined();
-			});
-	});
-
-	it('/signup (POST) - error', async () => {
-		return request(app.getServer())
-			.post('/signup')
-			.send({ email: 'bademail', password: '1', name: 'name' })
-			.expect(400);
-	});
-
+	// ! TO DO - replace to beforeAll method.
+	// ! But before remake app initialization in bootstrap method.
 	it('/login (POST) - success', async () => {
 		return request(app.getServer())
 			.post('/login')
@@ -62,20 +46,23 @@ describe('AuthController (e2e)', () => {
 			});
 	});
 
-	it('/login (POST) - error', async () => {
+	it('/users (GET) - success', async () => {
 		return request(app.getServer())
-			.post('/login')
-			.send({ email: 'wrong@mail.ru', password: '123' })
-			.expect(401);
+			.get('/users')
+			.set('cookie', authTokenCookie)
+			.expect(200);
 	});
 
-	it('/users/:id (DELETE) - success', async () => {
-		return (
-			request(app.getServer())
-				.delete(`/users/${createdUserId}`)
-				.set('cookie', authTokenCookie)
-				.expect(200)
-		);
+	it('/users/:id (PUT) - success', async () => {
+		return request(app.getServer())
+			.put(`/users/${userExample._id}`)
+			.send({
+				email: userExample.email,
+				name: userExample.name,
+				password: userExample.password,
+			})
+			.set('cookie', authTokenCookie)
+			.expect(200);
 	});
 
 	afterAll(async () => {

@@ -138,7 +138,7 @@ definitions:
       email:
         type: string
         description: User email
-        example: user@example.com
+        example: user@user.com
       password:
         type: string
         description: User password
