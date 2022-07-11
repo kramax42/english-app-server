@@ -9,18 +9,19 @@ import { logger } from '@utils/logger';
 
 const userDto: CreateUserDto = {
 	name: 'max',
-	email: 'qwezxc@mail.com',
+	email: 'acvxcczoet@mail.com',
 	password: 'q1w2e3r4',
 };
 
 const loginDto: LoginDto = {
-	email: 'qwezxc@mail.com',
+	email: 'acvxcczoet@mail.com',
 	password: 'q1w2e3r4',
 };
 
 describe('AuthController (e2e)', () => {
 	let app: App;
 	let createdUserId: string;
+	let authTokenCookie: string;
 
 	beforeAll(async () => {
 		try {
@@ -55,7 +56,10 @@ describe('AuthController (e2e)', () => {
 		return request(app.getServer())
 			.post('/login')
 			.send(loginDto)
-			.expect('Set-Cookie', /^Authorization=.+/);
+			.expect('Set-Cookie', /^Authorization=.+/)
+			.then(({ body }: request.Response) => {
+				authTokenCookie = body.data.cookie;
+			});
 	});
 
 	it('/login (POST) - error', async () => {
@@ -68,8 +72,8 @@ describe('AuthController (e2e)', () => {
 	it('/users/:id (DELETE) - success', async () => {
 		return (
 			request(app.getServer())
-				.delete(`/users/${createdUserId}`) //.then(request => console.log(request))
-				// .set('Authorization', 'Bearer ' + token)
+				.delete(`/users/${createdUserId}`)
+				.set('cookie', authTokenCookie)
 				.expect(200)
 		);
 	});
