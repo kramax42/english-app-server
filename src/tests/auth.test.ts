@@ -5,6 +5,7 @@ import AuthController from '@modules/auth/auth.controller';
 import mongoose from 'mongoose';
 import { LoginDto } from '@dtos/auth.dto';
 import UsersController from '@modules/users/users.controller';
+import { logger } from '@utils/logger';
 
 const userDto: CreateUserDto = {
 	name: 'max',
@@ -26,7 +27,7 @@ describe('AuthController (e2e)', () => {
 			await mongoose.disconnect();
 			await mongoose.connection.close();
 		} catch (err) {
-			console.log(err);
+			logger.error(err);
 		}
 
 		app = new App([new AuthController(), new UsersController()]);
@@ -78,7 +79,7 @@ describe('AuthController (e2e)', () => {
 			await mongoose.disconnect();
 			await mongoose.connection.close();
 		} catch (err) {
-			console.log(err);
+			logger.error(err);
 		}
 	});
 });

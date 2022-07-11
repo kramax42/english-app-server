@@ -2,6 +2,7 @@ import request from 'supertest';
 import App from '@/app';
 import IndexController from '@/modules/index/index.controller';
 import mongoose from 'mongoose';
+import { logger } from '@utils/logger';
 
 describe('Testing Index', () => {
 	let app: App;
@@ -13,7 +14,7 @@ describe('Testing Index', () => {
 
 			app = new App([new IndexController()]);
 		} catch (err) {
-			console.log(err);
+			logger.error(err);
 		}
 	});
 
@@ -26,7 +27,7 @@ describe('Testing Index', () => {
 			await mongoose.disconnect();
 			await mongoose.connection.close();
 		} catch (err) {
-			console.log(err);
+			logger.error(err);
 		}
 	});
 });
