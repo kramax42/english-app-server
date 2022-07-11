@@ -9,12 +9,12 @@ import { logger } from '@utils/logger';
 
 const userDto: CreateUserDto = {
 	name: 'max',
-	email: 'acvxcczoet@mail.com',
+	email: 'exampl34@mail.com',
 	password: 'q1w2e3r4',
 };
 
 const loginDto: LoginDto = {
-	email: 'acvxcczoet@mail.com',
+	email: 'exampl34@mail.com',
 	password: 'q1w2e3r4',
 };
 
