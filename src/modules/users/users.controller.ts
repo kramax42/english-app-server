@@ -67,7 +67,7 @@ class UsersController implements Controller {
 				userId,
 				userData
 			);
-
+				
 			res.status(200).json({ data: updatedUser, message: 'updated' });
 		} catch (error) {
 			next(error);

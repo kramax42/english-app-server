@@ -2,20 +2,18 @@ import bcrypt from 'bcrypt';
 import config from 'config';
 import jwt from 'jsonwebtoken';
 import { CreateUserDto } from '@dtos/users.dto';
-import { HttpException } from '@exceptions/HttpException';
 import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { User } from '@interfaces/users.interface';
-import { isEmpty } from '@utils/util';
-import userRepository from '@models/user.model';
 import { LoginDto } from '@dtos/auth.dto';
 import UsersRepository from '@modules/users/users.repository';
+import { WrongCredentialsException } from '@/exceptions/wrong-credentials.exception';
+import { AlreadyExistsException } from '@/exceptions/already-exist.exception';
 class AuthService {
 	private readonly usersRepository = new UsersRepository();
 
 	public async signup({ email, password, name }: CreateUserDto): Promise<User> {
 		const existedUser = await this.usersRepository.findUserByEmail(email);
-		if (existedUser)
-			throw new HttpException(409, 'User with this email alredy exist');
+		if (existedUser) throw new AlreadyExistsException();
 
 		const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -29,19 +27,19 @@ class AuthService {
 		return newUser;
 	}
 
-	public async login(
-		{ email, password}: LoginDto
-	): Promise<{ cookie: string; findedUser: User }> {
-
+	public async login({
+		email,
+		password,
+	}: LoginDto): Promise<{ cookie: string; findedUser: User }> {
 		const findedUser = await this.usersRepository.findUserByEmail(email);
-		if (!findedUser) throw new HttpException(403, `Incorrect credentials`);
+		if (!findedUser) throw new WrongCredentialsException();
 
 		const isPasswordMatching: boolean = await bcrypt.compare(
 			password,
 			findedUser.password
 		);
-		if (!isPasswordMatching){
-			throw new HttpException(409, "You're password not matching");
+		if (!isPasswordMatching) {
+			throw new WrongCredentialsException();
 		}
 		const tokenData = this.createToken(findedUser);
 		const cookie = this.createCookie(tokenData);
@@ -50,9 +48,8 @@ class AuthService {
 	}
 
 	public async logout(email: string): Promise<User> {
-
 		const findedUser = await this.usersRepository.findUserByEmail(email);
-		if (!findedUser) throw new HttpException(403, `Incorrect credentials`);
+		if (!findedUser) throw new WrongCredentialsException();
 
 		return findedUser;
 	}

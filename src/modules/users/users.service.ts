@@ -1,12 +1,10 @@
-
+import { UserNotFoundException } from '@/exceptions/user-not-found.exception';
 import { CreateUserDto } from '@dtos/users.dto';
-import { HttpException } from '@exceptions/HttpException';
 import { User } from '@interfaces/users.interface';
 import userRepository from '@models/user.model';
 import UsersRepository from './users.repository';
 
 class UsersService {
-
 	private readonly usersRepository = new UsersRepository();
 
 	public async getAllUsers(): Promise<User[]> {
@@ -16,18 +14,17 @@ class UsersService {
 
 	public async findUserById(userId: string): Promise<User> {
 		const findedUser = await this.usersRepository.findUserById(userId);
-		if (!findedUser) throw new HttpException(409, "You're not user");
+		if (!findedUser) throw new UserNotFoundException();
 
 		return findedUser;
 	}
-	
 
 	public async updateUser(
 		userId: string,
 		userDto: CreateUserDto
 	): Promise<User> {
 		const findedUser = await this.usersRepository.findUserById(userId);
-		if (!findedUser) throw new HttpException(409, "You're not user");
+		if (!findedUser) throw new UserNotFoundException();
 
 		const updatedUser = await this.usersRepository.updateUser(userId, userDto);
 
@@ -36,12 +33,11 @@ class UsersService {
 
 	public async deleteUser(userId: string): Promise<User> {
 		const findedUser = await this.usersRepository.findUserById(userId);
-		if (!findedUser) throw new HttpException(409, "You're not user");
+		if (!findedUser) throw new UserNotFoundException();
 
 		const deletedWord = await this.usersRepository.deleteUser(userId);
 		return deletedWord;
 	}
-
 
 	// async validateUser(email: string): Promise<Pick<UserModel, 'email'>> {
 	// 	const user = await this.findUser(email);

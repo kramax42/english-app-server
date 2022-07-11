@@ -62,7 +62,7 @@ describe('AuthController (e2e)', () => {
 		return request(app.getServer())
 			.post('/login')
 			.send({ email: 'wrong@mail.ru', password: '123' })
-			.expect(403);
+			.expect(401);
 	});
 
 	it('/users/:id (DELETE) - success', async () => {

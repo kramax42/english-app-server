@@ -1,7 +1,7 @@
 import config from 'config';
 import { NextFunction, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { HttpException } from '@exceptions/HttpException';
+import { HttpException } from '@exceptions/http.exception';
 import { DataStoredInToken, RequestWithUser } from '@interfaces/auth.interface';
 import userRepository from '@/models/user.model';
 
