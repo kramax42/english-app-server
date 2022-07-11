@@ -137,10 +137,12 @@ definitions:
     properties:
       email:
         type: string
-        description: user Email
+        description: User email
+        example: user@example.com
       password:
         type: string
-        description: user Password
+        description: User password
+        example: qwe123
 
 schemes:
  - https
