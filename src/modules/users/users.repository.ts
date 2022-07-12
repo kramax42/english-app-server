@@ -1,6 +1,6 @@
-import { CreateUserDto } from '@dtos/users.dto';
-import { User } from '@interfaces/users.interface';
-import UserModel from '@models/user.model';
+import { CreateUserDto } from '@dtos/user.dto';
+import { User } from '@interfaces/user.interface';
+import { UserModel } from '@models/user.model';
 
 class UsersRepository {
 	private userModel = UserModel;
@@ -24,12 +24,13 @@ class UsersRepository {
 	}
 
 	public async findUserById(userId: string): Promise<User | null> {
-		const user = await this.userModel.findById(userId).exec();
-		return user;
+		const foundUser = await this.userModel.findById(userId).exec();
+		return foundUser;
 	}
 
-	async findUserByEmail(email: string) {
-		return this.userModel.findOne({ email }).exec();
+	async findUserByEmail(email: string): Promise<User | null> {
+		const foundUser = await this.userModel.findOne({ email }).exec();
+		return foundUser;
 	}
 
 	public async updateUser(

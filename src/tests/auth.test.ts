@@ -1,6 +1,6 @@
 import request from 'supertest';
 import App from '@/app';
-import { CreateUserDto } from '@dtos/users.dto';
+import { CreateUserDto } from '@dtos/user.dto';
 import AuthController from '@modules/auth/auth.controller';
 import mongoose from 'mongoose';
 import { LoginDto } from '@dtos/auth.dto';

@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import { LoginDto } from '@dtos/auth.dto';
 import UsersController from '@modules/users/users.controller';
 import { logger } from '@utils/logger';
-import { User } from '@interfaces/users.interface';
+import { User } from '@interfaces/user.interface';
 
 const userExample: User = {
 	_id: '62cc527749f7a5864b076412',

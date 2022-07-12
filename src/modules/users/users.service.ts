@@ -1,7 +1,6 @@
 import { UserNotFoundException } from '@/exceptions/user-not-found.exception';
-import { CreateUserDto } from '@dtos/users.dto';
-import { User } from '@interfaces/users.interface';
-import userRepository from '@models/user.model';
+import { CreateUserDto } from '@dtos/user.dto';
+import { User } from '@interfaces/user.interface';
 import UsersRepository from './users.repository';
 import bcrypt from 'bcrypt';
 
@@ -14,18 +13,18 @@ class UsersService {
 	}
 
 	public async findUserById(userId: string): Promise<User> {
-		const findedUser = await this.usersRepository.findUserById(userId);
-		if (!findedUser) throw new UserNotFoundException();
+		const foundUser = await this.usersRepository.findUserById(userId);
+		if (!foundUser) throw new UserNotFoundException();
 
-		return findedUser;
+		return foundUser;
 	}
 
 	public async updateUser(
 		userId: string,
 		userDto: CreateUserDto
 	): Promise<User> {
-		const findedUser = await this.usersRepository.findUserById(userId);
-		if (!findedUser) throw new UserNotFoundException();
+		const foundUser = await this.usersRepository.findUserById(userId);
+		if (!foundUser) throw new UserNotFoundException();
 
 		const { name, email, password } = userDto;
 		const hashedPassword = await bcrypt.hash(password, 10);
@@ -39,8 +38,8 @@ class UsersService {
 	}
 
 	public async deleteUser(userId: string): Promise<User> {
-		const findedUser = await this.usersRepository.findUserById(userId);
-		if (!findedUser) throw new UserNotFoundException();
+		const foundUser = await this.usersRepository.findUserById(userId);
+		if (!foundUser) throw new UserNotFoundException();
 
 		const deletedWord = await this.usersRepository.deleteUser(userId);
 		return deletedWord;
@@ -59,7 +58,7 @@ class UsersService {
 	// }
 
 	async findUser(email: string) {
-		return userRepository.findOne({ email }).exec();
+		return this.usersRepository.findUserByEmail(email);
 	}
 }
 

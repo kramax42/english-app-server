@@ -1,4 +1,4 @@
-import { User } from '@interfaces/users.interface';
+import { User } from '@interfaces/user.interface';
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
@@ -7,9 +7,7 @@ const userSchema = new mongoose.Schema({
 	password: String,
 });
 
-const UserModel = mongoose.model<User & mongoose.Document>(
+export const UserModel = mongoose.model<User & mongoose.Document>(
 	'User',
 	userSchema
 );
-
-export default UserModel;

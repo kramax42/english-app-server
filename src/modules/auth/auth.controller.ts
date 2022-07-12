@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { CreateUserDto } from '@dtos/users.dto';
+import { CreateUserDto } from '@dtos/user.dto';
 import { RequestWithUser } from '@interfaces/auth.interface';
-import { User } from '@interfaces/users.interface';
+import { User } from '@interfaces/user.interface';
 import AuthService from './auth.service';
 import { Controller } from '@interfaces/contoller.interface';
 import validationMiddleware from '@middlewares/validation.middleware';
@@ -54,11 +54,15 @@ class AuthController implements Controller {
 	): Promise<void> => {
 		try {
 			const userData: CreateUserDto = req.body;
-			const { cookie, findedUser:user } = await this.authService.login(userData);
+			const { cookie, foundUser: user } = await this.authService.login(
+				userData
+			);
 
 			res.setHeader('Set-Cookie', [cookie]);
 			// Set cookie value in body for auth in e2e tests.
-			res.status(200).json({ data: {user, authTokenCookie: cookie}, message: 'login' });
+			res
+				.status(200)
+				.json({ data: { user, authTokenCookie: cookie }, message: 'login' });
 		} catch (error) {
 			next(error);
 		}

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { UpdateUserDto } from '@dtos/users.dto';
-import { User } from '@interfaces/users.interface';
+import { UpdateUserDto } from '@dtos/user.dto';
+import { User } from '@interfaces/user.interface';
 import UsersService from './users.service';
 import validationMiddleware from '@middlewares/validation.middleware';
 import { Controller } from '@interfaces/contoller.interface';

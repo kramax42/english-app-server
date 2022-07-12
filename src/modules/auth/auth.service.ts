@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import config from 'config';
 import jwt from 'jsonwebtoken';
-import { CreateUserDto } from '@dtos/users.dto';
+import { CreateUserDto } from '@dtos/user.dto';
 import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
-import { User } from '@interfaces/users.interface';
+import { User } from '@interfaces/user.interface';
 import { LoginDto } from '@dtos/auth.dto';
 import UsersRepository from '@modules/users/users.repository';
 import { WrongCredentialsException } from '@/exceptions/wrong-credentials.exception';
@@ -30,28 +30,28 @@ class AuthService {
 	public async login({
 		email,
 		password,
-	}: LoginDto): Promise<{ cookie: string; findedUser: User }> {
-		const findedUser = await this.usersRepository.findUserByEmail(email);
-		if (!findedUser) throw new WrongCredentialsException();
+	}: LoginDto): Promise<{ cookie: string; foundUser: User }> {
+		const foundUser = await this.usersRepository.findUserByEmail(email);
+		if (!foundUser) throw new WrongCredentialsException();
 
 		const isPasswordMatching: boolean = await bcrypt.compare(
 			password,
-			findedUser.password
+			foundUser.password
 		);
 		if (!isPasswordMatching) {
 			throw new WrongCredentialsException();
 		}
-		const tokenData = this.createToken(findedUser);
+		const tokenData = this.createToken(foundUser);
 		const cookie = this.createCookie(tokenData);
 
-		return { cookie, findedUser };
+		return { cookie, foundUser };
 	}
 
 	public async logout(email: string): Promise<User> {
-		const findedUser = await this.usersRepository.findUserByEmail(email);
-		if (!findedUser) throw new WrongCredentialsException();
+		const foundUser = await this.usersRepository.findUserByEmail(email);
+		if (!foundUser) throw new WrongCredentialsException();
 
-		return findedUser;
+		return foundUser;
 	}
 
 	public createToken(user: User): TokenData {
