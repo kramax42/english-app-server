@@ -108,8 +108,125 @@ paths:
         500:
           description: 'Server Error'
 
+# [GET] words
+  /words:
+    get:
+      tags:
+      - words
+      summary: Get Users
+      responses:
+        200:
+          description: 'OK'
+        500:
+          description: 'Server Error'
+
+# [POST] words
+    post:
+      tags:
+      - words
+      summary: Create word
+      parameters:
+      - name: body
+        in: body
+        description: word data
+        required: true
+        schema:
+          $ref: '#/definitions/words'
+      responses:
+        200:
+          description: 'OK'
+        400:
+          description: 'Bad Request'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+
+# [GET] words/id
+  /words/{id}:
+    get:
+      tags:
+      - words
+      summary: Find word by id
+      parameters:
+      - name: id
+        in: path
+        description: Word id
+        required: true
+        type: string
+      responses:
+        200:
+          description: 'OK'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+# [PUT] words/id
+    put:
+      tags:
+      - words
+      summary: Update word by id
+      parameters:
+      - name: id
+        in: path
+        description: word id
+        required: true
+        type: string
+      - name: body
+        in: body
+        description: word data
+        required: true
+        schema:
+          $ref: '#/definitions/words'
+      responses:
+        200:
+          description: 'OK'
+        400:
+          description: 'Bad Request'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+
+# [DELETE] words/id
+    delete:
+      tags:
+      - words
+      summary: Delete word by id
+      parameters:
+      - name: id
+        in: path
+        description: word id
+        required: true
+        type: string
+      responses:
+        200:
+          description: 'OK'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+
 # definitions
 definitions:
+  login:
+    type: object
+    required:
+        - email
+        - password
+    properties:
+      email:
+        type: string
+        description: User email
+        example: user@user.com
+      password:
+        type: string
+        description: User password
+        example: qwe123
   users:
     type: object
     required:
@@ -129,20 +246,38 @@ definitions:
       password:
         type: string
         description: user Password
-  login:
+  words:
     type: object
     required:
-        - email
-        - password
+        - word
+        - transcription
+        - translation
+        - usageExamples
     properties:
-      email:
+      _id:
         type: string
-        description: User email
-        example: user@user.com
-      password:
+        description: word Id
+      word:
         type: string
-        description: User password
-        example: qwe123
+        description: english word
+      transcription:
+        type: string
+        description: word transcription
+      translation:
+        type: array
+        items:
+          type: string
+      usageExamples:
+        type: array
+        items:
+          type: object
+          properties:
+            sentence:
+              type: string
+            translation:
+              type: string
+
+  
 
 schemes:
  - https

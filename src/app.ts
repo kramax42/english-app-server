@@ -91,7 +91,7 @@ class App {
 			swaggerDefinition: {
 				info: {
 					title: 'REST API',
-					version: '1.0.1',
+					version: '1.1.2',
 					description: 'Example docs',
 				},
 			},
