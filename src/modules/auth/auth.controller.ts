@@ -54,7 +54,7 @@ class AuthController implements Controller {
 	): Promise<void> => {
 		try {
 			const userData: CreateUserDto = req.body;
-			const { cookie, foundUser: user } = await this.authService.login(
+			const { cookie, foundUser: user, accessToken } = await this.authService.login(
 				userData
 			);
 
@@ -62,7 +62,7 @@ class AuthController implements Controller {
 			// Set cookie value in body for auth in e2e tests.
 			res
 				.status(200)
-				.json({ data: { user, authTokenCookie: cookie }, message: 'login' });
+				.json({ data: { user, accessToken, cookie }, message: 'login' });
 		} catch (error) {
 			next(error);
 		}

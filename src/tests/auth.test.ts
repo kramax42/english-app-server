@@ -21,7 +21,7 @@ const loginDto: LoginDto = {
 describe('AuthController (e2e)', () => {
 	let app: App;
 	let createdUserId: string;
-	let authTokenCookie: string;
+	let accessToken: string;
 
 	beforeAll(async () => {
 		try {
@@ -58,7 +58,7 @@ describe('AuthController (e2e)', () => {
 			.send(loginDto)
 			.expect('Set-Cookie', /^Authorization=.+/)
 			.then(({ body }: request.Response) => {
-				authTokenCookie = body.data.authTokenCookie;
+				accessToken = body.data.accessToken;
 			});
 	});
 
@@ -73,7 +73,7 @@ describe('AuthController (e2e)', () => {
 		return (
 			request(app.getServer())
 				.delete(`/users/${createdUserId}`)
-				.set('cookie', authTokenCookie)
+				.set('cookie', `Authorization=${accessToken}`)
 				.expect(200)
 		);
 	});

@@ -17,26 +17,26 @@ class CommonWordsController implements Controller {
 	}
 
 	private initializeRoutes() {
-		this.router.get(`${this.path}`, authMiddleware, this.getAllWords);
-		this.router.post(`${this.path}`, authMiddleware, this.createWord);
-		this.router.get(`${this.path}/:id`, authMiddleware, this.getWordById);
+		this.router.get(`${this.path}`, authMiddleware, this.findAll);
+		this.router.post(`${this.path}`, authMiddleware, this.create);
+		this.router.get(`${this.path}/:id`, authMiddleware, this.getById);
 		this.router.put(
 			`${this.path}/:id`,
 			authMiddleware,
 			validationMiddleware(UpdateCommonWordDto, 'body', true),
-			this.updateWord
+			this.update
 		);
-		this.router.delete(`${this.path}/:id`, authMiddleware, this.deleteWord);
+		this.router.delete(`${this.path}/:id`, authMiddleware, this.delete);
 	}
 
-	private 	createWord = async (
+	private create = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const wordDto: CreateCommonWordDto = req.body;
-			const createdWord: CommonWord = await this.commonWordsService.createWord(wordDto);
+			const createdWord: CommonWord = await this.commonWordsService.create(wordDto);
 
 			res.status(201).json({ data: createdWord, message: 'Word created' });
 		} catch (error) {
@@ -45,13 +45,13 @@ class CommonWordsController implements Controller {
 	};
 
 
-	private getAllWords = async (
+	private findAll = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const words: CommonWord[] = await this.commonWordsService.getAllWords();
+			const words: CommonWord[] = await this.commonWordsService.findAll();
 
 			res.status(200).json({ data: words, message: 'Get all words.' });
 		} catch (error) {
@@ -59,14 +59,14 @@ class CommonWordsController implements Controller {
 		}
 	};
 
-	private getWordById = async (
+	private getById = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const id = req.params.id;
-			const foundWord: CommonWord = await this.commonWordsService.findWordById(
+			const foundWord: CommonWord = await this.commonWordsService.findById(
 				id
 			);
 
@@ -76,7 +76,7 @@ class CommonWordsController implements Controller {
 		}
 	};
 
-	private updateWord = async (
+	private update = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -84,7 +84,7 @@ class CommonWordsController implements Controller {
 		try {
 			const id = req.params.id;
 			const wordDto: UpdateCommonWordDto = req.body;
-			const updatedWord: CommonWord = await this.commonWordsService.updateWord(
+			const updatedWord: CommonWord = await this.commonWordsService.update(
 				id,
 				wordDto
 			);
@@ -95,14 +95,14 @@ class CommonWordsController implements Controller {
 		}
 	};
 
-	private deleteWord = async (
+	private delete = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const id = req.params.id;
-			const deletedWord: CommonWord = await this.commonWordsService.deleteWord(
+			const deletedWord: CommonWord = await this.commonWordsService.delete(
 				id
 			);
 

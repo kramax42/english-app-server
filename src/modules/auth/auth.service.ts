@@ -12,12 +12,12 @@ class AuthService {
 	private readonly usersRepository = new UsersRepository();
 
 	public async signup({ email, password, name }: CreateUserDto): Promise<User> {
-		const existedUser = await this.usersRepository.findUserByEmail(email);
+		const existedUser = await this.usersRepository.findByEmail(email);
 		if (existedUser) throw new AlreadyExistsException();
 
 		const hashedPassword = await bcrypt.hash(password, 10);
 
-		const newUser = await this.usersRepository.createUser({
+		const newUser = await this.usersRepository.create({
 			email,
 			name,
 			password: hashedPassword,
@@ -30,8 +30,8 @@ class AuthService {
 	public async login({
 		email,
 		password,
-	}: LoginDto): Promise<{ cookie: string; foundUser: User }> {
-		const foundUser = await this.usersRepository.findUserByEmail(email);
+	}: LoginDto): Promise<{ cookie: string; foundUser: User; accessToken: string }> {
+		const foundUser = await this.usersRepository.findByEmail(email);
 		if (!foundUser) throw new WrongCredentialsException();
 
 		const isPasswordMatching: boolean = await bcrypt.compare(
@@ -44,11 +44,11 @@ class AuthService {
 		const tokenData = this.createToken(foundUser);
 		const cookie = this.createCookie(tokenData);
 
-		return { cookie, foundUser };
+		return { cookie, foundUser, accessToken: tokenData.token };
 	}
 
 	public async logout(email: string): Promise<User> {
-		const foundUser = await this.usersRepository.findUserByEmail(email);
+		const foundUser = await this.usersRepository.findByEmail(email);
 		if (!foundUser) throw new WrongCredentialsException();
 
 		return foundUser;

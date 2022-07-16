@@ -17,24 +17,24 @@ class UsersController implements Controller {
 	}
 
 	private initializeRoutes() {
-		this.router.get(`${this.path}`, authMiddleware, this.getUsers);
-		this.router.get(`${this.path}/:id`, authMiddleware, this.getUserById);
+		this.router.get(`${this.path}`, authMiddleware, this.findAll);
+		this.router.get(`${this.path}/:id`, authMiddleware, this.findById);
 		this.router.put(
 			`${this.path}/:id`,
 			authMiddleware,
 			validationMiddleware(UpdateUserDto, 'body', true),
-			this.updateUser
+			this.update
 		);
-		this.router.delete(`${this.path}/:id`, authMiddleware, this.deleteUser);
+		this.router.delete(`${this.path}/:id`, authMiddleware, this.delete);
 	}
 
-	private getUsers = async (
+	private findAll = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const getAllUsersData: User[] = await this.userService.getAllUsers();
+			const getAllUsersData: User[] = await this.userService.findAll();
 
 			res
 				.status(200)
@@ -44,14 +44,14 @@ class UsersController implements Controller {
 		}
 	};
 
-	private getUserById = async (
+	private findById = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const userId = req.params.id;
-			const findOneUserData: User = await this.userService.findUserById(userId);
+			const findOneUserData: User = await this.userService.findById(userId);
 
 			res.status(200).json({ data: findOneUserData, message: 'findOne' });
 		} catch (error) {
@@ -59,7 +59,7 @@ class UsersController implements Controller {
 		}
 	};
 
-	private updateUser = async (
+	private update = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -67,7 +67,7 @@ class UsersController implements Controller {
 		try {
 			const userId = req.params.id;
 			const userData: UpdateUserDto = req.body;
-			const updatedUser: User = await this.userService.updateUser(
+			const updatedUser: User = await this.userService.update(
 				userId,
 				userData
 			);
@@ -78,14 +78,14 @@ class UsersController implements Controller {
 		}
 	};
 
-	private deleteUser = async (
+	private delete = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const userId = req.params.id;
-			const deletedUser: User = await this.userService.deleteUser(userId);
+			const deletedUser: User = await this.userService.delete(userId);
 
 			res.status(200).json({ data: deletedUser, message: 'deleted' });
 		} catch (error) {

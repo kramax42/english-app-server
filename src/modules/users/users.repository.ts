@@ -5,12 +5,12 @@ import { UserModel } from '@models/user.model';
 class UsersRepository {
 	private userModel = UserModel;
 
-	public async getAllUsers(): Promise<User[]> {
+	public async findAll(): Promise<User[]> {
 		const users = await this.userModel.find().exec();
 		return users;
 	}
 
-	public async createUser({
+	public async create({
 		email,
 		name,
 		password,
@@ -23,17 +23,17 @@ class UsersRepository {
 		return user;
 	}
 
-	public async findUserById(userId: string): Promise<User | null> {
+	public async findById(userId: string): Promise<User | null> {
 		const foundUser = await this.userModel.findById(userId).exec();
 		return foundUser;
 	}
 
-	async findUserByEmail(email: string): Promise<User | null> {
+	async findByEmail(email: string): Promise<User | null> {
 		const foundUser = await this.userModel.findOne({ email }).exec();
 		return foundUser;
 	}
 
-	public async updateUser(
+	public async update(
 		userId: string,
 		userData: CreateUserDto
 	): Promise<User> {
@@ -44,7 +44,7 @@ class UsersRepository {
 		return updatedUser;
 	}
 
-	public async deleteUser(userId: string): Promise<User> {
+	public async delete(userId: string): Promise<User> {
 		const deletedWord = await this.userModel.findByIdAndDelete(userId).exec();
 		return deletedWord;
 	}

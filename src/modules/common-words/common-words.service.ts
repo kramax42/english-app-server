@@ -9,56 +9,56 @@ import {
 class CommonWordsService {
 	private readonly commonWordsRepository = new CommonWordsRepository();
 
-	async createWord(wordDto: CreateCommonWordDto) {
+	async create(wordDto: CreateCommonWordDto) {
 
-		const existedWord = await this.findWord(wordDto.word);
+		const existedWord = await this.find(wordDto.word);
 		if (existedWord) {
 			return null;
 		}
 
-		const createdWord = await this.commonWordsRepository.createWord(wordDto);
+		const createdWord = await this.commonWordsRepository.create(wordDto);
 
 		// await newWord.save();
 
 		return createdWord;
 	}
 
-	async getAllWords(): Promise<CommonWord[]> {
-		const words = await this.commonWordsRepository.getAllWords();
+	async findAll(): Promise<CommonWord[]> {
+		const words = await this.commonWordsRepository.findAll();
 		return words;
 	}
 
-	async findWordById(userId: string): Promise<CommonWord> {
-		const foundWord = await this.commonWordsRepository.findWordById(userId);
+	async findById(userId: string): Promise<CommonWord> {
+		const foundWord = await this.commonWordsRepository.findById(userId);
 		if (!foundWord) throw new WordNotFoundException();
 
 		return foundWord;
 	}
 
-	async updateWord(
+	async update(
 		id: string,
 		wordDto: UpdateCommonWordDto
 	): Promise<CommonWord> {
-		const foundWord = await this.commonWordsRepository.findWordById(id);
+		const foundWord = await this.commonWordsRepository.findById(id);
 		if (!foundWord) throw new WordNotFoundException();
 
-		const updatedUser = await this.commonWordsRepository.updateWord(
+		const updatedUser = await this.commonWordsRepository.update(
 			id,
 			wordDto
 		);
 		return updatedUser;
 	}
 
-	async deleteWord(id: string): Promise<CommonWord> {
-		const foundWord = await this.commonWordsRepository.findWordById(id);
+	async delete(id: string): Promise<CommonWord> {
+		const foundWord = await this.commonWordsRepository.findById(id);
 		if (!foundWord) throw new WordNotFoundException();
 
-		const deletedWord = await this.commonWordsRepository.deleteWord(id);
+		const deletedWord = await this.commonWordsRepository.delete(id);
 		return deletedWord;
 	}
 
-	async findWord(word: string) {
-		return this.commonWordsRepository.findWord(word);
+	async find(word: string) {
+		return this.commonWordsRepository.find(word);
 	}
 }
 

@@ -7,28 +7,28 @@ import bcrypt from 'bcrypt';
 class UsersService {
 	private readonly usersRepository = new UsersRepository();
 
-	public async getAllUsers(): Promise<User[]> {
-		const users = await this.usersRepository.getAllUsers();
+	public async findAll(): Promise<User[]> {
+		const users = await this.usersRepository.findAll();
 		return users;
 	}
 
-	public async findUserById(userId: string): Promise<User> {
-		const foundUser = await this.usersRepository.findUserById(userId);
+	public async findById(userId: string): Promise<User> {
+		const foundUser = await this.usersRepository.findById(userId);
 		if (!foundUser) throw new UserNotFoundException();
 
 		return foundUser;
 	}
 
-	public async updateUser(
+	public async update(
 		userId: string,
 		userDto: CreateUserDto
 	): Promise<User> {
-		const foundUser = await this.usersRepository.findUserById(userId);
+		const foundUser = await this.usersRepository.findById(userId);
 		if (!foundUser) throw new UserNotFoundException();
 
 		const { name, email, password } = userDto;
 		const hashedPassword = await bcrypt.hash(password, 10);
-		const updatedUser = await this.usersRepository.updateUser(userId, {
+		const updatedUser = await this.usersRepository.update(userId, {
 			name,
 			email,
 			password: hashedPassword,
@@ -37,11 +37,11 @@ class UsersService {
 		return updatedUser;
 	}
 
-	public async deleteUser(userId: string): Promise<User> {
-		const foundUser = await this.usersRepository.findUserById(userId);
+	public async delete(userId: string): Promise<User> {
+		const foundUser = await this.usersRepository.findById(userId);
 		if (!foundUser) throw new UserNotFoundException();
 
-		const deletedWord = await this.usersRepository.deleteUser(userId);
+		const deletedWord = await this.usersRepository.delete(userId);
 		return deletedWord;
 	}
 
@@ -58,7 +58,7 @@ class UsersService {
 	// }
 
 	async findUser(email: string) {
-		return this.usersRepository.findUserByEmail(email);
+		return this.usersRepository.findByEmail(email);
 	}
 }
 
