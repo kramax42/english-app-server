@@ -58,11 +58,17 @@ class AuthController implements Controller {
 				userData
 			);
 
+			const returnedUser = {
+				id: user._id,
+				name: user.name,
+				email: user.email,
+			}
+
 			res.setHeader('Set-Cookie', [cookie]);
 			// Set cookie value in body for auth in e2e tests.
 			res
 				.status(200)
-				.json({ data: { user, accessToken, cookie }, message: 'login' });
+				.json({ data: { user: returnedUser, accessToken}, message: 'login' });
 		} catch (error) {
 			next(error);
 		}
