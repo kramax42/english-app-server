@@ -13,10 +13,11 @@ const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFun
       const secretKey: string = config.get('secretKey');
       const verificationResponse = (await jwt.verify(Authorization, secretKey)) as DataStoredInToken;
       const userId = verificationResponse.id;
-      const findUser = await UserModel.findOne({ id: userId })
+      const foundedUser = await UserModel.findById(userId)
 
-      if (findUser) {
-        req.user = findUser;
+
+      if (foundedUser) {
+        req.user = foundedUser;
         next();
       } else {
         next(new HttpException(401, 'Wrong authentication token'));
