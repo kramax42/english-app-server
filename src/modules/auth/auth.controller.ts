@@ -28,7 +28,7 @@ class AuthController implements Controller {
 			validationMiddleware(LoginDto, 'body'),
 			this.logIn
 		);
-		this.router.post(`${this.path}logout`, authMiddleware, this.logOut);
+		this.router.delete(`${this.path}logout`, authMiddleware, this.logOut);
 		this.router.get(`${this.path}me`, authMiddleware, this.me);
 	}
 
