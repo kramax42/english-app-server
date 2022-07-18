@@ -1,7 +1,7 @@
 import { CommonWord, UsageExample } from '@interfaces/common-word.interface';
 import mongoose from 'mongoose';
 
-const usageExampleSchema = new mongoose.Schema<UsageExample>({
+export const usageExampleSchema = new mongoose.Schema<UsageExample>({
 	sentence: String,
 	translation: String,
 });
