@@ -9,6 +9,7 @@ temp/
 logs/
 
 # don't check in  env files
+.env
 .env.prod
 .env.staging
 **/.DS_Store
