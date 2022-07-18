@@ -42,11 +42,11 @@ class CommonWordsService {
 		const foundWord = await this.commonWordsRepository.findById(id);
 		if (!foundWord) throw new WordNotFoundException();
 
-		const updatedUser = await this.commonWordsRepository.update(
+		const updatedWord = await this.commonWordsRepository.update(
 			id,
 			wordDto
 		);
-		return updatedUser;
+		return updatedWord;
 	}
 
 	async delete(id: string): Promise<CommonWord> {
