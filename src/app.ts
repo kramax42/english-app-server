@@ -15,7 +15,8 @@ import swaggerUi from 'swagger-ui-express';
 import { Controller } from '@interfaces/contoller.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
-import mongoose from 'mongoose';
+import { connectToMongoDB } from './utils/connect-to-mongodb';
+
 
 class App {
 	public app: express.Application;
@@ -49,19 +50,7 @@ class App {
 	}
 
 	private connectToTheDatabase() {
-		const { MONGO_USER, MONGO_PASSWORD, MONGO_PATH } = process.env;
-		const mongoUrl = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_PATH}`;
-
-		// Connect to MongoDB
-		mongoose
-			.connect(mongoUrl)
-			.then(() => {
-				logger.info(`====== MongoDB Connected ======`);
-			})
-			.catch((err: any) => {
-				logger.error(err);
-				process.exit(1);
-			});
+		connectToMongoDB()
 	}
 
 	private initializeMiddlewares() {
