@@ -4,9 +4,9 @@ import { RequestWithUser } from '@interfaces/auth.interface';
 import { User } from '@interfaces/user.interface';
 import AuthService from './auth.service';
 import { Controller } from '@interfaces/contoller.interface';
-import validationMiddleware from '@middlewares/validation.middleware';
 import authMiddleware from '@middlewares/auth.middleware';
 import { LoginDto } from '@/dtos/auth.dto';
+import { bodyValidator } from '@/middlewares/validation.middleware';
 
 class AuthController implements Controller {
 	public path = '/';
@@ -20,12 +20,12 @@ class AuthController implements Controller {
 	private initializeRoutes() {
 		this.router.post(
 			`${this.path}signup`,
-			validationMiddleware(CreateUserDto, 'body'),
+			bodyValidator(CreateUserDto),
 			this.signUp
 		);
 		this.router.post(
 			`${this.path}login`,
-			validationMiddleware(LoginDto, 'body'),
+			bodyValidator(LoginDto),
 			this.logIn
 		);
 		this.router.delete(`${this.path}logout`, authMiddleware, this.logOut);
@@ -38,7 +38,7 @@ class AuthController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const userData: CreateUserDto = req.body;
+			const userData = req.validatedBody as CreateUserDto;
 			const signUpUserData: User = await this.authService.signup(userData);
 
 			res.status(201).json({ data: signUpUserData, message: 'signup' });
@@ -53,7 +53,7 @@ class AuthController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const userData: CreateUserDto = req.body;
+			const userData = req.validatedBody as CreateUserDto;
 			const { cookie, foundUser: user, accessToken } = await this.authService.login(
 				userData
 			);
@@ -80,7 +80,7 @@ class AuthController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const userData: User = req.user;
+			const userData = req.user as User;
 			const logOutUserData: User = await this.authService.logout(
 				userData.email
 			);
@@ -98,7 +98,7 @@ class AuthController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const user: User = req.user;
+			const user = req.user as User; 
 			res.status(200).json({ data: user, message: 'me' });
 		} catch (error) {
 			next(error);

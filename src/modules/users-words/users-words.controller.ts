@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import validationMiddleware from '@middlewares/validation.middleware';
 import { Controller } from '@interfaces/contoller.interface';
 import authMiddleware from '@middlewares/auth.middleware';
 import { CreateUserWordDto, UpdateUserWordDto } from '@/dtos/user-word.dto';
 import { UserWord } from '@/interfaces/user-word.interface';
 import UsersWordsService from './users-words.service';
+import { bodyValidator } from '@/middlewares/validation.middleware';
 
 class UsersWordsController implements Controller {
 	public path = '/user-words';
@@ -18,12 +18,12 @@ class UsersWordsController implements Controller {
 
 	private initializeRoutes() {
 		this.router.get(`${this.path}`, authMiddleware, this.findAll);
-		this.router.post(`${this.path}`, authMiddleware, this.create);
+		this.router.post(`${this.path}`, authMiddleware, bodyValidator(UpdateUserWordDto), this.create);
 		this.router.get(`${this.path}/:id`, authMiddleware, this.getById);
 		this.router.put(
 			`${this.path}/:id`,
 			authMiddleware,
-			validationMiddleware(UpdateUserWordDto, 'body', true),
+			bodyValidator(UpdateUserWordDto),
 			this.update
 		);
 		this.router.delete(`${this.path}/:id`, authMiddleware, this.delete);
@@ -35,7 +35,7 @@ class UsersWordsController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const wordDto: CreateUserWordDto = req.body;
+			const wordDto = req.validatedBody as CreateUserWordDto;
 			const createdWord: UserWord = await this.UsersWordsService.create(wordDto);
 
 			res.status(201).json({ data: createdWord, message: 'Word created' });
@@ -83,7 +83,7 @@ class UsersWordsController implements Controller {
 	): Promise<void> => {
 		try {
 			const id = req.params.id;
-			const wordDto: UpdateUserWordDto = req.body;
+			const wordDto = req.validatedBody as UpdateUserWordDto;
 			const updatedWord: UserWord = await this.UsersWordsService.update(
 				id,
 				wordDto

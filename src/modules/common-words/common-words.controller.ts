@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import validationMiddleware from '@middlewares/validation.middleware';
 import { Controller } from '@interfaces/contoller.interface';
 import authMiddleware from '@middlewares/auth.middleware';
 import { CreateCommonWordDto, UpdateCommonWordDto } from '@/dtos/common-word.dto';
 import { CommonWord } from '@/interfaces/common-word.interface';
 import CommonWordsService from './common-words.service';
+import { PaginationParamsDto } from '@/dtos/pagination-params.dto';
+import { bodyValidator, queryValidator } from '@/middlewares/validation.middleware';
 
 class CommonWordsController implements Controller {
 	public path = '/words';
@@ -17,13 +18,15 @@ class CommonWordsController implements Controller {
 	}
 
 	private initializeRoutes() {
-		this.router.get(`${this.path}`, authMiddleware, this.findAll);
-		this.router.post(`${this.path}`, authMiddleware, this.create);
+		this.router.get(`${this.path}`,
+		queryValidator(PaginationParamsDto),
+		  this.findAll);
+		this.router.post(`${this.path}`, authMiddleware, bodyValidator(CreateCommonWordDto), this.create);
 		this.router.get(`${this.path}/:id`, authMiddleware, this.getById);
 		this.router.put(
 			`${this.path}/:id`,
 			authMiddleware,
-			validationMiddleware(UpdateCommonWordDto, 'body', true),
+			bodyValidator(UpdateCommonWordDto),
 			this.update
 		);
 		this.router.delete(`${this.path}/:id`, authMiddleware, this.delete);
@@ -35,7 +38,7 @@ class CommonWordsController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const wordDto: CreateCommonWordDto = req.body;
+			const wordDto = req.validatedBody as CreateCommonWordDto;
 			const createdWord: CommonWord = await this.commonWordsService.create(wordDto);
 
 			res.status(201).json({ data: createdWord, message: 'Word created' });
@@ -51,7 +54,9 @@ class CommonWordsController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const words: CommonWord[] = await this.commonWordsService.findAll();
+			const query = req.validatedQuery as PaginationParamsDto;
+			
+			const words: CommonWord[] = await this.commonWordsService.findAll(query.skip, query.limit);
 
 			res.status(200).json({ data: words, message: 'Get all words.' });
 		} catch (error) {
@@ -83,7 +88,8 @@ class CommonWordsController implements Controller {
 	): Promise<void> => {
 		try {
 			const id = req.params.id;
-			const wordDto: UpdateCommonWordDto = req.body;
+			const wordDto = req.validatedBody as UpdateCommonWordDto;
+			
 			const updatedWord: CommonWord = await this.commonWordsService.update(
 				id,
 				wordDto

@@ -8,8 +8,21 @@ import {
 class CommonWordsRepository {
 	private wordModel = CommonWordModel;
 
-	public async findAll(): Promise<CommonWord[]> {
-		const words = await this.wordModel.find().exec();
+	public async findAll(
+		documentsToSkip: number = 0,
+		limitOfDocuments: number | undefined
+	): Promise<CommonWord[]> {
+		const findQuery = this.wordModel
+			.find()
+			.sort({ _id: 1 })
+			.skip(documentsToSkip);
+
+		if (limitOfDocuments) {
+			findQuery.limit(limitOfDocuments);
+		}
+
+		const words = await findQuery;
+
 		return words;
 	}
 

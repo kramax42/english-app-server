@@ -2,9 +2,9 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { UpdateUserDto } from '@dtos/user.dto';
 import { User } from '@interfaces/user.interface';
 import UsersService from './users.service';
-import validationMiddleware from '@middlewares/validation.middleware';
 import { Controller } from '@interfaces/contoller.interface';
 import authMiddleware from '@/middlewares/auth.middleware';
+import { bodyValidator } from '@/middlewares/validation.middleware';
 
 class UsersController implements Controller {
 	public path = '/users';
@@ -22,7 +22,7 @@ class UsersController implements Controller {
 		this.router.put(
 			`${this.path}/:id`,
 			authMiddleware,
-			validationMiddleware(UpdateUserDto, 'body', true),
+			bodyValidator(UpdateUserDto),
 			this.update
 		);
 		this.router.delete(`${this.path}/:id`, authMiddleware, this.delete);

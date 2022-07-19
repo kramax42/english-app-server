@@ -10,7 +10,6 @@ class CommonWordsService {
 	private readonly commonWordsRepository = new CommonWordsRepository();
 
 	async create(wordDto: CreateCommonWordDto) {
-
 		const existedWord = await this.find(wordDto.word);
 		if (existedWord) {
 			return null;
@@ -23,8 +22,11 @@ class CommonWordsService {
 		return createdWord;
 	}
 
-	async findAll(): Promise<CommonWord[]> {
-		const words = await this.commonWordsRepository.findAll();
+	async findAll(
+		documentsToSkip:number = 0,
+		limitOfDocuments: number | undefined
+	): Promise<CommonWord[]> {
+		const words = await this.commonWordsRepository.findAll(documentsToSkip, limitOfDocuments);
 		return words;
 	}
 
@@ -35,17 +37,11 @@ class CommonWordsService {
 		return foundWord;
 	}
 
-	async update(
-		id: string,
-		wordDto: UpdateCommonWordDto
-	): Promise<CommonWord> {
+	async update(id: string, wordDto: UpdateCommonWordDto): Promise<CommonWord> {
 		const foundWord = await this.commonWordsRepository.findById(id);
 		if (!foundWord) throw new WordNotFoundException();
 
-		const updatedWord = await this.commonWordsRepository.update(
-			id,
-			wordDto
-		);
+		const updatedWord = await this.commonWordsRepository.update(id, wordDto);
 		return updatedWord;
 	}
 
