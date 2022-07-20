@@ -3,7 +3,10 @@ import { logger } from '@utils/logger';
 
 export function connectToMongoDB() {
   const { MONGO_USER, MONGO_PASSWORD, MONGO_PATH } = process.env;
-  const mongoUrl = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_PATH}`;
+
+  // ! TODO: remove this variable
+  const tmpPath = 'n1-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017,n2-c2-mongodb-clevercloud-customers.services.clever-cloud.com:27017/b1g912bljqgjmpu?replicaSet=rs0'
+  const mongoUrl = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_PATH || tmpPath}`;
 
   // Connect to MongoDB
   mongoose
