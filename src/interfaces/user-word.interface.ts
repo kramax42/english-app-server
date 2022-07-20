@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { CommonWord } from "./common-word.interface";
 
 export enum WordStudyStatus {
@@ -7,5 +8,6 @@ export enum WordStudyStatus {
 }
 
 export interface UserWord extends CommonWord {
+  user: mongoose.Schema.Types.ObjectId;
   studyStatus: WordStudyStatus;
 }

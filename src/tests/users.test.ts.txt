@@ -9,14 +9,14 @@ import { User } from '@interfaces/user.interface';
 
 const userExample: User = {
 	_id: '62cc527749f7a5864b076412',
-	name: 'Jimbo',
-	email: 'user@user.com',
-	password: 'qwe123',
+	name: 'ADMIN',
+	email: 'admin@admin.com',
+	password: 'admin123@',
 };
 
 const loginDto: LoginDto = {
-	email: 'user@user.com',
-	password: 'qwe123',
+	email: 'admin@admin.com',
+	password: 'admin123@',
 };
 
 describe('UsersController (e2e)', () => {

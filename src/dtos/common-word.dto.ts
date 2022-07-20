@@ -12,15 +12,15 @@ class UsageExampleDto {
 
 export class CreateCommonWordDto {
   @IsString()
-  public word: string;
+  word: string;
  
   @IsArray()
   @ArrayMinSize(1)
-  public translation: string[];
+  translation: string[];
 
   @IsOptional()
   @IsString()
-  public transcription: string;
+  transcription: string;
 
   @IsOptional()
   @IsArray()
@@ -28,22 +28,24 @@ export class CreateCommonWordDto {
   @ValidateNested({ each: true })
   // Additional validating for correct nested DTO field.
   @Transform(({value: values}) => values.map(value => plainToClass(UsageExampleDto, value)))
-  public usageExamples: UsageExampleDto[];
+  usageExamples: UsageExampleDto[];
 }
  
 
 
 export class UpdateCommonWordDto {
+  @IsOptional()
   @IsString()
-  public word: string;
+  word: string;
  
+  @IsOptional()
   @IsArray()
   @ArrayMinSize(1)
-  public translation: string[];
+  translation: string[];
 
   @IsOptional()
   @IsString()
-  public transcription: string;
+  transcription: string;
 
   @IsOptional()
   @IsArray()
@@ -51,7 +53,7 @@ export class UpdateCommonWordDto {
   @ValidateNested({ each: true })
   // Additional validating for correct nested DTO field.
   @Transform(({value: values}) => values.map(value => plainToClass(UsageExampleDto, value)))
-  public usageExamples: UsageExampleDto[];
+  usageExamples: UsageExampleDto[];
 }
 
 

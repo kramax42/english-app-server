@@ -5,6 +5,8 @@ import UsersService from './users.service';
 import { Controller } from '@interfaces/contoller.interface';
 import authMiddleware from '@/middlewares/auth.middleware';
 import { bodyValidator } from '@/middlewares/validation.middleware';
+import { RequestWithUser } from '@/interfaces/auth.interface';
+import { ForbiddenException } from '@/exceptions/forbidden.exception';
 
 class UsersController implements Controller {
 	public path = '/users';
@@ -19,7 +21,7 @@ class UsersController implements Controller {
 	private initializeRoutes() {
 		this.router.get(`${this.path}`, authMiddleware, this.findAll);
 		this.router.get(`${this.path}/:id`, authMiddleware, this.findById);
-		this.router.put(
+		this.router.patch(
 			`${this.path}/:id`,
 			authMiddleware,
 			bodyValidator(UpdateUserDto),
@@ -60,12 +62,17 @@ class UsersController implements Controller {
 	};
 
 	private update = async (
-		req: Request,
+		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const userId = req.params.id;
+
+			if(userId !== req.user._id) {
+				throw new ForbiddenException();
+			}
+
 			const userData: UpdateUserDto = req.body;
 			const updatedUser: User = await this.userService.update(
 				userId,

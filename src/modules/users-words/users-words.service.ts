@@ -5,60 +5,62 @@ import {
 	CreateUserWordDto,
 	UpdateUserWordDto,
 } from '@dtos/user-word.dto';
+import { AlreadyExistsException } from '@/exceptions/already-exist.exception';
 
 class UsersWordsService {
 	private readonly usersWordsRepository = new UsersWordsRepository();
 
-	async create(wordDto: CreateUserWordDto) {
+	async create(userId: string, wordDto: CreateUserWordDto) {
 
-		const existedWord = await this.find(wordDto.word);
+		const existedWord = await this.find(userId, wordDto.word);
 		if (existedWord) {
-			return null;
+			throw new AlreadyExistsException();
 		}
 
-		const createdWord = await this.usersWordsRepository.create(wordDto);
+		const createdWord = await this.usersWordsRepository.create(userId, wordDto);
 
 		// await newWord.save();
 
 		return createdWord;
 	}
 
-	async findAll(): Promise<UserWord[]> {
-		const words = await this.usersWordsRepository.findAll();
+	async findAll(userId: string): Promise<UserWord[]> {
+		const words = await this.usersWordsRepository.findAll(userId);
 		return words;
 	}
 
-	async findById(userId: string): Promise<UserWord> {
-		const foundWord = await this.usersWordsRepository.findById(userId);
+	async findById(userId: string, wordId: string): Promise<UserWord> {
+		const foundWord = await this.usersWordsRepository.findById(userId, wordId);
 		if (!foundWord) throw new WordNotFoundException();
 
 		return foundWord;
 	}
 
 	async update(
-		id: string,
+		userId: string, wordId: string,
 		wordDto: UpdateUserWordDto
 	): Promise<UserWord> {
-		const foundWord = await this.usersWordsRepository.findById(id);
+		const foundWord = await this.usersWordsRepository.findById(userId, wordId);
 		if (!foundWord) throw new WordNotFoundException();
 
 		const updatedWord = await this.usersWordsRepository.update(
-			id,
+			userId,
+			wordId,
 			wordDto
 		);
 		return updatedWord;
 	}
 
-	async delete(id: string): Promise<UserWord> {
-		const foundWord = await this.usersWordsRepository.findById(id);
+	async delete(userId: string, wordId: string): Promise<UserWord> {
+		const foundWord = await this.usersWordsRepository.findById(userId, wordId);
 		if (!foundWord) throw new WordNotFoundException();
 
-		const deletedWord = await this.usersWordsRepository.delete(id);
+		const deletedWord = await this.usersWordsRepository.delete(userId, wordId);
 		return deletedWord;
 	}
 
-	async find(word: string) {
-		return this.usersWordsRepository.find(word);
+	async find(userId: string, word: string) {
+		return this.usersWordsRepository.find(userId, word);
 	}
 }
 

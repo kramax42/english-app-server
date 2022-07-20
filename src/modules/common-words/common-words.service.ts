@@ -5,6 +5,7 @@ import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
 } from '@dtos/common-word.dto';
+import { AlreadyExistsException } from '@/exceptions/already-exist.exception';
 
 class CommonWordsService {
 	private readonly commonWordsRepository = new CommonWordsRepository();
@@ -12,7 +13,7 @@ class CommonWordsService {
 	async create(wordDto: CreateCommonWordDto) {
 		const existedWord = await this.find(wordDto.word);
 		if (existedWord) {
-			return null;
+			throw new AlreadyExistsException();
 		}
 
 		const createdWord = await this.commonWordsRepository.create(wordDto);

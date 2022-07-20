@@ -5,6 +5,7 @@ import { CreateUserWordDto, UpdateUserWordDto } from '@/dtos/user-word.dto';
 import { UserWord } from '@/interfaces/user-word.interface';
 import UsersWordsService from './users-words.service';
 import { bodyValidator } from '@/middlewares/validation.middleware';
+import { RequestWithUser } from '@/interfaces/auth.interface';
 
 class UsersWordsController implements Controller {
 	public path = '/user-words';
@@ -20,7 +21,7 @@ class UsersWordsController implements Controller {
 		this.router.get(`${this.path}`, authMiddleware, this.findAll);
 		this.router.post(`${this.path}`, authMiddleware, bodyValidator(UpdateUserWordDto), this.create);
 		this.router.get(`${this.path}/:id`, authMiddleware, this.getById);
-		this.router.put(
+		this.router.patch(
 			`${this.path}/:id`,
 			authMiddleware,
 			bodyValidator(UpdateUserWordDto),
@@ -30,13 +31,13 @@ class UsersWordsController implements Controller {
 	}
 
 	private create = async (
-		req: Request,
+		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const wordDto = req.validatedBody as CreateUserWordDto;
-			const createdWord: UserWord = await this.UsersWordsService.create(wordDto);
+			const createdWord: UserWord = await this.UsersWordsService.create(req.user._id, wordDto);
 
 			res.status(201).json({ data: createdWord, message: 'Word created' });
 		} catch (error) {
@@ -46,12 +47,12 @@ class UsersWordsController implements Controller {
 
 
 	private findAll = async (
-		req: Request,
+		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const words: UserWord[] = await this.UsersWordsService.findAll();
+			const words: UserWord[] = await this.UsersWordsService.findAll(req.user._id);
 
 			res.status(200).json({ data: words, message: 'Get all words.' });
 		} catch (error) {
@@ -60,14 +61,14 @@ class UsersWordsController implements Controller {
 	};
 
 	private getById = async (
-		req: Request,
+		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const id = req.params.id;
+			const wordId = req.params.id;
 			const foundWord: UserWord = await this.UsersWordsService.findById(
-				id
+				req.user._id, wordId,
 			);
 
 			res.status(200).json({ data: foundWord, message: 'Found word' });
@@ -77,15 +78,15 @@ class UsersWordsController implements Controller {
 	};
 
 	private update = async (
-		req: Request,
+		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const id = req.params.id;
+			const wordId = req.params.id;
 			const wordDto = req.validatedBody as UpdateUserWordDto;
 			const updatedWord: UserWord = await this.UsersWordsService.update(
-				id,
+				req.user._id, wordId,
 				wordDto
 			);
 
@@ -96,14 +97,14 @@ class UsersWordsController implements Controller {
 	};
 
 	private delete = async (
-		req: Request,
+		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const id = req.params.id;
+			const wordId = req.params.id;
 			const deletedWord: UserWord = await this.UsersWordsService.delete(
-				id
+				req.user._id, wordId
 			);
 
 			res.status(200).json({ data: deletedWord, message: 'deleted' });
