@@ -55,7 +55,7 @@ class AuthService {
 	}
 
 	public createToken(user: User): TokenData {
-		const dataStoredInToken: DataStoredInToken = { id: user._id };
+		const dataStoredInToken: DataStoredInToken = { id: user.id };
 		const secretKey: string = config.get('secretKey');
 		const expiresIn: number = 60 * 60;
 

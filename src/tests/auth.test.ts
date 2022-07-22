@@ -40,7 +40,7 @@ describe('AuthController (e2e)', () => {
 			.send(userDto)
 			.expect(201)
 			.then(({ body }: request.Response) => {
-				createdUserId = body.data.id;
+				createdUserId = body.id;
 				expect(createdUserId).toBeDefined();
 			});
 	});
@@ -58,7 +58,7 @@ describe('AuthController (e2e)', () => {
 			.send(loginDto)
 			.expect('Set-Cookie', /^Authorization=.+/)
 			.then(({ body }: request.Response) => {
-				accessToken = body.data.accessToken;
+				accessToken = body.accessToken;
 			});
 	});
 

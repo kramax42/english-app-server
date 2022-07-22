@@ -41,7 +41,7 @@ class AuthController implements Controller {
 			const userData = req.validatedBody as CreateUserDto;
 			const signUpUserData: User = await this.authService.signup(userData);
 
-			res.status(201).json({ data: signUpUserData, message: 'signup' });
+			res.status(201).json(signUpUserData);
 		} catch (error) {
 			next(error);
 		}
@@ -59,7 +59,7 @@ class AuthController implements Controller {
 			);
 
 			const returnedUser = {
-				id: user._id,
+				id: user.id,
 				name: user.name,
 				email: user.email,
 			}
@@ -68,7 +68,7 @@ class AuthController implements Controller {
 			// Set cookie value in body for auth in e2e tests.
 			res
 				.status(200)
-				.json({ data: { user: returnedUser, accessToken}, message: 'login' });
+				.json({ user: returnedUser, accessToken});
 		} catch (error) {
 			next(error);
 		}
@@ -86,7 +86,7 @@ class AuthController implements Controller {
 			);
 
 			res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
-			res.status(200).json({ data: logOutUserData, message: 'logout' });
+			res.status(200).json(logOutUserData);
 		} catch (error) {
 			next(error);
 		}
@@ -99,7 +99,14 @@ class AuthController implements Controller {
 	): Promise<void> => {
 		try {
 			const user = req.user as User; 
-			res.status(200).json({ data: user, message: 'me' });
+
+			const returnedUser = {
+				id: user.id,
+				name: user.name,
+				email: user.email,
+			}
+
+			res.status(200).json(returnedUser);
 		} catch (error) {
 			next(error);
 		}

@@ -7,7 +7,7 @@ class UsersWordsRepository {
 	private wordModel = UserWordModel;
 
 	public async findAll(userId: string): Promise<UserWord[]> {
-		const words = await this.wordModel.find({user: userId}).exec();
+		const words = await this.wordModel.find({ user: userId }).exec();
 		return words;
 	}
 
@@ -21,7 +21,6 @@ class UsersWordsRepository {
 			studyStatus,
 		}: CreateUserWordDto
 	): Promise<UserWord> {
-
 		console.log(userId);
 
 		const createdWord = await this.wordModel.create({
@@ -40,20 +39,28 @@ class UsersWordsRepository {
 	}
 
 	async findById(userId: string, wordId: string): Promise<UserWord | null> {
-		const foundWord = await this.wordModel.findOne({user: userId, _id: wordId}).exec();
+		const foundWord = await this.wordModel
+			.findOne({ user: userId, _id: wordId })
+			.exec();
 		return foundWord;
 	}
 
-	async update(userId: string, wordId: string, dto: UpdateUserWordDto): Promise<UserWord> {
+	async update(
+		userId: string,
+		wordId: string,
+		dto: UpdateUserWordDto
+	): Promise<UserWord> {
 		const updatedWord = await this.wordModel
-			.findOneAndUpdate({_id: wordId, user: userId}, dto, { new: true })
+			.findOneAndUpdate({ _id: wordId, user: userId }, dto, { new: true })
 			.exec();
 
 		return updatedWord;
 	}
 
-	async delete(userId: string, wordId: string,): Promise<UserWord> {
-		const deletedWord = await this.wordModel.findOneAndDelete({_id: wordId, user: userId}).exec();
+	async delete(userId: string, wordId: string): Promise<UserWord> {
+		const deletedWord = await this.wordModel
+			.findOneAndDelete({ _id: wordId, user: userId })
+			.exec();
 		return deletedWord;
 	}
 }

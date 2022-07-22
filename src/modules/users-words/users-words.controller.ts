@@ -19,7 +19,12 @@ class UsersWordsController implements Controller {
 
 	private initializeRoutes() {
 		this.router.get(`${this.path}`, authMiddleware, this.findAll);
-		this.router.post(`${this.path}`, authMiddleware, bodyValidator(UpdateUserWordDto), this.create);
+		this.router.post(
+			`${this.path}`,
+			authMiddleware,
+			bodyValidator(UpdateUserWordDto),
+			this.create
+		);
 		this.router.get(`${this.path}/:id`, authMiddleware, this.getById);
 		this.router.patch(
 			`${this.path}/:id`,
@@ -37,14 +42,16 @@ class UsersWordsController implements Controller {
 	): Promise<void> => {
 		try {
 			const wordDto = req.validatedBody as CreateUserWordDto;
-			const createdWord: UserWord = await this.UsersWordsService.create(req.user._id, wordDto);
+			const createdWord: UserWord = await this.UsersWordsService.create(
+				req.user.id,
+				wordDto
+			);
 
-			res.status(201).json({ data: createdWord, message: 'Word created' });
+			res.status(201).json(createdWord);
 		} catch (error) {
 			next(error);
 		}
 	};
-
 
 	private findAll = async (
 		req: RequestWithUser,
@@ -52,9 +59,11 @@ class UsersWordsController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const words: UserWord[] = await this.UsersWordsService.findAll(req.user._id);
+			const words: UserWord[] = await this.UsersWordsService.findAll(
+				req.user.id
+			);
 
-			res.status(200).json({ data: words, message: 'Get all words.' });
+			res.status(200).json(words);
 		} catch (error) {
 			next(error);
 		}
@@ -68,10 +77,11 @@ class UsersWordsController implements Controller {
 		try {
 			const wordId = req.params.id;
 			const foundWord: UserWord = await this.UsersWordsService.findById(
-				req.user._id, wordId,
+				req.user.id,
+				wordId
 			);
 
-			res.status(200).json({ data: foundWord, message: 'Found word' });
+			res.status(200).json(foundWord);
 		} catch (error) {
 			next(error);
 		}
@@ -86,11 +96,12 @@ class UsersWordsController implements Controller {
 			const wordId = req.params.id;
 			const wordDto = req.validatedBody as UpdateUserWordDto;
 			const updatedWord: UserWord = await this.UsersWordsService.update(
-				req.user._id, wordId,
+				req.user.id,
+				wordId,
 				wordDto
 			);
 
-			res.status(200).json({ data: updatedWord, message: 'Word updated.' });
+			res.status(200).json(updatedWord);
 		} catch (error) {
 			next(error);
 		}
@@ -104,10 +115,11 @@ class UsersWordsController implements Controller {
 		try {
 			const wordId = req.params.id;
 			const deletedWord: UserWord = await this.UsersWordsService.delete(
-				req.user._id, wordId
+				req.user.id,
+				wordId
 			);
 
-			res.status(200).json({ data: deletedWord, message: 'deleted' });
+			res.status(200).json(deletedWord);
 		} catch (error) {
 			next(error);
 		}

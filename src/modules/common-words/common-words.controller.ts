@@ -12,8 +12,8 @@ import {
 	bodyValidator,
 	queryValidator,
 } from '@/middlewares/validation.middleware';
-import { permitTo } from '@/middlewares/roles.middleware';
-import { Role } from '@/interfaces/auth.interface';
+import { permitTo } from '@middlewares/roles.middleware';
+import { Role } from '@interfaces/auth.interface';
 
 class CommonWordsController implements Controller {
 	public path = '/words';
@@ -65,7 +65,7 @@ class CommonWordsController implements Controller {
 				wordDto
 			);
 
-			res.status(201).json({ data: createdWord, message: 'Word created' });
+			res.status(201).json(createdWord);
 		} catch (error) {
 			next(error);
 		}
@@ -84,7 +84,7 @@ class CommonWordsController implements Controller {
 				query.limit
 			);
 
-			res.status(200).json({ data: words, message: 'Get all words.' });
+			res.status(200).json(words);
 		} catch (error) {
 			next(error);
 		}
@@ -99,7 +99,7 @@ class CommonWordsController implements Controller {
 			const id = req.params.id;
 			const foundWord: CommonWord = await this.commonWordsService.findById(id);
 
-			res.status(200).json({ data: foundWord, message: 'Found word' });
+			res.status(200).json(foundWord);
 		} catch (error) {
 			next(error);
 		}
@@ -119,7 +119,7 @@ class CommonWordsController implements Controller {
 				wordDto
 			);
 
-			res.status(200).json({ data: updatedWord, message: 'Word updated.' });
+			res.status(200).json(updatedWord);
 		} catch (error) {
 			next(error);
 		}
@@ -134,7 +134,7 @@ class CommonWordsController implements Controller {
 			const id = req.params.id;
 			const deletedWord: CommonWord = await this.commonWordsService.delete(id);
 
-			res.status(200).json({ data: deletedWord, message: 'deleted' });
+			res.status(200).json(deletedWord);
 		} catch (error) {
 			next(error);
 		}

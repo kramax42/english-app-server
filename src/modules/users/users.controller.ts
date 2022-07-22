@@ -3,10 +3,10 @@ import { UpdateUserDto } from '@dtos/user.dto';
 import { User } from '@interfaces/user.interface';
 import UsersService from './users.service';
 import { Controller } from '@interfaces/contoller.interface';
-import authMiddleware from '@/middlewares/auth.middleware';
-import { bodyValidator } from '@/middlewares/validation.middleware';
-import { RequestWithUser } from '@/interfaces/auth.interface';
-import { ForbiddenException } from '@/exceptions/forbidden.exception';
+import authMiddleware from '@middlewares/auth.middleware';
+import { bodyValidator } from '@middlewares/validation.middleware';
+import { RequestWithUser } from '@interfaces/auth.interface';
+import { ForbiddenException } from '@exceptions/forbidden.exception';
 
 class UsersController implements Controller {
 	public path = '/users';
@@ -53,9 +53,9 @@ class UsersController implements Controller {
 	): Promise<void> => {
 		try {
 			const userId = req.params.id;
-			const findOneUserData: User = await this.userService.findById(userId);
+			const foundUser: User = await this.userService.findById(userId);
 
-			res.status(200).json({ data: findOneUserData, message: 'findOne' });
+			res.status(200).json(foundUser);
 		} catch (error) {
 			next(error);
 		}
@@ -69,17 +69,14 @@ class UsersController implements Controller {
 		try {
 			const userId = req.params.id;
 
-			if(userId !== req.user._id) {
+			if (userId !== req.user.id) {
 				throw new ForbiddenException();
 			}
 
 			const userData: UpdateUserDto = req.body;
-			const updatedUser: User = await this.userService.update(
-				userId,
-				userData
-			);
+			const updatedUser: User = await this.userService.update(userId, userData);
 
-			res.status(200).json({ data: updatedUser, message: 'updated' });
+			res.status(200).json(updatedUser);
 		} catch (error) {
 			next(error);
 		}
@@ -94,7 +91,7 @@ class UsersController implements Controller {
 			const userId = req.params.id;
 			const deletedUser: User = await this.userService.delete(userId);
 
-			res.status(200).json({ data: deletedUser, message: 'deleted' });
+			res.status(200).json(deletedUser);
 		} catch (error) {
 			next(error);
 		}
