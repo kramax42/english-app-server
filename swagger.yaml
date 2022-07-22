@@ -113,7 +113,7 @@ paths:
     get:
       tags:
       - words
-      summary: Get Users
+      summary: Get common words
       responses:
         200:
           description: 'OK'
@@ -234,7 +234,7 @@ definitions:
         - password
         - name
     properties:
-      _id:
+      id:
         type: string
         description: user Id
       email:
@@ -254,7 +254,7 @@ definitions:
         - translation
         - usageExamples
     properties:
-      _id:
+      id:
         type: string
         description: word Id
       word:

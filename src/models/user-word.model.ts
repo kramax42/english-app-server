@@ -1,6 +1,7 @@
 import { UserWord, WordStudyStatus } from '@/interfaces/user-word.interface';
 import mongoose from 'mongoose';
 import { usageExampleSchema } from './common-word.model';
+import { options } from './common/options';
 
 export const userWordSchema = new mongoose.Schema<UserWord>(
 	{
@@ -21,8 +22,10 @@ export const userWordSchema = new mongoose.Schema<UserWord>(
 			default: WordStudyStatus.UNKNOWN,
 		},
 	},
-	{ timestamps: true }
+	options
 );
+
+
 
 export const UserWordModel = mongoose.model<UserWord & mongoose.Document>(
 	'UserWord',

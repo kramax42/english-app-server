@@ -15,7 +15,7 @@ import swaggerUi from 'swagger-ui-express';
 import { Controller } from '@interfaces/contoller.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
-import { connectToMongoDB } from './utils/connect-to-mongodb';
+import { connectToMongoDB } from './utils/database/connect-to-mongodb';
 
 
 class App {

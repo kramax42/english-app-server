@@ -9,12 +9,12 @@ import { logger } from '@utils/logger';
 
 const userDto: CreateUserDto = {
 	name: 'max',
-	email: 'exampl34@mail.com',
+	email: 'examplu34@mail.com',
 	password: 'q1w2e3r4',
 };
 
 const loginDto: LoginDto = {
-	email: 'exampl34@mail.com',
+	email: 'examplu34@mail.com',
 	password: 'q1w2e3r4',
 };
 
@@ -40,7 +40,7 @@ describe('AuthController (e2e)', () => {
 			.send(userDto)
 			.expect(201)
 			.then(({ body }: request.Response) => {
-				createdUserId = body.data._id;
+				createdUserId = body.data.id;
 				expect(createdUserId).toBeDefined();
 			});
 	});
