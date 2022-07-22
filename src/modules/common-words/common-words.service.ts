@@ -24,11 +24,19 @@ class CommonWordsService {
 	}
 
 	async findAll(
-		documentsToSkip:number = 0,
+		documentsToSkip: number = 0,
 		limitOfDocuments: number | undefined
 	): Promise<CommonWord[]> {
-		const words = await this.commonWordsRepository.findAll(documentsToSkip, limitOfDocuments);
+		const words = await this.commonWordsRepository.findAll(
+			documentsToSkip,
+			limitOfDocuments
+		);
 		return words;
+	}
+
+	async count(): Promise<number> {
+		const wordsCount = await this.commonWordsRepository.count();
+		return wordsCount;
 	}
 
 	async findById(userId: string): Promise<CommonWord> {

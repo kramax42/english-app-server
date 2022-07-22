@@ -31,6 +31,7 @@ class CommonWordsController implements Controller {
 			queryValidator(PaginationParamsDto),
 			this.findAll
 		);
+		this.router.get(`${this.path}/count`, this.count);
 		this.router.post(
 			`${this.path}`,
 			authMiddleware,
@@ -85,6 +86,20 @@ class CommonWordsController implements Controller {
 			);
 
 			res.status(200).json(words);
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	private count = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			const wordsCount: number = await this.commonWordsService.count();
+
+			res.status(200).json(wordsCount);
 		} catch (error) {
 			next(error);
 		}

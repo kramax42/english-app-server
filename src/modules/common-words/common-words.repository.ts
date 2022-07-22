@@ -45,6 +45,10 @@ class CommonWordsRepository {
 		return this.wordModel.findOne({ word }).exec();
 	}
 
+	async count(): Promise<number> {
+		return this.wordModel.countDocuments({}).exec();
+	}
+
 	async findById(id: string): Promise<CommonWord | null> {
 		const foundWord = await this.wordModel.findById(id).exec();
 		return foundWord;
