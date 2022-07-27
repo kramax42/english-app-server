@@ -78,6 +78,7 @@ class App {
 	private initializeSwagger() {
 		const options = {
 			swaggerDefinition: {
+				openapi: '3.0.1',
 				info: {
 					title: 'REST API',
 					version: '2.0.0',
@@ -86,7 +87,7 @@ class App {
 			},
 			components: {
 				securitySchemes: {
-					bearerAuth: {
+					jwt: {
 						type: 'http',
 						scheme: 'bearer',
 						bearerFormat: 'JWT',
@@ -95,7 +96,7 @@ class App {
 			},
 			security: [
 				{
-					bearerAuth: [],
+					jwt: []
 				},
 			],
 			apis: ['swagger.yaml'],

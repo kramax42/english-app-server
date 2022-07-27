@@ -64,11 +64,12 @@ class AuthController implements Controller {
 				email: user.email,
 			}
 
+
 			res.setHeader('Set-Cookie', [cookie]);
 			// Set cookie value in body for auth in e2e tests.
 			res
 				.status(200)
-				.json({ user: returnedUser, accessToken});
+				.json({ user: returnedUser, accessToken });
 		} catch (error) {
 			next(error);
 		}
@@ -98,7 +99,7 @@ class AuthController implements Controller {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const user = req.user as User; 
+			const user = req.user as User;
 
 			const returnedUser = {
 				id: user.id,
