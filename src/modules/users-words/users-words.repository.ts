@@ -6,9 +6,26 @@ import { WordNotFoundException } from '@/exceptions/word-not-found.exceptions';
 class UsersWordsRepository {
 	private wordModel = UserWordModel;
 
-	public async findAll(userId: string): Promise<UserWord[]> {
-		const words = await this.wordModel.find({ user: userId }).exec();
-		return words;
+	public async findAll(userId: string, documentsToSkip: number = 0,
+		limitOfDocuments: number | undefined): Promise<UserWord[]> {
+
+			const findQuery = this.wordModel
+			.find({ user: userId })
+			.sort({ _id: 1 })
+			.skip(documentsToSkip);
+
+		if (limitOfDocuments) {
+			findQuery.limit(limitOfDocuments);
+		}
+
+		const words = await findQuery;
+
+		return words;	
+	}
+
+	async count(): Promise<number> {
+		// return this.wordModel.countDocuments({}).exec();
+		return this.wordModel.estimatedDocumentCount().exec();
 	}
 
 	public async create(

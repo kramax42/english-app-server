@@ -24,9 +24,19 @@ class UsersWordsService {
 		return createdWord;
 	}
 
-	async findAll(userId: string): Promise<UserWord[]> {
-		const words = await this.usersWordsRepository.findAll(userId);
+	async findAll(
+		userId: string,
+		documentsToSkip: number = 0,
+		limitOfDocuments: number | undefined
+		): Promise<UserWord[]> {
+		const words = await this.usersWordsRepository
+			.findAll(userId, documentsToSkip, limitOfDocuments);
 		return words;
+	}
+
+	async count(): Promise<number> {
+		const wordsCount = await this.usersWordsRepository.count();
+		return wordsCount;
 	}
 
 	async findById(userId: string, wordId: string): Promise<UserWord> {

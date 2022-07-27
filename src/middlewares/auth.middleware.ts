@@ -7,14 +7,13 @@ import { UserModel } from '@models/user.model';
 
 const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFunction) => {
   try {
-    const Authorization = req.cookies['Authorization'] || req.header('Authorization').split('Bearer ')[1] || null;
+    const Authorization = req.cookies['Authorization'].split('Bearer ')[1] || req.header('Authorization').split('Bearer ')[1] || null;
 
     if (Authorization) {
       const secretKey: string = config.get('secretKey');
       const verificationResponse = (await jwt.verify(Authorization, secretKey)) as DataStoredInToken;
       const userId = verificationResponse.id;
       const foundedUser = await UserModel.findById(userId)
-
 
       if (foundedUser) {
         req.user = foundedUser;

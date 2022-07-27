@@ -66,7 +66,7 @@ class AuthService {
 	}
 
 	public createCookie(tokenData: TokenData): string {
-		return `Authorization: Bearer ${tokenData.token}; Max-Age=${tokenData.expiresIn};`;
+		return `Authorization= Bearer ${tokenData.token}; Max-Age=${tokenData.expiresIn};`;
 	}
 }
 

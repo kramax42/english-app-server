@@ -65,7 +65,8 @@ class AuthController implements Controller {
 			}
 
 
-			res.setHeader('Set-Cookie', [cookie]);
+			res.setHeader('Set-Cookie', cookie);
+			
 			// Set cookie value in body for auth in e2e tests.
 			res
 				.status(200)
