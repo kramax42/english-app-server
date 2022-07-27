@@ -130,6 +130,18 @@ paths:
         500:
           description: 'Server Error'
 
+# [GET] common words count
+  /words/count:
+    get:
+      tags:
+      - words
+      summary: Get common words count
+      responses:
+        200:
+          description: 'OK'
+        500:
+          description: 'Server Error'
+
 # [POST] words
     post:
       tags:
@@ -173,7 +185,7 @@ paths:
         500:
           description: 'Server Error'
 
-# [PUT] words/id
+# [PATCH] words/id
     put:
       tags:
       - words
@@ -220,6 +232,120 @@ paths:
         500:
           description: 'Server Error'
 
+
+# [GET] user-words
+  /user-words:
+    get:
+      tags:
+      - user-words
+      summary: Get user words
+      responses:
+        200:
+          description: 'OK'
+        500:
+          description: 'Server Error'
+
+# [GET] user words count
+  /user-words/count:
+    get:
+      tags:
+      - user-words
+      summary: Get user words count
+      responses:
+        200:
+          description: 'OK'
+        500:
+          description: 'Server Error'
+
+# [POST] user-words
+    post:
+      tags:
+      - user-words
+      summary: Create word
+      parameters:
+      - name: body
+        in: body
+        description: word data
+        required: true
+        schema:
+          $ref: '#/definitions/user-words'
+      responses:
+        200:
+          description: 'OK'
+        400:
+          description: 'Bad Request'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+
+# [GET] user-words/id
+  /user-words/{id}:
+    get:
+      tags:
+      - user-words
+      summary: Find word by id
+      parameters:
+      - name: id
+        in: path
+        description: Word id
+        required: true
+        type: string
+      responses:
+        200:
+          description: 'OK'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+# [PATCH] user-words/id
+    put:
+      tags:
+      - user-words
+      summary: Update user word by id
+      parameters:
+      - name: id
+        in: path
+        description: word id
+        required: true
+        type: string
+      - name: body
+        in: body
+        description: word data
+        required: true
+        schema:
+          $ref: '#/definitions/user-words'
+      responses:
+        200:
+          description: 'OK'
+        400:
+          description: 'Bad Request'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+
+# [DELETE] user-words/id
+    delete:
+      tags:
+      - user-words
+      summary: Delete user-word by id
+      parameters:
+      - name: id
+        in: path
+        description: word id
+        required: true
+        type: string
+      responses:
+        200:
+          description: 'OK'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
 
 # definitions
 definitions:
@@ -286,6 +412,40 @@ definitions:
               type: string
             translation:
               type: string
+  user-words:
+    type: object
+    required:
+        - word
+        - transcription
+        - translation
+        - usageExamples
+        - studyStatus
+    properties:
+      id:
+        type: string
+        description: word Id
+      word:
+        type: string
+        description: english word
+      transcription:
+        type: string
+        description: word transcription
+      translation:
+        type: array
+        items:
+          type: string
+      usageExamples:
+        type: array
+        items:
+          type: object
+          properties:
+            sentence:
+              type: string
+            translation:
+              type: string
+      studyStatus:
+        type: string
+        description: user-word study status
 
   
 
