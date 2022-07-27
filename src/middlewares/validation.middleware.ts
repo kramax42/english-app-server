@@ -61,6 +61,8 @@ function createValidatorMiddleware<T extends object>({ objectGetter, objectSette
     const params = objectGetter(req) ?? {};
     const dto = plainToInstance(dtoClass, params, { exposeUnsetFields: false, enableImplicitConversion: options.implicitConversion });
 
+    console.log(req.body);
+
     validateOrReject(dto, { whitelist: options.whitelist ?? true })
       .then(() => {
         objectSetter(req, dto);

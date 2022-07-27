@@ -23,13 +23,11 @@ paths:
       tags:
       - login
       summary: login
-      parameters:
-      - name: body
-        in: body
-        description: user Data
-        required: true
-        schema:
-          $ref: '#/definitions/login'
+      requestBody:
+        content:
+          application/json: 
+            schema:
+              $ref: '#/definitions/login'
       responses:
         200:
           description: 'OK'

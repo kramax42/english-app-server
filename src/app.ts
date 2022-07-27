@@ -85,20 +85,6 @@ class App {
 					description: 'Example docs',
 				},
 			},
-			components: {
-				securitySchemes: {
-					jwt: {
-						type: 'http',
-						scheme: 'bearer',
-						bearerFormat: 'JWT',
-					},
-				},
-			},
-			security: [
-				{
-					jwt: []
-				},
-			],
 			apis: ['swagger.yaml'],
 		};
 
