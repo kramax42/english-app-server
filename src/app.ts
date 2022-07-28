@@ -81,8 +81,8 @@ class App {
 				openapi: '3.0.1',
 				info: {
 					title: 'REST API',
-					version: '2.0.0',
-					description: 'Example docs',
+					version: '2.1.0',
+					description: 'Api documentation.',
 				},
 			},
 			apis: ['swagger.yaml'],

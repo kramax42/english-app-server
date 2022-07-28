@@ -12,7 +12,8 @@ export const commonWordSchema = new mongoose.Schema<CommonWord>(
 	{
 		word: { type: String, required: true },
 		transcription: { type: String, default: 'transcription' },
-		translation: { type: [String], required: true },
+		translations: { type: [String], required: true },
+		definitions: { type: [String], required: true },
 		usageExamples: {
 			type: [usageExampleSchema],
 			default: [{ sentence: '', translation: '' }],

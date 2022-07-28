@@ -5,6 +5,7 @@ export interface UsageExample {
 export interface CommonWord {
   word: string;
   transcription: string;
-  translation: string[];
+  definitions: string[];
+  translations: string[];
   usageExamples: UsageExample[];
 }

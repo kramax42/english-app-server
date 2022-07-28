@@ -130,18 +130,6 @@ paths:
         500:
           description: 'Server Error'
 
-# [GET] common words count
-  /words/count:
-    get:
-      tags:
-      - words
-      summary: Get common words count
-      responses:
-        200:
-          description: 'OK'
-        500:
-          description: 'Server Error'
-
 # [POST] words
     post:
       tags:
@@ -165,6 +153,21 @@ paths:
           description: 'Server Error'
 
 
+# [GET] common words count
+  /words/count:
+    get:
+      tags:
+      - words
+      summary: Get common words count
+      responses:
+        200:
+          description: 'OK'
+        500:
+          description: 'Server Error'
+
+
+
+
 # [GET] words/id
   /words/{id}:
     get:
@@ -186,7 +189,7 @@ paths:
           description: 'Server Error'
 
 # [PATCH] words/id
-    put:
+    patch:
       tags:
       - words
       summary: Update word by id
@@ -245,28 +248,16 @@ paths:
         500:
           description: 'Server Error'
 
-# [GET] user words count
-  /user-words/count:
-    get:
-      tags:
-      - user-words
-      summary: Get user words count
-      responses:
-        200:
-          description: 'OK'
-        500:
-          description: 'Server Error'
-
 # [POST] user-words
     post:
       tags:
       - user-words
-      summary: Create word
+      summary: Create user word
       parameters:
       - name: body
         in: body
         description: word data
-        required: true
+        # required: true
         schema:
           $ref: '#/definitions/user-words'
       responses:
@@ -279,6 +270,17 @@ paths:
         500:
           description: 'Server Error'
 
+# [GET] user words count
+  /user-words/count:
+    get:
+      tags:
+      - user-words
+      summary: Get user words count
+      responses:
+        200:
+          description: 'OK'
+        500:
+          description: 'Server Error'
 
 # [GET] user-words/id
   /user-words/{id}:
@@ -301,7 +303,7 @@ paths:
           description: 'Server Error'
 
 # [PATCH] user-words/id
-    put:
+    patch:
       tags:
       - user-words
       summary: Update user word by id
@@ -387,19 +389,24 @@ definitions:
     required:
         - word
         - transcription
-        - translation
+        - translations
+        - definitionss
         - usageExamples
     properties:
-      id:
-        type: string
-        description: word Id
+      # id:
+      #   type: string
+      #   description: word Id
       word:
         type: string
         description: english word
       transcription:
         type: string
         description: word transcription
-      translation:
+      definitions:
+        type: array
+        items:
+          type: string
+      translations:
         type: array
         items:
           type: string
@@ -417,20 +424,25 @@ definitions:
     required:
         - word
         - transcription
-        - translation
+        - translations
+        - definitions
         - usageExamples
         - studyStatus
     properties:
-      id:
-        type: string
-        description: word Id
+      # id:
+      #   type: string
+      #   description: word Id
       word:
         type: string
-        description: english word
+        description: user word
       transcription:
         type: string
         description: word transcription
-      translation:
+      translations:
+        type: array
+        items:
+          type: string
+      definitions:
         type: array
         items:
           type: string

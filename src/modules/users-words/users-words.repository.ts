@@ -32,7 +32,8 @@ class UsersWordsRepository {
 		userId: string,
 		{
 			word,
-			translation,
+			translations,
+			definitions,
 			transcription,
 			usageExamples,
 			studyStatus,
@@ -43,7 +44,8 @@ class UsersWordsRepository {
 		const createdWord = await this.wordModel.create({
 			user: userId,
 			word,
-			translation,
+			translations,
+			definitions,
 			transcription,
 			usageExamples,
 			studyStatus,

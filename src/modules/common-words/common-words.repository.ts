@@ -28,13 +28,15 @@ class CommonWordsRepository {
 
 	public async create({
 		word,
-		translation,
+		translations,
+		definitions,
 		transcription,
 		usageExamples,
 	}: CreateCommonWordDto): Promise<CommonWord> {
 		const createdWord = await this.wordModel.create({
 			word,
-			translation,
+			translations,
+			definitions,
 			transcription,
 			usageExamples,
 		});
