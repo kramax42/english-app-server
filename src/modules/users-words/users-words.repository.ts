@@ -2,14 +2,16 @@ import { UserWordModel } from '@models/user-word.model';
 import { UserWord } from '@interfaces/user-word.interface';
 import { CreateUserWordDto, UpdateUserWordDto } from '@dtos/user-word.dto';
 import { WordNotFoundException } from '@/exceptions/word-not-found.exceptions';
+import { CommonWordModel } from '@/models/common-word.model';
 
 class UsersWordsRepository {
 	private wordModel = UserWordModel;
+	private commonWordModel = CommonWordModel;
 
 	public async findAll(userId: string, documentsToSkip: number = 0,
 		limitOfDocuments: number | undefined): Promise<UserWord[]> {
 
-			const findQuery = this.wordModel
+		const findQuery = this.wordModel
 			.find({ user: userId })
 			.sort({ _id: 1 })
 			.skip(documentsToSkip);
@@ -20,7 +22,7 @@ class UsersWordsRepository {
 
 		const words = await findQuery;
 
-		return words;	
+		return words;
 	}
 
 	async count(): Promise<number> {
@@ -39,11 +41,14 @@ class UsersWordsRepository {
 			studyStatus,
 		}: CreateUserWordDto
 	): Promise<UserWord> {
-		console.log(userId);
+
+		const commonWord = await this.commonWordModel.findOne({ word });
+		const commonWordId = commonWord ? commonWord.id : null;
 
 		const createdWord = await this.wordModel.create({
 			user: userId,
 			word,
+			commonWord: commonWordId,
 			translations,
 			definitions,
 			transcription,

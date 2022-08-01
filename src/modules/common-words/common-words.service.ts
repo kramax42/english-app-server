@@ -1,5 +1,5 @@
 import { WordNotFoundException } from '@/exceptions/word-not-found.exceptions';
-import { CommonWord } from '@/interfaces/common-word.interface';
+import { CommonWord, CommonWordWithUserStudyStatus } from '@/interfaces/common-word.interface';
 import CommonWordsRepository from './common-words.repository';
 import {
 	CreateCommonWordDto,
@@ -26,7 +26,7 @@ class CommonWordsService {
 	async findAll(
 		documentsToSkip: number = 0,
 		limitOfDocuments: number | undefined
-	): Promise<CommonWord[]> {
+	): Promise<CommonWordWithUserStudyStatus[]> {
 		const words = await this.commonWordsRepository.findAll(
 			documentsToSkip,
 			limitOfDocuments

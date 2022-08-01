@@ -1,3 +1,5 @@
+import { WordStudyStatus } from "./user-word.interface";
+
 export interface UsageExample {
   sentence: string;
   translation: string;
@@ -8,4 +10,9 @@ export interface CommonWord {
   definitions: string[];
   translations: string[];
   usageExamples: UsageExample[];
+}
+
+export interface CommonWordWithUserStudyStatus {
+  userStudyStatus: WordStudyStatus;
+  commonWord: CommonWord;
 }

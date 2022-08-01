@@ -9,5 +9,6 @@ export enum WordStudyStatus {
 
 export interface UserWord extends CommonWord {
   user: mongoose.Schema.Types.ObjectId;
+  commonWord: mongoose.Schema.Types.ObjectId;
   studyStatus: WordStudyStatus;
 }

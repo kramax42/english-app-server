@@ -5,7 +5,7 @@ import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
 } from '@/dtos/common-word.dto';
-import { CommonWord } from '@/interfaces/common-word.interface';
+import { CommonWord, CommonWordWithUserStudyStatus } from '@/interfaces/common-word.interface';
 import CommonWordsService from './common-words.service';
 import { PaginationParamsDto } from '@/dtos/pagination-params.dto';
 import {
@@ -80,7 +80,7 @@ class CommonWordsController implements Controller {
 		try {
 			const query = req.validatedQuery as PaginationParamsDto;
 
-			const words: CommonWord[] = await this.commonWordsService.findAll(
+			const words: CommonWordWithUserStudyStatus[] = await this.commonWordsService.findAll(
 				query.skip,
 				query.limit
 			);

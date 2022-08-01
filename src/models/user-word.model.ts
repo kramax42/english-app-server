@@ -9,6 +9,10 @@ export const userWordSchema = new mongoose.Schema<UserWord>(
 			ref: 'User',
 			type: mongoose.Schema.Types.ObjectId,
 		},
+		commonWord: {
+			ref: 'CommonWord',
+			type: mongoose.Schema.Types.ObjectId,
+		},
 		word: { type: String, required: true },
 		transcription: { type: String, default: 'transcription' },
 		definitions: { type: [String], required: true },

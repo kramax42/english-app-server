@@ -1,29 +1,43 @@
 import { CommonWordModel } from '@models/common-word.model';
-import { CommonWord } from '@interfaces/common-word.interface';
+import { CommonWord, CommonWordWithUserStudyStatus } from '@interfaces/common-word.interface';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
 } from '@dtos/common-word.dto';
+import { UserWordModel } from '@/models/user-word.model';
+import { WordStudyStatus } from '@/interfaces/user-word.interface';
+
+
 
 class CommonWordsRepository {
+	private userWordModel = UserWordModel;
 	private wordModel = CommonWordModel;
 
 	public async findAll(
-		documentsToSkip: number = 0,
-		limitOfDocuments: number | undefined
-	): Promise<CommonWord[]> {
+		skip: number = 0,
+		limit: number | undefined
+	): Promise<CommonWordWithUserStudyStatus[]> {
 		const findQuery = this.wordModel
 			.find()
 			.sort({ _id: 1 })
-			.skip(documentsToSkip);
+			.skip(skip)
 
-		if (limitOfDocuments) {
-			findQuery.limit(limitOfDocuments);
+		if (limit) {
+			findQuery.limit(limit);
 		}
-
 		const words = await findQuery;
 
-		return words;
+		const results: CommonWordWithUserStudyStatus[] = [];
+
+		for (const word of words) {
+			const userWord = await this.userWordModel.findOne({ commonWord: word._id });
+			results.push({
+				commonWord: word,
+				userStudyStatus: userWord ? userWord.studyStatus : WordStudyStatus.UNKNOWN
+			});
+		}
+
+		return Promise.all(results);
 	}
 
 	public async create({
