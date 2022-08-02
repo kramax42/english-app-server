@@ -23,7 +23,7 @@ class UsersWordsController implements Controller {
 
 	private initializeRoutes() {
 		this.router.get(`${this.path}`, authMiddleware, queryValidator(PaginationParamsDto), this.findAll);
-		this.router.get(`${this.path}/count`, this.count);
+		this.router.get(`${this.path}/count`, authMiddleware, this.count);
 		this.router.post(
 			`${this.path}`,
 			authMiddleware,
@@ -81,12 +81,12 @@ class UsersWordsController implements Controller {
 	};
 
 	private count = async (
-		req: Request,
+		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const wordsCount: number = await this.usersWordsService.count();
+			const wordsCount: number = await this.usersWordsService.count(req.user.id);
 
 			res.status(200).json(wordsCount);
 		} catch (error) {

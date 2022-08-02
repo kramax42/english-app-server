@@ -25,9 +25,9 @@ class UsersWordsRepository {
 		return words;
 	}
 
-	async count(): Promise<number> {
-		// return this.wordModel.countDocuments({}).exec();
-		return this.wordModel.estimatedDocumentCount().exec();
+	async count(userId: string): Promise<number> {
+		// return (await this.wordModel.find({ user: userId }).exec()).length;
+		return this.wordModel.countDocuments({ user: userId });
 	}
 
 	public async create(

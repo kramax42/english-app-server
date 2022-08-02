@@ -34,8 +34,8 @@ class UsersWordsService {
 		return words;
 	}
 
-	async count(): Promise<number> {
-		const wordsCount = await this.usersWordsRepository.count();
+	async count(userId: string): Promise<number> {
+		const wordsCount = await this.usersWordsRepository.count(userId);
 		return wordsCount;
 	}
 
