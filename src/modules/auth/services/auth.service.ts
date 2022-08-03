@@ -5,13 +5,16 @@ import { CreateUserDto } from '@dtos/user.dto';
 import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { User } from '@interfaces/user.interface';
 import { LoginDto } from '@dtos/auth.dto';
-import UsersRepository from '@modules/users/users.repository';
 import { WrongCredentialsException } from '@/exceptions/wrong-credentials.exception';
 import { AlreadyExistsException } from '@/exceptions/already-exist.exception';
-class AuthService {
-	private readonly usersRepository = new UsersRepository();
+import { IAuthService } from './auth.service.interface';
+import { IUsersRepository } from '@/modules/users/repositories/users.repository.interface';
 
-	public async signup({ email, password, name }: CreateUserDto): Promise<User> {
+export class AuthService implements IAuthService {
+
+	constructor(private readonly usersRepository: IUsersRepository) { }
+
+	async signUp({ email, password, name }: CreateUserDto): Promise<User> {
 		const existedUser = await this.usersRepository.findByEmail(email);
 		if (existedUser) throw new AlreadyExistsException();
 
@@ -27,7 +30,7 @@ class AuthService {
 		return newUser;
 	}
 
-	public async login({
+	async logIn({
 		email,
 		password,
 	}: LoginDto): Promise<{ cookie: string; foundUser: User; accessToken: string }> {
@@ -47,14 +50,14 @@ class AuthService {
 		return { cookie, foundUser, accessToken: tokenData.token };
 	}
 
-	public async logout(email: string): Promise<User> {
+	async logOut(email: string): Promise<User> {
 		const foundUser = await this.usersRepository.findByEmail(email);
 		if (!foundUser) throw new WrongCredentialsException();
 
 		return foundUser;
 	}
 
-	public createToken(user: User): TokenData {
+	createToken(user: User): TokenData {
 		const dataStoredInToken: DataStoredInToken = { id: user.id };
 		const secretKey: string = config.get('secretKey');
 		const expiresIn: number = 60 * 60;
@@ -65,9 +68,8 @@ class AuthService {
 		};
 	}
 
-	public createCookie(tokenData: TokenData): string {
+	createCookie(tokenData: TokenData): string {
 		return `Authorization= Bearer ${tokenData.token}; Max-Age=${tokenData.expiresIn};`;
 	}
 }
 
-export default AuthService;

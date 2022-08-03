@@ -1,7 +1,7 @@
 import request from 'supertest';
 import App from '@/app';
 import { CreateUserDto } from '@dtos/user.dto';
-import AuthController from '@modules/auth/auth.controller';
+import AuthController from '@/modules/auth/controllers/auth.controller';
 import mongoose from 'mongoose';
 import { LoginDto } from '@dtos/auth.dto';
 import UsersController from '@modules/users/users.controller';

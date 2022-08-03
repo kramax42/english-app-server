@@ -1,12 +1,10 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { Controller } from '@interfaces/contoller.interface';
 import authMiddleware from '@middlewares/auth.middleware';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
 } from '@/dtos/common-word.dto';
 import { CommonWord, CommonWordWithUserStudyStatus } from '@/interfaces/common-word.interface';
-import CommonWordsService from './common-words.service';
 import { PaginationParamsDto } from '@/dtos/pagination-params.dto';
 import {
 	bodyValidator,
@@ -14,18 +12,18 @@ import {
 } from '@/middlewares/validation.middleware';
 import { permitTo } from '@middlewares/roles.middleware';
 import { Role } from '@interfaces/auth.interface';
+import { ICommonWordsController } from './common-words.controllers.interface';
+import { ICommonWordsService } from '../services/common-words.service.interface';
 
-class CommonWordsController implements Controller {
+export class CommonWordsController implements ICommonWordsController {
 	public path = '/words';
 	public router = Router();
 
-	public commonWordsService = new CommonWordsService();
-
-	constructor() {
+	constructor(private readonly commonWordsService: ICommonWordsService) {
 		this.initializeRoutes();
 	}
 
-	private initializeRoutes() {
+	initializeRoutes() {
 		this.router.get(
 			`${this.path}`,
 			queryValidator(PaginationParamsDto),
@@ -55,7 +53,7 @@ class CommonWordsController implements Controller {
 		);
 	}
 
-	private create = async (
+	create = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -72,7 +70,7 @@ class CommonWordsController implements Controller {
 		}
 	};
 
-	private findAll = async (
+	findAll = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -91,7 +89,7 @@ class CommonWordsController implements Controller {
 		}
 	};
 
-	private count = async (
+	count = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -105,7 +103,7 @@ class CommonWordsController implements Controller {
 		}
 	};
 
-	private getById = async (
+	getById = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -120,7 +118,7 @@ class CommonWordsController implements Controller {
 		}
 	};
 
-	private update = async (
+	update = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -140,7 +138,7 @@ class CommonWordsController implements Controller {
 		}
 	};
 
-	private delete = async (
+	delete = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
@@ -156,4 +154,3 @@ class CommonWordsController implements Controller {
 	};
 }
 
-export default CommonWordsController;

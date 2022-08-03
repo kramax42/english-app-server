@@ -1,16 +1,17 @@
-import { CreateUserDto } from '@dtos/user.dto';
-import { User } from '@interfaces/user.interface';
-import { UserModel } from '@models/user.model';
+import { CreateUserDto } from "@/dtos/user.dto";
+import { User } from "@/interfaces/user.interface";
+import { UserModel } from "@/models/user.model";
+import { IUsersRepository } from "./users.repository.interface";
 
-class UsersRepository {
+export class UsersRepository implements IUsersRepository {
 	private userModel = UserModel;
 
-	public async findAll(): Promise<User[]> {
+	async findAll(): Promise<User[]> {
 		const users = await this.userModel.find().exec();
 		return users;
 	}
 
-	public async create({
+	async create({
 		email,
 		name,
 		password,
@@ -23,7 +24,7 @@ class UsersRepository {
 		return user;
 	}
 
-	public async findById(userId: string): Promise<User | null> {
+	async findById(userId: string): Promise<User | null> {
 		const foundUser = await this.userModel.findById(userId).exec();
 		return foundUser;
 	}
@@ -33,7 +34,7 @@ class UsersRepository {
 		return foundUser;
 	}
 
-	public async update(
+	async update(
 		userId: string,
 		userData: CreateUserDto
 	): Promise<User> {
@@ -44,10 +45,9 @@ class UsersRepository {
 		return updatedUser;
 	}
 
-	public async delete(userId: string): Promise<User> {
+	async delete(userId: string): Promise<User> {
 		const deletedWord = await this.userModel.findByIdAndDelete(userId).exec();
 		return deletedWord;
 	}
 }
 
-export default UsersRepository;

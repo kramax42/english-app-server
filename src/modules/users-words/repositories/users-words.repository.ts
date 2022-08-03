@@ -1,10 +1,10 @@
 import { UserWordModel } from '@models/user-word.model';
 import { UserWord } from '@interfaces/user-word.interface';
 import { CreateUserWordDto, UpdateUserWordDto } from '@dtos/user-word.dto';
-import { WordNotFoundException } from '@/exceptions/word-not-found.exceptions';
 import { CommonWordModel } from '@/models/common-word.model';
+import { IUsersWordsRepository } from './users-words.repository.interface';
 
-class UsersWordsRepository {
+export class UsersWordsRepository implements IUsersWordsRepository {
 	private wordModel = UserWordModel;
 	private commonWordModel = CommonWordModel;
 
@@ -89,4 +89,3 @@ class UsersWordsRepository {
 	}
 }
 
-export default UsersWordsRepository;

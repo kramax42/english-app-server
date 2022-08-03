@@ -6,14 +6,13 @@ import {
 } from '@dtos/common-word.dto';
 import { UserWordModel } from '@/models/user-word.model';
 import { WordStudyStatus } from '@/interfaces/user-word.interface';
+import { ICommonWordsRepository } from './common-words.repository.interface';
 
-
-
-class CommonWordsRepository {
+export class CommonWordsRepository implements ICommonWordsRepository {
 	private userWordModel = UserWordModel;
 	private wordModel = CommonWordModel;
 
-	public async findAll(
+	async findAll(
 		skip: number = 0,
 		limit: number | undefined
 	): Promise<CommonWordWithUserStudyStatus[]> {
@@ -40,7 +39,7 @@ class CommonWordsRepository {
 		return Promise.all(results);
 	}
 
-	public async create({
+	async create({
 		word,
 		translations,
 		definitions,
@@ -85,4 +84,3 @@ class CommonWordsRepository {
 	}
 }
 
-export default CommonWordsRepository;

@@ -1,24 +1,24 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { UpdateUserDto } from '@dtos/user.dto';
 import { User } from '@interfaces/user.interface';
-import UsersService from './users.service';
-import { Controller } from '@interfaces/contoller.interface';
+
 import authMiddleware from '@middlewares/auth.middleware';
 import { bodyValidator } from '@middlewares/validation.middleware';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { ForbiddenException } from '@exceptions/forbidden.exception';
+import { IUsersController } from './users.controllers.interface';
+import { IUsersService } from '../services/users.service.interface';
 
-class UsersController implements Controller {
+
+export class UsersController implements IUsersController {
 	public path = '/users';
 	public router = Router();
 
-	public userService = new UsersService();
-
-	constructor() {
+	constructor(private readonly usersService: IUsersService) {
 		this.initializeRoutes();
 	}
 
-	private initializeRoutes() {
+	initializeRoutes() {
 		this.router.get(`${this.path}`, authMiddleware, this.findAll);
 		this.router.get(`${this.path}/:id`, authMiddleware, this.findById);
 		this.router.patch(
@@ -30,13 +30,13 @@ class UsersController implements Controller {
 		this.router.delete(`${this.path}/:id`, authMiddleware, this.delete);
 	}
 
-	private findAll = async (
+	findAll = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const getAllUsersData: User[] = await this.userService.findAll();
+			const getAllUsersData: User[] = await this.usersService.findAll();
 
 			res
 				.status(200)
@@ -46,14 +46,14 @@ class UsersController implements Controller {
 		}
 	};
 
-	private findById = async (
+	findById = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const userId = req.params.id;
-			const foundUser: User = await this.userService.findById(userId);
+			const foundUser: User = await this.usersService.findById(userId);
 
 			res.status(200).json(foundUser);
 		} catch (error) {
@@ -61,7 +61,7 @@ class UsersController implements Controller {
 		}
 	};
 
-	private update = async (
+	update = async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
@@ -74,7 +74,7 @@ class UsersController implements Controller {
 			}
 
 			const userData: UpdateUserDto = req.body;
-			const updatedUser: User = await this.userService.update(userId, userData);
+			const updatedUser: User = await this.usersService.update(userId, userData);
 
 			res.status(200).json(updatedUser);
 		} catch (error) {
@@ -82,14 +82,14 @@ class UsersController implements Controller {
 		}
 	};
 
-	private delete = async (
+	delete = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const userId = req.params.id;
-			const deletedUser: User = await this.userService.delete(userId);
+			const deletedUser: User = await this.usersService.delete(userId);
 
 			res.status(200).json(deletedUser);
 		} catch (error) {
@@ -98,4 +98,3 @@ class UsersController implements Controller {
 	};
 }
 
-export default UsersController;

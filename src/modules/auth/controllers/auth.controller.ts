@@ -2,22 +2,22 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { CreateUserDto } from '@dtos/user.dto';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { User } from '@interfaces/user.interface';
-import AuthService from './auth.service';
-import { Controller } from '@interfaces/contoller.interface';
+
 import authMiddleware from '@middlewares/auth.middleware';
 import { LoginDto } from '@/dtos/auth.dto';
 import { bodyValidator } from '@/middlewares/validation.middleware';
+import { IAuthController } from './auth.controller.interface';
+import { IAuthService } from '../services/auth.service.interface';
 
-class AuthController implements Controller {
+export class AuthController implements IAuthController {
 	public path = '/';
 	public router = Router();
-	public authService = new AuthService();
 
-	constructor() {
+	constructor(private readonly authService: IAuthService) {
 		this.initializeRoutes();
 	}
 
-	private initializeRoutes() {
+	initializeRoutes() {
 		this.router.post(
 			`${this.path}signup`,
 			bodyValidator(CreateUserDto),
@@ -32,14 +32,14 @@ class AuthController implements Controller {
 		this.router.get(`${this.path}me`, authMiddleware, this.me);
 	}
 
-	private signUp = async (
+	signUp = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const userData = req.validatedBody as CreateUserDto;
-			const signUpUserData: User = await this.authService.signup(userData);
+			const signUpUserData: User = await this.authService.signUp(userData);
 
 			res.status(201).json(signUpUserData);
 		} catch (error) {
@@ -47,14 +47,14 @@ class AuthController implements Controller {
 		}
 	};
 
-	private logIn = async (
+	logIn = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const userData = req.validatedBody as CreateUserDto;
-			const { cookie, foundUser: user, accessToken } = await this.authService.login(
+			const { cookie, foundUser: user, accessToken } = await this.authService.logIn(
 				userData
 			);
 
@@ -67,7 +67,7 @@ class AuthController implements Controller {
 
 
 			res.setHeader('Set-Cookie', cookie);
-			
+
 			// Set cookie value in body for auth in e2e tests.
 			res
 				.status(200)
@@ -77,14 +77,14 @@ class AuthController implements Controller {
 		}
 	};
 
-	private logOut = async (
+	logOut = async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const userData = req.user as User;
-			const logOutUserData: User = await this.authService.logout(
+			const logOutUserData: User = await this.authService.logOut(
 				userData.email
 			);
 
@@ -95,7 +95,7 @@ class AuthController implements Controller {
 		}
 	};
 
-	private me = async (
+	me = async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
@@ -117,4 +117,3 @@ class AuthController implements Controller {
 	};
 }
 
-export default AuthController;

@@ -1,14 +1,16 @@
 import { WordNotFoundException } from '@/exceptions/word-not-found.exceptions';
 import { UserWord } from '@/interfaces/user-word.interface';
-import UsersWordsRepository from './users-words.repository';
 import {
 	CreateUserWordDto,
 	UpdateUserWordDto,
 } from '@dtos/user-word.dto';
 import { AlreadyExistsException } from '@/exceptions/already-exist.exception';
+import { IUsersWordsService } from './users-words.service.interface';
+import { IUsersWordsRepository } from '../repositories/users-words.repository.interface';
 
-class UsersWordsService {
-	private readonly usersWordsRepository = new UsersWordsRepository();
+export class UsersWordsService implements IUsersWordsService {
+
+	constructor(private readonly usersWordsRepository: IUsersWordsRepository) { }
 
 	async create(userId: string, wordDto: CreateUserWordDto) {
 
@@ -16,21 +18,16 @@ class UsersWordsService {
 		if (existedWord) {
 			throw new AlreadyExistsException();
 		}
-
 		const createdWord = await this.usersWordsRepository.create(userId, wordDto);
-
-		// await newWord.save();
-
 		return createdWord;
 	}
 
 	async findAll(
 		userId: string,
-		documentsToSkip: number = 0,
-		limitOfDocuments: number | undefined
-		): Promise<UserWord[]> {
-		const words = await this.usersWordsRepository
-			.findAll(userId, documentsToSkip, limitOfDocuments);
+		skip: number = 0,
+		limit: number | undefined
+	): Promise<UserWord[]> {
+		const words = await this.usersWordsRepository.findAll(userId, skip, limit);
 		return words;
 	}
 
@@ -74,4 +71,3 @@ class UsersWordsService {
 	}
 }
 
-export default UsersWordsService;

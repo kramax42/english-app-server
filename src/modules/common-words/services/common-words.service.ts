@@ -1,14 +1,16 @@
 import { WordNotFoundException } from '@/exceptions/word-not-found.exceptions';
 import { CommonWord, CommonWordWithUserStudyStatus } from '@/interfaces/common-word.interface';
-import CommonWordsRepository from './common-words.repository';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
 } from '@dtos/common-word.dto';
 import { AlreadyExistsException } from '@/exceptions/already-exist.exception';
+import { ICommonWordsService } from './common-words.service.interface';
+import { ICommonWordsRepository } from '../repositories/common-words.repository.interface';
 
-class CommonWordsService {
-	private readonly commonWordsRepository = new CommonWordsRepository();
+export class CommonWordsService implements ICommonWordsService {
+
+	constructor(private readonly commonWordsRepository: ICommonWordsRepository) { }
 
 	async create(wordDto: CreateCommonWordDto) {
 		const existedWord = await this.find(wordDto.word);
@@ -24,12 +26,12 @@ class CommonWordsService {
 	}
 
 	async findAll(
-		documentsToSkip: number = 0,
-		limitOfDocuments: number | undefined
+		skip: number = 0,
+		limit: number | undefined
 	): Promise<CommonWordWithUserStudyStatus[]> {
 		const words = await this.commonWordsRepository.findAll(
-			documentsToSkip,
-			limitOfDocuments
+			skip,
+			limit
 		);
 		return words;
 	}
@@ -67,4 +69,3 @@ class CommonWordsService {
 	}
 }
 
-export default CommonWordsService;

@@ -1,27 +1,25 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { Controller } from '@interfaces/contoller.interface';
 import authMiddleware from '@middlewares/auth.middleware';
 import { CreateUserWordDto, UpdateUserWordDto } from '@/dtos/user-word.dto';
 import { UserWord } from '@/interfaces/user-word.interface';
-import UsersWordsService from './users-words.service';
 import {
 	bodyValidator,
 	queryValidator,
 } from '@/middlewares/validation.middleware';
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import { PaginationParamsDto } from '@/dtos/pagination-params.dto';
+import { IUsersWordsService } from '../services/users-words.service.interface';
+import { IUserWordsController } from './users-words.controller.interface';
 
-class UsersWordsController implements Controller {
+export class UsersWordsController implements IUserWordsController {
 	public path = '/user-words';
 	public router = Router();
 
-	public usersWordsService = new UsersWordsService();
-
-	constructor() {
+	constructor(private readonly usersWordsService: IUsersWordsService) {
 		this.initializeRoutes();
 	}
 
-	private initializeRoutes() {
+	initializeRoutes() {
 		this.router.get(`${this.path}`, authMiddleware, queryValidator(PaginationParamsDto), this.findAll);
 		this.router.get(`${this.path}/count`, authMiddleware, this.count);
 		this.router.post(
@@ -40,7 +38,7 @@ class UsersWordsController implements Controller {
 		this.router.delete(`${this.path}/:id`, authMiddleware, this.delete);
 	}
 
-	private create = async (
+	create = async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
@@ -58,7 +56,7 @@ class UsersWordsController implements Controller {
 		}
 	};
 
-	private findAll = async (
+	findAll = async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
@@ -80,7 +78,7 @@ class UsersWordsController implements Controller {
 		}
 	};
 
-	private count = async (
+	count = async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
@@ -94,7 +92,7 @@ class UsersWordsController implements Controller {
 		}
 	};
 
-	private getById = async (
+	getById = async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
@@ -112,7 +110,7 @@ class UsersWordsController implements Controller {
 		}
 	};
 
-	private update = async (
+	update = async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
@@ -132,7 +130,7 @@ class UsersWordsController implements Controller {
 		}
 	};
 
-	private delete = async (
+	delete = async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
@@ -151,4 +149,3 @@ class UsersWordsController implements Controller {
 	};
 }
 
-export default UsersWordsController;
