@@ -1,5 +1,4 @@
 import * as os from 'os';
-import { NextFunction, Request, Response, Router } from 'express';
 import { IProcessInfoResponse, IResourceUsageResponse, IServerTimeResponse, ISystemInfoResponse, ISystemStatusService } from './system-status.service.interface';
 
 export class SystemStatusService implements ISystemStatusService {
@@ -41,14 +40,14 @@ export class SystemStatusService implements ISystemStatusService {
 		try {
 			const totalMem: number = os.totalmem();
 			const memProc: NodeJS.MemoryUsage = process.memoryUsage();
-			const freemMem: number = os.freemem();
+			const freeMem: number = os.freemem();
 
 			const response: IResourceUsageResponse = {
 				processMemory: memProc,
 				systemMemory: {
-					free: freemMem,
+					free: freeMem,
 					total: totalMem,
-					percentFree: Math.round((freemMem / totalMem) * 100),
+					percentFree: Math.round((freeMem / totalMem) * 100),
 				},
 				processCpu: process.cpuUsage(),
 				systemCpu: os.cpus(),
