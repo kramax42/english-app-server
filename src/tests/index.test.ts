@@ -1,6 +1,6 @@
 import request from 'supertest';
 import App from '@/app';
-import IndexController from '@modules/index/index.controller';
+import IndexController from '@/modules/system-status/index.controller';
 import mongoose from 'mongoose';
 import { logger } from '@utils/logger';
 

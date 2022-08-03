@@ -12,10 +12,10 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { Controller } from '@interfaces/contoller.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
 import { connectToMongoDB } from './utils/database/connect-to-mongodb';
+import { IController } from './interfaces/contoller.interface';
 
 
 class App {
@@ -24,7 +24,7 @@ class App {
 	public env: string;
 	public server: Server;
 
-	constructor(controllers: Controller[]) {
+	constructor(controllers: IController[]) {
 		this.app = express();
 		this.port = process.env.PORT || 5000;
 		this.env = process.env.NODE_ENV || 'development';
@@ -69,7 +69,7 @@ class App {
 		this.app.use(cookieParser());
 	}
 
-	private initializeContollers(contollers: Controller[]) {
+	private initializeContollers(contollers: IController[]) {
 		contollers.forEach((controller) => {
 			this.app.use('/', controller.router);
 		});
