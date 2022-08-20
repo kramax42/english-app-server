@@ -6,10 +6,7 @@
         "dir": "../logs"
     },
     "cors": {
-        "origin": [
-            "https://english-app-client.vercel.app",
-            "http://localhost:3000"
-        ],
+        "origin": "https://english-app-client.vercel.app",
         "credentials": true
     }
 }
