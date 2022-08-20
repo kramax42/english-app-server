@@ -55,10 +55,25 @@ class App {
 
 	private initializeMiddlewares() {
 		this.app.use(morgan(config.get('log.format'), { stream }));
+
+		let whitelist = ['http://localhost:3000', config.get('cors.origin')];
 		this.app.use(
 			cors({
-				origin: config.get('cors.origin'),
-				credentials: config.get('cors.credentials'),
+				// origin: config.get('cors.origin'),
+				// credentials: config.get('cors.credentials'),
+				origin: function (origin, callback) {
+					// if (whitelist.indexOf(origin) !== -1) {
+					//   console.log("allowed cors for:", origin)
+					//   callback(null, true)
+					// } else {
+					//   console.log("blocked cors for:", origin)
+					//   callback(new Error('Not allowed by CORS'))
+					// }
+					callback(null, true);
+				},
+				allowedHeaders: 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
+				methods: "GET,PUT,POST,PATCH,DELETE,UPDATE,OPTIONS",
+				credentials: true,
 			})
 		);
 		this.app.use(hpp());
