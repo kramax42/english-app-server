@@ -88,7 +88,7 @@ export class AuthController implements IAuthController {
 				userData.email
 			);
 
-			res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
+			res.setHeader('Set-Cookie', ['Authorization=; HttpOnly; SameSite=None; Secure; Max-age=0']);
 			res.status(200).json(logOutUserData);
 		} catch (error) {
 			next(error);

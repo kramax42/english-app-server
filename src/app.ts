@@ -62,13 +62,13 @@ class App {
 				// origin: config.get('cors.origin'),
 				// credentials: config.get('cors.credentials'),
 				origin: function (origin, callback) {
-					if (whitelist.indexOf(origin) !== -1) {
-					  console.log("allowed cors for:", origin)
-					  callback(null, true)
-					} else {
-					  console.log("blocked cors for:", origin)
-					  callback(new Error('Not allowed by CORS'))
-					}
+					// if (whitelist.indexOf(origin) !== -1) {
+					// 	console.log("allowed cors for:", origin)
+					// 	callback(null, true)
+					// } else {
+					// 	console.log("blocked cors for:", origin)
+					// 	callback(new Error('Not allowed by CORS'))
+					// }
 					callback(null, true);
 				},
 				allowedHeaders: 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
@@ -76,6 +76,13 @@ class App {
 				credentials: true,
 			})
 		);
+		// this.app.use(function (req, res, next) {
+		// 	res.header('Access-Control-Allow-Credentials', 'true');
+		// 	res.header('Access-Control-Allow-Origin', config.get('cors.origin'));
+		// 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS');
+		// 	res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+		// 	next();
+		// });
 		this.app.use(hpp());
 		this.app.use(helmet());
 		this.app.use(compression());
