@@ -139,7 +139,6 @@ paths:
       - name: body
         in: body
         description: word data
-        required: true
         schema:
           $ref: '#/definitions/words'
       responses:
@@ -202,7 +201,6 @@ paths:
       - name: body
         in: body
         description: word data
-        required: true
         schema:
           $ref: '#/definitions/words'
       responses:

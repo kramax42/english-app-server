@@ -19,6 +19,7 @@ export class UsersWordsService implements IUsersWordsService {
 			throw new AlreadyExistsException();
 		}
 		const createdWord = await this.usersWordsRepository.create(userId, wordDto);
+		console.log(wordDto);
 		return createdWord;
 	}
 

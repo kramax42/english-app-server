@@ -2,9 +2,11 @@ import { plainToClass, Transform } from 'class-transformer';
 import { IsString, IsArray, ArrayMinSize, IsOptional, ValidateNested, IsDefined, IsNotEmptyObject } from 'class-validator';
 
 class UsageExampleDto {
+  @IsOptional()
   @IsString()
   sentence: string;
 
+  @IsOptional()
   @IsString()
   translation: string;
 }
@@ -13,19 +15,21 @@ export class CreateCommonWordDto {
   @IsString()
   word: string;
 
+  @IsOptional()
   @IsArray()
   @ArrayMinSize(1)
   translations: string[];
 
+  @IsOptional()
   @IsArray()
   @ArrayMinSize(1)
   definitions: string[];
 
-  // @IsOptional()
+  @IsOptional()
   @IsString()
   transcription: string;
 
-  // @IsOptional()
+  @IsOptional()
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
