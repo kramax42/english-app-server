@@ -5,7 +5,6 @@ import {
 } from '@dtos/user-word.dto';
 
 export interface IUsersWordsService {
-
     create: (userId: string, wordDto: CreateUserWordDto) => Promise<UserWord>;
     findAll: (userId: string, skip: number, limit: number | undefined) => Promise<UserWord[]>;
     find: (userId: string, word: string) => Promise<UserWord>;

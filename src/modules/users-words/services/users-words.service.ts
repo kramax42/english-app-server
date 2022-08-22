@@ -13,13 +13,11 @@ export class UsersWordsService implements IUsersWordsService {
 	constructor(private readonly usersWordsRepository: IUsersWordsRepository) { }
 
 	async create(userId: string, wordDto: CreateUserWordDto) {
-
 		const existedWord = await this.find(userId, wordDto.word);
 		if (existedWord) {
 			throw new AlreadyExistsException();
 		}
 		const createdWord = await this.usersWordsRepository.create(userId, wordDto);
-		console.log(wordDto);
 		return createdWord;
 	}
 
@@ -40,7 +38,6 @@ export class UsersWordsService implements IUsersWordsService {
 	async findById(userId: string, wordId: string): Promise<UserWord> {
 		const foundWord = await this.usersWordsRepository.findById(userId, wordId);
 		if (!foundWord) throw new WordNotFoundException();
-
 		return foundWord;
 	}
 
@@ -50,6 +47,16 @@ export class UsersWordsService implements IUsersWordsService {
 	): Promise<UserWord> {
 		const foundWord = await this.usersWordsRepository.findById(userId, wordId);
 		if (!foundWord) throw new WordNotFoundException();
+
+
+		// Forbidden updating word
+		// with name that already belongs to another word. 
+		if (foundWord.word !== wordDto.word) {
+			const existedWord = await this.find(userId, wordDto.word);
+			if (existedWord) {
+				throw new AlreadyExistsException();
+			}
+		}
 
 		const updatedWord = await this.usersWordsRepository.update(
 			userId,
