@@ -5,7 +5,7 @@ import { WordStudyStatus } from "@/interfaces/user-word.interface";
 import { registerDecorator, ValidationOptions, ValidationArguments } from "class-validator";
 
 export function IsStudyStatus(validationOptions?: ValidationOptions) {
-   return function (object: Object, propertyName: string) {
+    return function (object: Object, propertyName: string) {
         registerDecorator({
             name: "IsStudyStatus",
             target: object.constructor,
@@ -18,5 +18,5 @@ export function IsStudyStatus(validationOptions?: ValidationOptions) {
                 }
             }
         });
-   };
+    };
 } 

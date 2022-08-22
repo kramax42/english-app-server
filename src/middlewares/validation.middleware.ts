@@ -2,7 +2,6 @@ import { plainToInstance, ClassConstructor } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import type { Request, Response, NextFunction } from 'express';
 
-
 // Override Express request to use validated values in request.
 declare global {
   namespace Express {

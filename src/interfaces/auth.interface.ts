@@ -2,8 +2,8 @@ import { Request } from 'express';
 import { User } from '@interfaces/user.interface';
 
 export enum Role {
-  ADMIN = 'admin',
-  USER = 'user',
+	ADMIN = 'admin',
+	USER = 'user',
 }
 
 export interface DataStoredInToken {
