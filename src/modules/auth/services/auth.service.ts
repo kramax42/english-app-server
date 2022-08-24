@@ -69,7 +69,7 @@ export class AuthService implements IAuthService {
 	}
 
 	createCookie(tokenData: TokenData): string {
-		return `Authorization= Bearer ${tokenData.token}; HttpOnly; SameSite=None; Secure; Max-Age=${tokenData.expiresIn};`;
+		return `Authorization= Bearer ${tokenData.token}; Path=/; HttpOnly; SameSite=None; Secure; Max-Age=${tokenData.expiresIn};`;
 	}
 }
 
