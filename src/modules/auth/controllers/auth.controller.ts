@@ -5,10 +5,10 @@ import { User, UserResponseDTO } from '@interfaces/user.interface';
 import { authMiddleware } from '@middlewares/auth.middleware';
 import { LoginDto } from '@/dtos/auth.dto';
 import { bodyValidator } from '@/middlewares/validation.middleware';
-import { IAuthController } from './auth.controller.interface';
 import { IAuthService } from '../services/auth.service.interface';
+import { IController } from '@/interfaces/contoller.interface';
 
-export class AuthController implements IAuthController {
+export class AuthController implements IController {
 	public path = '/auth';
 	public router = Router();
 

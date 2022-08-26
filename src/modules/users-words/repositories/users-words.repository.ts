@@ -31,8 +31,7 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 	}
 
 	public async create(
-		userId: string,
-		{
+		userId: string, {
 			word,
 			translations,
 			definitions,

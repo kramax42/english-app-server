@@ -4,7 +4,7 @@ import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
 } from '@/dtos/common-word.dto';
-import { CommonWord, CommonWordWithUserStudyStatusResponseDTO } from '@/interfaces/common-word.interface';
+import { CommonWord, CommonWordWithUserWordResponseDTO } from '@/interfaces/common-word.interface';
 import { PaginationParamsDto } from '@/dtos/pagination-params.dto';
 import {
 	bodyValidator,
@@ -12,9 +12,9 @@ import {
 } from '@/middlewares/validation.middleware';
 import { permitTo } from '@middlewares/roles.middleware';
 import { RequestWithUser, Role } from '@interfaces/auth.interface';
-import { ICommonWordsController } from './common-words.controllers.interface';
 import { ICommonWordsService } from '../services/common-words.service.interface';
-export class CommonWordsController implements ICommonWordsController {
+import { IController } from '@/interfaces/contoller.interface';
+export class CommonWordsController implements IController {
 	public path = '/words';
 	public router = Router();
 
@@ -64,7 +64,8 @@ export class CommonWordsController implements ICommonWordsController {
 				wordDto
 			);
 
-			res.status(201).json(createdWord);
+			const createdWordResponse = this.commonWordsService.transformCommonWordForResponseDTO(createdWord);
+			res.status(201).json(createdWordResponse);
 		} catch (error) {
 			next(error);
 		}
@@ -78,7 +79,7 @@ export class CommonWordsController implements ICommonWordsController {
 		try {
 			const query = req.validatedQuery as PaginationParamsDto;
 
-			const words: CommonWordWithUserStudyStatusResponseDTO[] = await this.commonWordsService.findAll(
+			const words: CommonWordWithUserWordResponseDTO[] = await this.commonWordsService.findAll(
 				query.skip || 0,
 				query.limit || null,
 				req?.user?._id,

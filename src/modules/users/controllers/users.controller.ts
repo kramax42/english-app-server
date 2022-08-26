@@ -5,11 +5,11 @@ import { authMiddleware } from '@middlewares/auth.middleware';
 import { bodyValidator } from '@middlewares/validation.middleware';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { ForbiddenException } from '@exceptions/forbidden.exception';
-import { IUsersController } from './users.controllers.interface';
 import { IUsersService } from '../services/users.service.interface';
+import { IController } from '@/interfaces/contoller.interface';
 
 
-export class UsersController implements IUsersController {
+export class UsersController implements IController {
 	public path = '/users';
 	public router = Router();
 

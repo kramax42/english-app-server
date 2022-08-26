@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { CommonWord, UsageExample } from '@interfaces/common-word.interface';
+import { CommonWord, Transcription, UsageExample } from '@interfaces/common-word.interface';
 import { options } from './common/options';
 
 export const usageExampleSchema = new mongoose.Schema<UsageExample>({
@@ -7,12 +7,17 @@ export const usageExampleSchema = new mongoose.Schema<UsageExample>({
 	translation: String,
 }, options);
 
+export const transcriptionSchema = new mongoose.Schema<Transcription>({
+	uk: String,
+	us: String,
+}, options);
+
 export const commonWordSchema = new mongoose.Schema<CommonWord>({
 	word: { type: String, required: true },
-	transcription: { type: String, default: undefined },
-	translations: { type: [String], required: true, default: undefined },
-	definitions: { type: [String], required: true, default: undefined },
-	usageExamples: { type: [usageExampleSchema], default: undefined },
+	transcription: { type: transcriptionSchema, default: null },
+	translations: { type: [String], required: true, default: [] },
+	definitions: { type: [String], required: true, default: [] },
+	usageExamples: { type: [usageExampleSchema], default: [] },
 }, options
 );
 

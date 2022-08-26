@@ -8,10 +8,10 @@ import {
 import { RequestWithUser } from '@/interfaces/auth.interface';
 import { PaginationParamsDto } from '@/dtos/pagination-params.dto';
 import { IUsersWordsService } from '../services/users-words.service.interface';
-import { IUserWordsController } from './users-words.controller.interface';
 import { authMiddleware } from '@/middlewares/auth.middleware';
+import { IController } from '@/interfaces/contoller.interface';
 
-export class UsersWordsController implements IUserWordsController {
+export class UsersWordsController implements IController {
 	public path = '/user-words';
 	public router = Router();
 
@@ -49,7 +49,6 @@ export class UsersWordsController implements IUserWordsController {
 				req.user._id,
 				wordDto
 			);
-
 			res.status(201).json(createdWord);
 		} catch (error) {
 			next(error);
@@ -63,15 +62,12 @@ export class UsersWordsController implements IUserWordsController {
 	): Promise<void> => {
 
 		const query = req.validatedQuery as PaginationParamsDto;
-
 		try {
-
 			const words: UserWord[] = await this.usersWordsService.findAll(
 				req.user._id,
 				query.skip,
 				query.limit
 			);
-
 			res.status(200).json(words);
 		} catch (error) {
 			next(error);

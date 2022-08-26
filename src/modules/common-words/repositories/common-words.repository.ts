@@ -2,7 +2,7 @@
 // var mongoose = require('mongoose');
 import { Types } from 'mongoose';
 import { CommonWordModel } from '@models/common-word.model';
-import { CommonWord, CommonWordWithUserStudyStatusResponseDTO } from '@interfaces/common-word.interface';
+import { CommonWord, CommonWordWithUserWordResponseDTO } from '@interfaces/common-word.interface';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
@@ -18,66 +18,56 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		skip: number,
 		limit: number | null,
 		userId?: string
-	): Promise<CommonWordWithUserStudyStatusResponseDTO[]> {
-		// const findQuery = this.wordModel
-		// 	.find()
-		// 	.sort({ _id: 1 })
-		// 	.skip(skip)
+	): Promise<CommonWordWithUserWordResponseDTO[]> {
 
-		// if (limit) {
-		// 	findQuery.limit(limit);
-		// }
-		// const words = await findQuery;
-
-
-		console.log(skip)
 		const aggregate = this.wordModel.aggregate([
 			{ $sort: { _id: 1 } },
 			{ $skip: skip },
 			{ $limit: limit || 5 },
-			// {
-			// 	//https://stackoverflow.com/questions/51010754/add-only-a-field-from-another-collection-in-mongodb
-			// 	$lookup: {
-			// 		from: "userwords",
-					
-			// 		let: { nowUserId: new Types.ObjectId(userId), commonWord: '$word' },
-			// 		pipeline: [
-			// 			{
-			// 				$match:
-			// 				{
-			// 					$expr:
-			// 					{
-			// 						// $eq: ["$word", "$$commonWord"],
-
-			// 						$and:
-			// 							[
-			// 								{ $eq: ["$word", "$$commonWord"] },
-			// 								{ $eq: ["$$nowUserId", "$user"] }
-			// 							]
-			// 					}
-			// 				}
-			// 			}
-			// 		],
-			// 		as: "userWord"
-			// 	}
-			// },
-			// {
-			// 	$addFields: {
-			// 		userWordStudyStatus: "$userWord.studyStatus",
-			// 		id: "$_id",
-			// 	}
-			// },
-			// {
-			// 	$unwind: "$userWordStudyStatus"
-			// },
-			// {
-			// 	$project: {
-			// 		userWord: 0,
-			// 		_id: 0,
-			// 		__v: 0,
-			// 		["usageExamples._id"]: 0,
-			// 	}
-			// }
+			{
+				//https://stackoverflow.com/questions/51010754/add-only-a-field-from-another-collection-in-mongodb
+				$lookup: {
+					from: "userwords",
+					let: { thisSessionUserId: new Types.ObjectId(userId), commonWord: '$word' },
+					pipeline: [
+						{
+							$match:
+							{
+								$expr:
+								{
+									$and:
+										[
+											{ $eq: ["$word", "$$commonWord"] },
+											{ $eq: ["$user", "$$thisSessionUserId"] }
+										]
+								}
+							}
+						}
+					],
+					as: "userWord"
+				}
+			},
+			{
+				$addFields: {
+					id: "$_id",
+				}
+			},
+			{
+				$unwind: {
+					path: "$userWord",
+					preserveNullAndEmptyArrays: true
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					__v: 0,
+					"usageExamples._id": 0,
+					"userWord._id": 0,
+					"userWord.__v": 0,
+					"userWord.user": 0,
+				}
+			}
 		]);
 
 		// for (const word of words) {
@@ -90,25 +80,13 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 
 		// return Promise.all(results);
 
-		const results: CommonWordWithUserStudyStatusResponseDTO[] = await aggregate.exec();
+		const results: CommonWordWithUserWordResponseDTO[] = await aggregate.exec();
 
 		return results;
 	}
 
-	async create({
-		word,
-		translations,
-		definitions,
-		transcription,
-		usageExamples,
-	}: CreateCommonWordDto): Promise<CommonWord> {
-		const createdWord = await this.wordModel.create({
-			word,
-			translations,
-			definitions,
-			transcription,
-			usageExamples,
-		});
+	async create(createCommonWordDto: CreateCommonWordDto): Promise<CommonWord> {
+		const createdWord = await this.wordModel.create(createCommonWordDto);
 		return createdWord;
 	}
 
