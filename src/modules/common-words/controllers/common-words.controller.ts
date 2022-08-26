@@ -4,7 +4,7 @@ import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
 } from '@/dtos/common-word.dto';
-import { CommonWord, CommonWordWithUserWordResponseDTO } from '@/interfaces/common-word.interface';
+import { CommonWord, CommonWordResponseDto, CommonWordWithUserWordResponseDTO } from '@/interfaces/common-word.interface';
 import { PaginationParamsDto } from '@/dtos/pagination-params.dto';
 import {
 	bodyValidator,
@@ -47,7 +47,7 @@ export class CommonWordsController implements IController {
 		);
 		this.router.delete(
 			`${this.path}/:id`,
-			authMiddleware,
+			authMiddleware(),
 			permitTo(Role.ADMIN),
 			this.delete
 		);
@@ -114,7 +114,8 @@ export class CommonWordsController implements IController {
 			const id = req.params.id;
 			const foundWord: CommonWord = await this.commonWordsService.findById(id);
 
-			res.status(200).json(foundWord);
+			const foundWordResponseDTO: CommonWordResponseDto = this.commonWordsService.transformCommonWordForResponseDTO(foundWord);
+			res.status(200).json(foundWordResponseDTO);
 		} catch (error) {
 			next(error);
 		}
@@ -134,7 +135,8 @@ export class CommonWordsController implements IController {
 				wordDto
 			);
 
-			res.status(200).json(updatedWord);
+			const updatedWordResponseDTO: CommonWordResponseDto = this.commonWordsService.transformCommonWordForResponseDTO(updatedWord);
+			res.status(200).json(updatedWordResponseDTO);
 		} catch (error) {
 			next(error);
 		}
@@ -148,8 +150,9 @@ export class CommonWordsController implements IController {
 		try {
 			const id = req.params.id;
 			const deletedWord: CommonWord = await this.commonWordsService.delete(id);
-
-			res.status(200).json(deletedWord);
+			console.log('asdasd', deletedWord);
+			const deletedWordResponseDTO: CommonWordResponseDto = this.commonWordsService.transformCommonWordForResponseDTO(deletedWord);
+			res.status(200).json(deletedWordResponseDTO);
 		} catch (error) {
 			next(error);
 		}

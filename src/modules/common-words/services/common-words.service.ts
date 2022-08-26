@@ -74,7 +74,10 @@ export class CommonWordsService implements ICommonWordsService {
 		return {
 			id: word._id,
 			word: word.word,
-			transcription: word.transcription,
+			transcription: {
+				uk: word.transcription?.uk || null,
+				us: word.transcription?.us || null,
+			},
 			translations: word.translations,
 			definitions: word.definitions,
 			usageExamples: word.usageExamples.map(usageExample => {

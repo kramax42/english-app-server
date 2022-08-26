@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { CreateUserWordDto, UpdateUserWordDto } from '@/dtos/user-word.dto';
-import { UserWord } from '@/interfaces/user-word.interface';
+import { UserWord, UserWordResponseDto } from '@/interfaces/user-word.interface';
 import {
 	bodyValidator,
 	queryValidator,
@@ -49,7 +49,8 @@ export class UsersWordsController implements IController {
 				req.user._id,
 				wordDto
 			);
-			res.status(201).json(createdWord);
+			const createdWordResponseDTO: UserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(createdWord);
+			res.status(201).json(createdWordResponseDTO);
 		} catch (error) {
 			next(error);
 		}
@@ -68,7 +69,11 @@ export class UsersWordsController implements IController {
 				query.skip,
 				query.limit
 			);
-			res.status(200).json(words);
+
+			const wordsResponseDTO: UserWordResponseDto[] = words.map(word => {
+				return this.usersWordsService.transformUserWordForResponseDTO(word);
+			})
+			res.status(200).json(wordsResponseDTO);
 		} catch (error) {
 			next(error);
 		}
@@ -99,8 +104,9 @@ export class UsersWordsController implements IController {
 				req.user._id,
 				wordId
 			);
+			const foundWordResponseDTO: UserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(foundWord);
+			res.status(200).json(foundWordResponseDTO);
 
-			res.status(200).json(foundWord);
 		} catch (error) {
 			next(error);
 		}
@@ -120,7 +126,8 @@ export class UsersWordsController implements IController {
 				wordDto
 			);
 
-			res.status(200).json(updatedWord);
+			const updatedWordResponseDTO: UserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(updatedWord);
+			res.status(200).json(updatedWordResponseDTO);
 		} catch (error) {
 			next(error);
 		}
@@ -138,7 +145,8 @@ export class UsersWordsController implements IController {
 				wordId
 			);
 
-			res.status(200).json(deletedWord);
+			const deletedWordResponseDTO: UserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(deletedWord);
+			res.status(200).json(deletedWordResponseDTO);
 		} catch (error) {
 			next(error);
 		}

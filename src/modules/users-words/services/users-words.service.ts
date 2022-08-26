@@ -1,5 +1,5 @@
 import { WordNotFoundException } from '@/exceptions/word-not-found.exceptions';
-import { UserWord } from '@/interfaces/user-word.interface';
+import { UserWord, UserWordResponseDto } from '@/interfaces/user-word.interface';
 import {
 	CreateUserWordDto,
 	UpdateUserWordDto,
@@ -76,6 +76,24 @@ export class UsersWordsService implements IUsersWordsService {
 
 	async find(userId: string, word: string) {
 		return this.usersWordsRepository.find(userId, word);
+	}
+
+	transformUserWordForResponseDTO(word: UserWord): UserWordResponseDto {
+		return {
+			id: word._id,
+			studyStatus: word.studyStatus,
+			userId: word.user.toString(),
+			word: word.word,
+			transcription: word.transcription,
+			translations: word.translations,
+			definitions: word.definitions,
+			usageExamples: word.usageExamples.map(usageExample => {
+				return {
+					sentence: usageExample.sentence,
+					translation: usageExample.translation,
+				}
+			}),
+		}
 	}
 }
 

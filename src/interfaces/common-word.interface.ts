@@ -20,10 +20,10 @@ export interface CommonWord {
   usageExamples: UsageExample[];
 }
 
-export interface CommonWordResponseDto extends Omit<CommonWord, '_id' | 'usageExamples'> {
+export interface CommonWordResponseDto extends Omit<CommonWord, '_id' | 'usageExamples' | 'transcription'> {
   id: string;
   word: string;
-  transcription: Transcription;
+  transcription: Pick<Transcription, 'us' | 'uk'>;
   definitions: string[];
   translations: string[];
   usageExamples: Omit<UsageExample, "_id">[];

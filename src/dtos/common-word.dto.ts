@@ -11,6 +11,16 @@ class UsageExampleDto {
   translation: string;
 }
 
+class TranscriptionDto {
+  @IsOptional()
+  @IsString()
+  uk: string;
+
+  @IsOptional()
+  @IsString()
+  us: string;
+}
+
 export class CreateCommonWordDto {
   @IsString()
   word: string;
@@ -26,8 +36,7 @@ export class CreateCommonWordDto {
   definitions: string[];
 
   @IsOptional()
-  @IsString()
-  transcription: string;
+  transcription: TranscriptionDto;
 
   @IsOptional()
   @IsArray()

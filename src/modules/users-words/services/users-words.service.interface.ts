@@ -1,4 +1,4 @@
-import { UserWord } from '@/interfaces/user-word.interface';
+import { UserWord, UserWordResponseDto } from '@/interfaces/user-word.interface';
 import {
     CreateUserWordDto,
     UpdateUserWordDto,
@@ -12,5 +12,6 @@ export interface IUsersWordsService {
     count: (userId: string) => Promise<number>;
     update: (userId: string, wordId: string, wordDto: UpdateUserWordDto) => Promise<UserWord>;
     delete: (userId: string, wordId: string) => Promise<UserWord>;
+    transformUserWordForResponseDTO(word: UserWord): UserWordResponseDto;
 }
 
