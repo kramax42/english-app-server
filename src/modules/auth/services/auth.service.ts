@@ -83,7 +83,6 @@ export class AuthService implements IAuthService {
 			name: user.name,
 			role: user.role,
 		}
->>>>>>> 7e50416 (interfaces refactoring nad cleaning code)
 	}
 }
 
