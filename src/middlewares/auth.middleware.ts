@@ -5,10 +5,11 @@ import { HttpException } from '@exceptions/http.exception';
 import { DataStoredInToken, RequestWithUser } from '@interfaces/auth.interface';
 import { UserModel } from '@models/user.model';
 
-const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+export const authMiddleware = (throwError: boolean = true) => async (req: RequestWithUser, res: Response, next: NextFunction) => {
   try {
     const Authorization = req.cookies['Authorization'].split('Bearer ')[1] || req.header('Authorization').split('Bearer ')[1] || null;
     if (Authorization) {
+      console.log(Authorization);
       const secretKey: string = config.get('secretKey');
       const verificationResponse = (await jwt.verify(Authorization, secretKey)) as DataStoredInToken;
       const userId = verificationResponse.id;
@@ -18,14 +19,25 @@ const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFun
         req.user = foundedUser;
         next();
       } else {
-        next(new HttpException(401, 'Wrong authentication token'));
+        if (throwError) {
+          next(new HttpException(401, 'Wrong authentication token'));
+        } else {
+          next();
+        }
+
       }
     } else {
-      next(new HttpException(404, 'Authentication token missing'));
+      if (throwError) {
+        next(new HttpException(404, 'Authentication token missing'));
+      } else {
+        next();
+      }
     }
   } catch (error) {
-    next(new HttpException(401, 'Wrong authentication token'));
+    if (throwError) {
+      next(new HttpException(401, 'Wrong authentication token'));
+    } else {
+      next();
+    }
   }
 };
-
-export default authMiddleware;

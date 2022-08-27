@@ -1,20 +1,19 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import authMiddleware from '@middlewares/auth.middleware';
+import { authMiddleware } from '@middlewares/auth.middleware';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
 } from '@/dtos/common-word.dto';
-import { CommonWord, CommonWordWithUserStudyStatus } from '@/interfaces/common-word.interface';
+import { CommonWord, CommonWordWithUserStudyStatusResponseDTO } from '@/interfaces/common-word.interface';
 import { PaginationParamsDto } from '@/dtos/pagination-params.dto';
 import {
 	bodyValidator,
 	queryValidator,
 } from '@/middlewares/validation.middleware';
 import { permitTo } from '@middlewares/roles.middleware';
-import { Role } from '@interfaces/auth.interface';
+import { RequestWithUser, Role } from '@interfaces/auth.interface';
 import { ICommonWordsController } from './common-words.controllers.interface';
 import { ICommonWordsService } from '../services/common-words.service.interface';
-
 export class CommonWordsController implements ICommonWordsController {
 	public path = '/words';
 	public router = Router();
@@ -26,21 +25,22 @@ export class CommonWordsController implements ICommonWordsController {
 	initializeRoutes() {
 		this.router.get(
 			`${this.path}`,
+			authMiddleware(false),
 			queryValidator(PaginationParamsDto),
 			this.findAll
 		);
 		this.router.get(`${this.path}/count`, this.count);
 		this.router.post(
 			`${this.path}`,
-			authMiddleware,
+			authMiddleware(),
 			permitTo(Role.ADMIN),
 			bodyValidator(CreateCommonWordDto),
 			this.create
 		);
-		this.router.get(`${this.path}/:id`, authMiddleware, this.getById);
+		this.router.get(`${this.path}/:id`, authMiddleware(), this.getById);
 		this.router.patch(
 			`${this.path}/:id`,
-			authMiddleware,
+			authMiddleware(),
 			permitTo(Role.ADMIN),
 			bodyValidator(UpdateCommonWordDto),
 			this.update
@@ -71,16 +71,17 @@ export class CommonWordsController implements ICommonWordsController {
 	};
 
 	findAll = async (
-		req: Request,
+		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
 			const query = req.validatedQuery as PaginationParamsDto;
 
-			const words: CommonWordWithUserStudyStatus[] = await this.commonWordsService.findAll(
-				query.skip,
-				query.limit
+			const words: CommonWordWithUserStudyStatusResponseDTO[] = await this.commonWordsService.findAll(
+				query.skip || 0,
+				query.limit || null,
+				req?.user?._id,
 			);
 
 			res.status(200).json(words);

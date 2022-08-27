@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import authMiddleware from '@middlewares/auth.middleware';
 import { CreateUserWordDto, UpdateUserWordDto } from '@/dtos/user-word.dto';
 import { UserWord } from '@/interfaces/user-word.interface';
 import {
@@ -10,6 +9,7 @@ import { RequestWithUser } from '@/interfaces/auth.interface';
 import { PaginationParamsDto } from '@/dtos/pagination-params.dto';
 import { IUsersWordsService } from '../services/users-words.service.interface';
 import { IUserWordsController } from './users-words.controller.interface';
+import { authMiddleware } from '@/middlewares/auth.middleware';
 
 export class UsersWordsController implements IUserWordsController {
 	public path = '/user-words';
@@ -20,22 +20,22 @@ export class UsersWordsController implements IUserWordsController {
 	}
 
 	initializeRoutes() {
-		this.router.get(`${this.path}`, authMiddleware, queryValidator(PaginationParamsDto), this.findAll);
-		this.router.get(`${this.path}/count`, authMiddleware, this.count);
+		this.router.get(`${this.path}`, authMiddleware(), queryValidator(PaginationParamsDto), this.findAll);
+		this.router.get(`${this.path}/count`, authMiddleware(), this.count);
 		this.router.post(
 			`${this.path}`,
-			authMiddleware,
+			authMiddleware(),
 			bodyValidator(UpdateUserWordDto),
 			this.create
 		);
-		this.router.get(`${this.path}/:id`, authMiddleware, this.getById);
+		this.router.get(`${this.path}/:id`, authMiddleware(), this.getById);
 		this.router.patch(
 			`${this.path}/:id`,
-			authMiddleware,
+			authMiddleware(),
 			bodyValidator(UpdateUserWordDto),
 			this.update
 		);
-		this.router.delete(`${this.path}/:id`, authMiddleware, this.delete);
+		this.router.delete(`${this.path}/:id`, authMiddleware(), this.delete);
 	}
 
 	create = async (
@@ -46,7 +46,7 @@ export class UsersWordsController implements IUserWordsController {
 		try {
 			const wordDto = req.validatedBody as CreateUserWordDto;
 			const createdWord: UserWord = await this.usersWordsService.create(
-				req.user.id,
+				req.user._id,
 				wordDto
 			);
 
@@ -67,7 +67,7 @@ export class UsersWordsController implements IUserWordsController {
 		try {
 
 			const words: UserWord[] = await this.usersWordsService.findAll(
-				req.user.id,
+				req.user._id,
 				query.skip,
 				query.limit
 			);
@@ -84,7 +84,7 @@ export class UsersWordsController implements IUserWordsController {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const wordsCount: number = await this.usersWordsService.count(req.user.id);
+			const wordsCount: number = await this.usersWordsService.count(req.user._id);
 
 			res.status(200).json(wordsCount);
 		} catch (error) {
@@ -100,7 +100,7 @@ export class UsersWordsController implements IUserWordsController {
 		try {
 			const wordId = req.params.id;
 			const foundWord: UserWord = await this.usersWordsService.findById(
-				req.user.id,
+				req.user._id,
 				wordId
 			);
 
@@ -119,7 +119,7 @@ export class UsersWordsController implements IUserWordsController {
 			const wordId = req.params.id;
 			const wordDto = req.validatedBody as UpdateUserWordDto;
 			const updatedWord: UserWord = await this.usersWordsService.update(
-				req.user.id,
+				req.user._id,
 				wordId,
 				wordDto
 			);
@@ -138,7 +138,7 @@ export class UsersWordsController implements IUserWordsController {
 		try {
 			const wordId = req.params.id;
 			const deletedWord: UserWord = await this.usersWordsService.delete(
-				req.user.id,
+				req.user._id,
 				wordId
 			);
 

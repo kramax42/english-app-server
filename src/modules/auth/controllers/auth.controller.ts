@@ -1,16 +1,15 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { CreateUserDto } from '@dtos/user.dto';
 import { RequestWithUser } from '@interfaces/auth.interface';
-import { User } from '@interfaces/user.interface';
-
-import authMiddleware from '@middlewares/auth.middleware';
+import { User, UserResponseDTO } from '@interfaces/user.interface';
+import { authMiddleware } from '@middlewares/auth.middleware';
 import { LoginDto } from '@/dtos/auth.dto';
 import { bodyValidator } from '@/middlewares/validation.middleware';
 import { IAuthController } from './auth.controller.interface';
 import { IAuthService } from '../services/auth.service.interface';
 
 export class AuthController implements IAuthController {
-	public path = '/';
+	public path = '/auth';
 	public router = Router();
 
 	constructor(private readonly authService: IAuthService) {
@@ -19,17 +18,17 @@ export class AuthController implements IAuthController {
 
 	initializeRoutes() {
 		this.router.post(
-			`${this.path}signup`,
+			`${this.path}/sign-up`,
 			bodyValidator(CreateUserDto),
 			this.signUp
 		);
 		this.router.post(
-			`${this.path}login`,
+			`${this.path}/sign-in`,
 			bodyValidator(LoginDto),
-			this.logIn
+			this.signIn
 		);
-		this.router.delete(`${this.path}logout`, authMiddleware, this.logOut);
-		this.router.get(`${this.path}me`, authMiddleware, this.me);
+		this.router.delete(`${this.path}/log-out`, authMiddleware(), this.logOut);
+		this.router.get(`${this.path}/me`, authMiddleware(), this.me);
 	}
 
 	signUp = async (
@@ -38,40 +37,29 @@ export class AuthController implements IAuthController {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const userData = req.validatedBody as CreateUserDto;
-			const signUpUserData: User = await this.authService.signUp(userData);
-
-			res.status(201).json(signUpUserData);
+			const user = req.validatedBody as CreateUserDto;
+			const createdUser: User = await this.authService.signUp(user);
+			const createdUserResponseDTO: UserResponseDTO = this.authService.transformUserForResponseDTO(createdUser);
+			res.status(201).json(createdUserResponseDTO);
 		} catch (error) {
 			next(error);
 		}
 	};
 
-	logIn = async (
+	signIn = async (
 		req: Request,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const userData = req.validatedBody as CreateUserDto;
-			const { cookie, foundUser: user, accessToken } = await this.authService.logIn(
-				userData
+			const user = req.validatedBody as CreateUserDto;
+			const { cookie, foundUser, accessToken } = await this.authService.signIn(
+				user
 			);
-
-			const returnedUser = {
-				id: user.id,
-				name: user.name,
-				email: user.email,
-				role: user.role,
-			}
-
+			const foundUserResponseDTO: UserResponseDTO = this.authService.transformUserForResponseDTO(foundUser);
 
 			res.setHeader('Set-Cookie', cookie);
-
-			// Set cookie value in body for auth in e2e tests.
-			res
-				.status(200)
-				.json({ user: returnedUser, accessToken });
+			res.status(200).json({ user: foundUserResponseDTO, accessToken });
 		} catch (error) {
 			next(error);
 		}
@@ -83,13 +71,14 @@ export class AuthController implements IAuthController {
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const userData = req.user as User;
-			const logOutUserData: User = await this.authService.logOut(
-				userData.email
+			const user = req.user as User;
+			const logOutUser: User = await this.authService.logOut(
+				user.email
 			);
+			const logOutUserResponseDTO: UserResponseDTO = this.authService.transformUserForResponseDTO(logOutUser);
 
-			res.setHeader('Set-Cookie', ['Authorization=; HttpOnly; SameSite=None; Secure; Max-age=0']);
-			res.status(200).json(logOutUserData);
+			res.setHeader('Set-Cookie', ['Authorization=; HttpOnly; SameSite=None; Secure; Max-age=0; Path=/;']);
+			res.status(200).json(logOutUserResponseDTO);
 		} catch (error) {
 			next(error);
 		}
@@ -102,15 +91,9 @@ export class AuthController implements IAuthController {
 	): Promise<void> => {
 		try {
 			const user = req.user as User;
+			const userResponseDTO: UserResponseDTO = this.authService.transformUserForResponseDTO(user);
 
-			const returnedUser = {
-				id: user.id,
-				name: user.name,
-				email: user.email,
-				role: user.role,
-			}
-
-			res.status(200).json(returnedUser);
+			res.status(200).json(userResponseDTO);
 		} catch (error) {
 			next(error);
 		}

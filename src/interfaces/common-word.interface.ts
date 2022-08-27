@@ -12,7 +12,7 @@ export interface CommonWord {
   usageExamples: UsageExample[];
 }
 
-export interface CommonWordWithUserStudyStatus {
+export interface CommonWordWithUserStudyStatusResponseDTO extends CommonWord {
+  id: string;
   userStudyStatus: WordStudyStatus;
-  commonWord: CommonWord;
 }

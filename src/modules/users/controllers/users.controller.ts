@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { UpdateUserDto } from '@dtos/user.dto';
 import { User } from '@interfaces/user.interface';
-
-import authMiddleware from '@middlewares/auth.middleware';
+import { authMiddleware } from '@middlewares/auth.middleware';
 import { bodyValidator } from '@middlewares/validation.middleware';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import { ForbiddenException } from '@exceptions/forbidden.exception';
@@ -19,15 +18,15 @@ export class UsersController implements IUsersController {
 	}
 
 	initializeRoutes() {
-		this.router.get(`${this.path}`, authMiddleware, this.findAll);
-		this.router.get(`${this.path}/:id`, authMiddleware, this.findById);
+		this.router.get(`${this.path}`, authMiddleware(), this.findAll);
+		this.router.get(`${this.path}/:id`, authMiddleware(), this.findById);
 		this.router.patch(
 			`${this.path}/:id`,
-			authMiddleware,
+			authMiddleware(),
 			bodyValidator(UpdateUserDto),
 			this.update
 		);
-		this.router.delete(`${this.path}/:id`, authMiddleware, this.delete);
+		this.router.delete(`${this.path}/:id`, authMiddleware(), this.delete);
 	}
 
 	findAll = async (
@@ -69,7 +68,7 @@ export class UsersController implements IUsersController {
 		try {
 			const userId = req.params.id;
 
-			if (userId !== req.user.id) {
+			if (userId !== req.user._id) {
 				throw new ForbiddenException();
 			}
 

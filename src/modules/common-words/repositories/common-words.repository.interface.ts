@@ -1,8 +1,8 @@
 import { CreateCommonWordDto, UpdateCommonWordDto } from "@/dtos/common-word.dto";
-import { CommonWord, CommonWordWithUserStudyStatus } from "@/interfaces/common-word.interface";
+import { CommonWord, CommonWordWithUserStudyStatusResponseDTO } from "@/interfaces/common-word.interface";
 
 export interface ICommonWordsRepository {
-    findAll: (skip: number, limit: number | undefined) => Promise<CommonWordWithUserStudyStatus[]>;
+    findAll: (skip: number, limit: number | null, userId?: string) => Promise<CommonWordWithUserStudyStatusResponseDTO[]>;
     create: ({
         word,
         translations,

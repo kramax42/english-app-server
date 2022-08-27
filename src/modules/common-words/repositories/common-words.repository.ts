@@ -1,11 +1,13 @@
+// import * as mongoose from 'mongoose';
+// var mongoose = require('mongoose');
+import { Types } from 'mongoose';
 import { CommonWordModel } from '@models/common-word.model';
-import { CommonWord, CommonWordWithUserStudyStatus } from '@interfaces/common-word.interface';
+import { CommonWord, CommonWordWithUserStudyStatusResponseDTO } from '@interfaces/common-word.interface';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
 } from '@dtos/common-word.dto';
 import { UserWordModel } from '@/models/user-word.model';
-import { WordStudyStatus } from '@/interfaces/user-word.interface';
 import { ICommonWordsRepository } from './common-words.repository.interface';
 
 export class CommonWordsRepository implements ICommonWordsRepository {
@@ -13,30 +15,84 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 	private wordModel = CommonWordModel;
 
 	async findAll(
-		skip: number = 0,
-		limit: number | undefined
-	): Promise<CommonWordWithUserStudyStatus[]> {
-		const findQuery = this.wordModel
-			.find()
-			.sort({ _id: 1 })
-			.skip(skip)
+		skip: number,
+		limit: number | null,
+		userId?: string
+	): Promise<CommonWordWithUserStudyStatusResponseDTO[]> {
+		// const findQuery = this.wordModel
+		// 	.find()
+		// 	.sort({ _id: 1 })
+		// 	.skip(skip)
 
-		if (limit) {
-			findQuery.limit(limit);
-		}
-		const words = await findQuery;
+		// if (limit) {
+		// 	findQuery.limit(limit);
+		// }
+		// const words = await findQuery;
 
-		const results: CommonWordWithUserStudyStatus[] = [];
 
-		for (const word of words) {
-			const userWord = await this.userWordModel.findOne({ commonWord: word._id });
-			results.push({
-				commonWord: word,
-				userStudyStatus: userWord ? userWord.studyStatus : WordStudyStatus.UNKNOWN
-			});
-		}
+		console.log(skip)
+		const aggregate = this.wordModel.aggregate([
+			{ $sort: { _id: 1 } },
+			{ $skip: skip },
+			{ $limit: limit || 5 },
+			// {
+			// 	//https://stackoverflow.com/questions/51010754/add-only-a-field-from-another-collection-in-mongodb
+			// 	$lookup: {
+			// 		from: "userwords",
+					
+			// 		let: { nowUserId: new Types.ObjectId(userId), commonWord: '$word' },
+			// 		pipeline: [
+			// 			{
+			// 				$match:
+			// 				{
+			// 					$expr:
+			// 					{
+			// 						// $eq: ["$word", "$$commonWord"],
 
-		return Promise.all(results);
+			// 						$and:
+			// 							[
+			// 								{ $eq: ["$word", "$$commonWord"] },
+			// 								{ $eq: ["$$nowUserId", "$user"] }
+			// 							]
+			// 					}
+			// 				}
+			// 			}
+			// 		],
+			// 		as: "userWord"
+			// 	}
+			// },
+			// {
+			// 	$addFields: {
+			// 		userWordStudyStatus: "$userWord.studyStatus",
+			// 		id: "$_id",
+			// 	}
+			// },
+			// {
+			// 	$unwind: "$userWordStudyStatus"
+			// },
+			// {
+			// 	$project: {
+			// 		userWord: 0,
+			// 		_id: 0,
+			// 		__v: 0,
+			// 		["usageExamples._id"]: 0,
+			// 	}
+			// }
+		]);
+
+		// for (const word of words) {
+		// 	const userWord = await this.userWordModel.findOne({ commonWord: word._id });
+		// 	results.push({
+		// 		commonWord: word,
+		// 		userStudyStatus: userWord ? userWord.studyStatus : WordStudyStatus.UNKNOWN
+		// 	});
+		// }
+
+		// return Promise.all(results);
+
+		const results: CommonWordWithUserStudyStatusResponseDTO[] = await aggregate.exec();
+
+		return results;
 	}
 
 	async create({

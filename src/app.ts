@@ -12,7 +12,7 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import errorMiddleware from '@middlewares/error.middleware';
+import { errorMiddleware } from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
 import { connectToMongoDB } from './utils/database/connect-to-mongodb';
 import { IController } from './interfaces/contoller.interface';

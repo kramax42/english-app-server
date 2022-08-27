@@ -11,7 +11,6 @@ export class CreateUserWordDto extends CreateCommonWordDto {
 }
 
 export class UpdateUserWordDto extends UpdateCommonWordDto {
-
   @IsOptional()
   @IsStudyStatus({
     message: "Incorrect word study status."
