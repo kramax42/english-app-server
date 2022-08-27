@@ -12,12 +12,12 @@ export class UsersWordsService implements IUsersWordsService {
 
 	constructor(private readonly usersWordsRepository: IUsersWordsRepository) { }
 
-	async create(userId: string, wordDto: CreateUserWordDto) {
-		const existedWord = await this.find(userId, wordDto.word);
+	async create(userId: string, createUserWordDto: CreateUserWordDto) {
+		const existedWord = await this.find(userId, createUserWordDto.word);
 		if (existedWord) {
 			throw new AlreadyExistsException();
 		}
-		const createdWord = await this.usersWordsRepository.create(userId, wordDto);
+		const createdWord = await this.usersWordsRepository.create(userId, createUserWordDto);
 		return createdWord;
 	}
 
@@ -43,7 +43,7 @@ export class UsersWordsService implements IUsersWordsService {
 
 	async update(
 		userId: string, wordId: string,
-		wordDto: UpdateUserWordDto
+		updateUserWordDto: UpdateUserWordDto
 	): Promise<UserWord> {
 		const foundWord = await this.usersWordsRepository.findById(userId, wordId);
 		if (!foundWord) throw new WordNotFoundException();
@@ -51,8 +51,8 @@ export class UsersWordsService implements IUsersWordsService {
 
 		// Forbidden updating word
 		// with name that already belongs to another word. 
-		if (foundWord.word !== wordDto.word) {
-			const existedWord = await this.find(userId, wordDto.word);
+		if (foundWord.word !== updateUserWordDto.word) {
+			const existedWord = await this.find(userId, updateUserWordDto.word);
 			if (existedWord) {
 				throw new AlreadyExistsException();
 			}
@@ -61,7 +61,7 @@ export class UsersWordsService implements IUsersWordsService {
 		const updatedWord = await this.usersWordsRepository.update(
 			userId,
 			wordId,
-			wordDto
+			updateUserWordDto
 		);
 		return updatedWord;
 	}
@@ -84,9 +84,15 @@ export class UsersWordsService implements IUsersWordsService {
 			studyStatus: word.studyStatus,
 			userId: word.user.toString(),
 			word: word.word,
-			transcription: word.transcription,
 			translations: word.translations,
 			definitions: word.definitions,
+			synonyms: word.synonyms,
+			antonyms: word.antonyms,
+			level: word.level,
+			transcription: {
+				uk: word.transcription.uk || null,
+				us: word.transcription.us || null,
+			},
 			usageExamples: word.usageExamples.map(usageExample => {
 				return {
 					sentence: usageExample.sentence,

@@ -6,7 +6,6 @@ import { IUsersWordsRepository } from './users-words.repository.interface';
 
 export class UsersWordsRepository implements IUsersWordsRepository {
 	private wordModel = UserWordModel;
-	private commonWordModel = CommonWordModel;
 
 	public async findAll(userId: string, documentsToSkip: number = 0,
 		limitOfDocuments: number | undefined): Promise<UserWord[]> {
@@ -30,29 +29,11 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 		return this.wordModel.countDocuments({ user: userId });
 	}
 
-	public async create(
-		userId: string, {
-			word,
-			translations,
-			definitions,
-			transcription,
-			usageExamples,
-			studyStatus,
-		}: CreateUserWordDto
-	): Promise<UserWord> {
-
-		const commonWord = await this.commonWordModel.findOne({ word });
-		const commonWordId = commonWord ? commonWord.id : null;
+	public async create(userId: string, createUserWordDto: CreateUserWordDto): Promise<UserWord> {
 
 		const createdWord = await this.wordModel.create({
 			user: userId,
-			word,
-			commonWord: commonWordId,
-			translations,
-			definitions,
-			transcription,
-			usageExamples,
-			studyStatus,
+			...createUserWordDto,
 		});
 		return createdWord;
 	}
@@ -71,10 +52,10 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 	async update(
 		userId: string,
 		wordId: string,
-		dto: UpdateUserWordDto
+		updateUserWordDto: UpdateUserWordDto
 	): Promise<UserWord> {
 		const updatedWord = await this.wordModel
-			.findOneAndUpdate({ _id: wordId, user: userId }, dto, { new: true })
+			.findOneAndUpdate({ _id: wordId, user: userId }, updateUserWordDto, { new: true })
 			.exec();
 
 		return updatedWord;

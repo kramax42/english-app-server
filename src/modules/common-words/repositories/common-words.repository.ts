@@ -1,17 +1,13 @@
-// import * as mongoose from 'mongoose';
-// var mongoose = require('mongoose');
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { CommonWordModel } from '@models/common-word.model';
 import { CommonWord, CommonWordWithUserWordResponseDTO } from '@interfaces/common-word.interface';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
 } from '@dtos/common-word.dto';
-import { UserWordModel } from '@/models/user-word.model';
 import { ICommonWordsRepository } from './common-words.repository.interface';
 
 export class CommonWordsRepository implements ICommonWordsRepository {
-	private userWordModel = UserWordModel;
 	private wordModel = CommonWordModel;
 
 	async findAll(
@@ -20,7 +16,6 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		userId?: string
 	): Promise<CommonWordWithUserWordResponseDTO[]> {
 
-		console.log(new Types.ObjectId(userId));
 		const aggregate = this.wordModel.aggregate([
 			{ $sort: { _id: 1 } },
 			{ $skip: skip },
@@ -29,7 +24,7 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 				//https://stackoverflow.com/questions/51010754/add-only-a-field-from-another-collection-in-mongodb
 				$lookup: {
 					from: "userwords",
-					let: { thisSessionUserId: new Types.ObjectId(userId), commonWord: '$word' },
+					let: { thisSessionUserId: new mongoose.Types.ObjectId(userId), commonWord: '$word' },
 					pipeline: [
 						{
 							$match:
@@ -82,7 +77,6 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		// return Promise.all(results);
 
 		const results: CommonWordWithUserWordResponseDTO[] = await aggregate.exec();
-		console.log(results);
 		return results;
 	}
 
