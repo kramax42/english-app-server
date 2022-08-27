@@ -1,5 +1,5 @@
 import { WordNotFoundException } from '@/exceptions/word-not-found.exceptions';
-import { CommonWord, CommonWordResponseDto, CommonWordWithUserWordResponseDTO } from '@/interfaces/common-word.interface';
+import { CommonWord, CommonWordResponseDto, CommonWordWithUserWordResponseDto } from '@/interfaces/common-word.interface';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
@@ -29,7 +29,7 @@ export class CommonWordsService implements ICommonWordsService {
 		skip: number,
 		limit: number | null,
 		userId?: string,
-	): Promise<CommonWordWithUserWordResponseDTO[]> {
+	): Promise<CommonWordWithUserWordResponseDto[]> {
 		const words = await this.commonWordsRepository.findAll(
 			skip,
 			limit,
@@ -70,7 +70,7 @@ export class CommonWordsService implements ICommonWordsService {
 		return this.commonWordsRepository.find(word);
 	}
 
-	transformCommonWordForResponseDTO(word: CommonWord): CommonWordResponseDto {
+	transformCommonWordForResponseDto(word: CommonWord): CommonWordResponseDto {
 		return {
 			id: word._id,
 			word: word.word,

@@ -39,7 +39,7 @@ export interface CommonWordResponseDto extends Omit<CommonWord, '_id' | 'usageEx
   usageExamples: Omit<UsageExample, "_id">[];
 }
 
-export interface CommonWordWithUserWordResponseDTO extends CommonWordResponseDto {
+export interface CommonWordWithUserWordResponseDto extends CommonWordResponseDto {
   userWord?: UserWord;
 }
 

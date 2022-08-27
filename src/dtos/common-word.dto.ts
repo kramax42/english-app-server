@@ -1,7 +1,7 @@
 import { WordLevel } from '@/interfaces/common-word.interface';
 import { IsWordLevel } from '@/utils/validators/word-levell.validator copy';
 import { plainToClass, Transform } from 'class-transformer';
-import { IsString, IsArray, ArrayMinSize, IsOptional, ValidateNested, IsDefined, IsNotEmptyObject } from 'class-validator';
+import { IsString, IsArray, IsOptional, ValidateNested } from 'class-validator';
 
 class UsageExampleDto {
   @IsString()

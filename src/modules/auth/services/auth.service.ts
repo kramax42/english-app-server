@@ -64,7 +64,7 @@ export class AuthService implements IAuthService {
 
 		const dataStoredInToken: DataStoredInToken = { id: user._id };
 		const secretKey: string = config.get('secretKey');
-		const expiresIn: number = 60 * 60;
+		const expiresIn: number = 60 * 60 * 100;
 
 		return {
 			expiresIn,

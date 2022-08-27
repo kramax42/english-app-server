@@ -4,7 +4,7 @@ import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
 } from '@/dtos/common-word.dto';
-import { CommonWord, CommonWordResponseDto, CommonWordWithUserWordResponseDTO } from '@/interfaces/common-word.interface';
+import { CommonWord, CommonWordResponseDto, CommonWordWithUserWordResponseDto } from '@/interfaces/common-word.interface';
 import { PaginationParamsDto } from '@/dtos/pagination-params.dto';
 import {
 	bodyValidator,
@@ -64,7 +64,7 @@ export class CommonWordsController implements IController {
 				wordDto
 			);
 
-			const createdWordResponse = this.commonWordsService.transformCommonWordForResponseDTO(createdWord);
+			const createdWordResponse = this.commonWordsService.transformCommonWordForResponseDto(createdWord);
 			res.status(201).json(createdWordResponse);
 		} catch (error) {
 			next(error);
@@ -79,7 +79,7 @@ export class CommonWordsController implements IController {
 		try {
 			const query = req.validatedQuery as PaginationParamsDto;
 
-			const words: CommonWordWithUserWordResponseDTO[] = await this.commonWordsService.findAll(
+			const words: CommonWordWithUserWordResponseDto[] = await this.commonWordsService.findAll(
 				query.skip || 0,
 				query.limit || null,
 				req?.user?._id,
@@ -114,7 +114,7 @@ export class CommonWordsController implements IController {
 			const id = req.params.id;
 			const foundWord: CommonWord = await this.commonWordsService.findById(id);
 
-			const foundWordResponseDto: CommonWordResponseDto = this.commonWordsService.transformCommonWordForResponseDTO(foundWord);
+			const foundWordResponseDto: CommonWordResponseDto = this.commonWordsService.transformCommonWordForResponseDto(foundWord);
 			res.status(200).json(foundWordResponseDto);
 		} catch (error) {
 			next(error);
@@ -135,7 +135,7 @@ export class CommonWordsController implements IController {
 				wordDto
 			);
 
-			const updatedWordResponseDto: CommonWordResponseDto = this.commonWordsService.transformCommonWordForResponseDTO(updatedWord);
+			const updatedWordResponseDto: CommonWordResponseDto = this.commonWordsService.transformCommonWordForResponseDto(updatedWord);
 			res.status(200).json(updatedWordResponseDto);
 		} catch (error) {
 			next(error);
@@ -151,7 +151,7 @@ export class CommonWordsController implements IController {
 			const id = req.params.id;
 			const deletedWord: CommonWord = await this.commonWordsService.delete(id);
 			console.log('asdasd', deletedWord);
-			const deletedWordResponseDto: CommonWordResponseDto = this.commonWordsService.transformCommonWordForResponseDTO(deletedWord);
+			const deletedWordResponseDto: CommonWordResponseDto = this.commonWordsService.transformCommonWordForResponseDto(deletedWord);
 			res.status(200).json(deletedWordResponseDto);
 		} catch (error) {
 			next(error);
