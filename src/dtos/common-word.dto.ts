@@ -2,11 +2,11 @@ import { plainToClass, Transform } from 'class-transformer';
 import { IsString, IsArray, ArrayMinSize, IsOptional, ValidateNested, IsDefined, IsNotEmptyObject } from 'class-validator';
 
 class UsageExampleDto {
-  @IsOptional()
+  // @IsOptional()
   @IsString()
   sentence: string;
 
-  @IsOptional()
+  // @IsOptional()
   @IsString()
   translation: string;
 }
@@ -27,20 +27,21 @@ export class CreateCommonWordDto {
 
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
+  @IsString({ each: true })
   translations: string[];
 
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
+  @IsString({ each: true })
   definitions: string[];
 
   @IsOptional()
+  @ValidateNested()
+  @Transform(({ value }) => plainToClass(TranscriptionDto, value))
   transcription: TranscriptionDto;
 
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   // Additional validating for correct nested DTO field.
   @Transform(({ value: values }) => values.map(value => plainToClass(UsageExampleDto, value)))
@@ -56,21 +57,21 @@ export class UpdateCommonWordDto {
 
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
+  @IsString({ each: true })
   translations: string[];
 
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
+  @IsString({ each: true })
   definitions: string[];
 
   @IsOptional()
-  @IsString()
-  transcription: string;
+  @ValidateNested()
+  @Transform(({ value }) => plainToClass(TranscriptionDto, value))
+  transcription: TranscriptionDto;
 
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   // Additional validating for correct nested DTO field.
   @Transform(({ value: values }) => values.map(value => plainToClass(UsageExampleDto, value)))

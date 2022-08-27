@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { UserWord, WordStudyStatus } from '@interfaces/user-word.interface';
-import { usageExampleSchema } from './common-word.model';
+import { transcriptionSchema, usageExampleSchema } from './common-word.model';
 import { options } from './common/options';
 
 export const userWordSchema = new mongoose.Schema<UserWord>({
@@ -9,7 +9,7 @@ export const userWordSchema = new mongoose.Schema<UserWord>({
 		type: mongoose.Schema.Types.ObjectId,
 	},
 	word: { type: String, required: true },
-	transcription: { type: String, default: null },
+	transcription: { type: transcriptionSchema, default: null },
 	definitions: { type: [String], default: [] },
 	translations: { type: [String], default: [] },
 	usageExamples: { type: [usageExampleSchema], default: [] },

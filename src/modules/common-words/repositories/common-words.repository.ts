@@ -20,6 +20,7 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		userId?: string
 	): Promise<CommonWordWithUserWordResponseDTO[]> {
 
+		console.log(new Types.ObjectId(userId));
 		const aggregate = this.wordModel.aggregate([
 			{ $sort: { _id: 1 } },
 			{ $skip: skip },
@@ -55,7 +56,7 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 			{
 				$unwind: {
 					path: "$userWord",
-					preserveNullAndEmptyArrays: true
+					preserveNullAndEmptyArrays: true,
 				},
 			},
 			{
@@ -81,7 +82,7 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		// return Promise.all(results);
 
 		const results: CommonWordWithUserWordResponseDTO[] = await aggregate.exec();
-
+		console.log(results);
 		return results;
 	}
 
