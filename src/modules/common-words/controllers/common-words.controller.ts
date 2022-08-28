@@ -32,8 +32,7 @@ export class CommonWordsController implements IController {
 		this.router.get(`${this.path}/count`, this.count);
 		this.router.post(
 			`${this.path}`,
-			authMiddleware(),
-			permitTo(Role.ADMIN),
+			// authMiddleware(),
 			bodyValidator(CreateCommonWordDto),
 			this.create
 		);
