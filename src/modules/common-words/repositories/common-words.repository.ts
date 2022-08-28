@@ -1,6 +1,6 @@
 import mongoose, { Types } from 'mongoose';
 import { CommonWordModel } from '@models/common-word.model';
-import { CommonWord, CommonWordWithUserWordResponseDTO } from '@interfaces/common-word.interface';
+import { CommonWord, CommonWordWithUserWordResponseDto } from '@interfaces/common-word.interface';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
@@ -14,7 +14,7 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		skip: number,
 		limit: number | null,
 		userId?: string
-	): Promise<CommonWordWithUserWordResponseDTO[]> {
+	): Promise<CommonWordWithUserWordResponseDto[]> {
 
 		const aggregate = this.wordModel.aggregate([
 			{ $sort: { _id: 1 } },
@@ -76,7 +76,7 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 
 		// return Promise.all(results);
 
-		const results: CommonWordWithUserWordResponseDTO[] = await aggregate.exec();
+		const results: CommonWordWithUserWordResponseDto[] = await aggregate.exec();
 		return results;
 	}
 
