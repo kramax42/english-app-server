@@ -19,6 +19,9 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 			findQuery.limit(limitOfDocuments);
 		}
 
+		// const explain = await findQuery.explain();
+		// console.log(explain)
+
 		const words = await findQuery;
 
 		return words;

@@ -29,6 +29,9 @@ export const userWordSchema = new mongoose.Schema<UserWord>({
 }, options
 );
 
+userWordSchema.index({ word: 1 });
+userWordSchema.index({ user: 1 });
+userWordSchema.index({ word: 1, user: 1 }, { unique: true });
 
 export const UserWordModel = mongoose.model<UserWord & mongoose.Document>(
 	'UserWord',

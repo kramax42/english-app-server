@@ -28,6 +28,8 @@ export const commonWordSchema = new mongoose.Schema<CommonWord>({
 }, options
 );
 
+commonWordSchema.index({ word: 1 }, { unique: true });
+
 export const CommonWordModel = mongoose.model<CommonWord & mongoose.Document>(
 	'CommonWord',
 	commonWordSchema
