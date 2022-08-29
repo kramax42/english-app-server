@@ -1,5 +1,5 @@
 import { WordNotFoundException } from '@/exceptions/word-not-found.exceptions';
-import { CommonWord, CommonWordResponseDto, CommonWordWithUserWordResponseDto } from '@/interfaces/common-word.interface';
+import { ICommonWord, ICommonWordResponseDto, ICommonWordWithUserWordResponseDto, IUsageExample } from '@/interfaces/common-word.interface';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
@@ -29,7 +29,7 @@ export class CommonWordsService implements ICommonWordsService {
 		skip: number,
 		limit: number | null,
 		userId?: string,
-	): Promise<CommonWordWithUserWordResponseDto[]> {
+	): Promise<ICommonWordWithUserWordResponseDto[]> {
 		const words = await this.commonWordsRepository.findAll(
 			skip,
 			limit,
@@ -43,14 +43,14 @@ export class CommonWordsService implements ICommonWordsService {
 		return wordsCount;
 	}
 
-	async findById(userId: string): Promise<CommonWord> {
+	async findById(userId: string): Promise<ICommonWord> {
 		const foundWord = await this.commonWordsRepository.findById(userId);
 		if (!foundWord) throw new WordNotFoundException();
 
 		return foundWord;
 	}
 
-	async update(id: string, wordDto: UpdateCommonWordDto): Promise<CommonWord> {
+	async update(id: string, wordDto: UpdateCommonWordDto): Promise<ICommonWord> {
 		const foundWord = await this.commonWordsRepository.findById(id);
 		if (!foundWord) throw new WordNotFoundException();
 
@@ -58,7 +58,7 @@ export class CommonWordsService implements ICommonWordsService {
 		return updatedWord;
 	}
 
-	async delete(id: string): Promise<CommonWord> {
+	async delete(id: string): Promise<ICommonWord> {
 		const foundWord = await this.commonWordsRepository.findById(id);
 		if (!foundWord) throw new WordNotFoundException();
 
@@ -70,23 +70,28 @@ export class CommonWordsService implements ICommonWordsService {
 		return this.commonWordsRepository.find(word);
 	}
 
-	transformCommonWordForResponseDto(word: CommonWord): CommonWordResponseDto {
+	transformCommonWordForResponseDto(word: ICommonWord): ICommonWordResponseDto {
 		return {
 			id: word._id,
 			word: word.word,
-			translations: word.translations,
-			definitions: word.definitions,
-			synonyms: word.synonyms,
-			antonyms: word.antonyms,
-			level: word.level,
 			transcription: {
 				uk: word.transcription.uk || null,
 				us: word.transcription.us || null,
 			},
-			usageExamples: word.usageExamples.map(usageExample => {
+			meanings: word.meanings.map(meaning => {
 				return {
-					sentence: usageExample.sentence,
-					translation: usageExample.translation,
+					pos: meaning.pos,
+					translations: meaning.translations,
+					definitions: meaning.definitions,
+					synonyms: meaning.synonyms,
+					antonyms: meaning.antonyms,
+					level: meaning.level,
+					usageExamples: meaning.usageExamples.map(usageExample => {
+						return {
+							sentence: usageExample.sentence,
+							translation: usageExample.translation,
+						}
+					}) ,
 				}
 			}),
 		}

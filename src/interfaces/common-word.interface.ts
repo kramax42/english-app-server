@@ -1,4 +1,4 @@
-import { UserWord } from "./user-word.interface";
+import { IUserWord } from "./user-word.interface";
 
 export enum WordLevel {
   A1 = 'A1',
@@ -10,36 +10,47 @@ export enum WordLevel {
   UNCATEGORIZED = 'uncategorized',
 }
 
-export interface UsageExample {
+export interface IUsageExample {
   _id: string;
   sentence: string | null;
   translation: string | null;
 }
 
-export interface Transcription {
+export interface ITranscription {
   _id: string;
   uk: string | null;
   us: string | null;
 }
-export interface CommonWord {
-  _id: string;
-  word: string;
-  transcription: Transcription;
+
+export interface IMeaning {
+  pos: string; // Part of speech.
   level: WordLevel;
   synonyms: string[];
   antonyms: string[];
   definitions: string[];
   translations: string[];
-  usageExamples: UsageExample[];
+  usageExamples: IUsageExample[];
+
+}
+export interface ICommonWord {
+  _id: string;
+  word: string;
+  transcription: ITranscription;
+  meanings: IMeaning[];
 }
 
-export interface CommonWordResponseDto extends Omit<CommonWord, '_id' | 'usageExamples' | 'transcription'> {
+
+export interface IMeaningResponseDto extends Omit<IMeaning, '_id' | 'usageExamples'> {
+  usageExamples: Omit<IUsageExample, "_id">[];
+}
+export interface ICommonWordResponseDto extends Omit<ICommonWord, '_id' | 'meanings' | 'transcription'> {
   id: string;
-  transcription: Pick<Transcription, 'us' | 'uk'> | null;
-  usageExamples: Omit<UsageExample, "_id">[];
+  meanings: IMeaningResponseDto[];
+  transcription: Pick<ITranscription, 'us' | 'uk'>;
+
 }
 
-export interface CommonWordWithUserWordResponseDto extends CommonWordResponseDto {
-  userWord?: UserWord;
+export interface ICommonWordWithUserWordResponseDto extends ICommonWordResponseDto {
+  userWord?: IUserWord;
 }
 

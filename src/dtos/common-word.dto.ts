@@ -22,14 +22,10 @@ class TranscriptionDto {
   us: string;
 }
 
-export class CreateCommonWordDto {
-  @IsString()
-  word: string;
-
+class MeaningDto {
   @IsOptional()
-  @ValidateNested()
-  @Transform(({ value }) => plainToClass(TranscriptionDto, value))
-  transcription: TranscriptionDto;
+  @IsString()
+  pos: string;
 
   @IsOptional()
   @IsArray()
@@ -65,6 +61,24 @@ export class CreateCommonWordDto {
 }
 
 
+export class CreateCommonWordDto {
+  @IsString()
+  word: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Transform(({ value }) => plainToClass(TranscriptionDto, value))
+  transcription: TranscriptionDto;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  // Additional validating for correct nested DTO field.
+  @Transform(({ value: values }) => values.map(value => plainToClass(MeaningDto, value)))
+  meanings: MeaningDto[];
+}
+
+
 
 export class UpdateCommonWordDto {
   @IsOptional()
@@ -78,36 +92,10 @@ export class UpdateCommonWordDto {
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  translations: string[];
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  definitions: string[];
-
-  @IsOptional()
-  @IsArray()
   @ValidateNested({ each: true })
   // Additional validating for correct nested DTO field.
-  @Transform(({ value: values }) => values.map(value => plainToClass(UsageExampleDto, value)))
-  usageExamples: UsageExampleDto[];
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  synonyms: string[];
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  antonyms: string[];
-
-  @IsOptional()
-  @IsWordLevel({
-    message: "Incorrect word level."
-  })
-  level: WordLevel;
+  @Transform(({ value: values }) => values.map(value => plainToClass(MeaningDto, value)))
+  meanings: MeaningDto[];
 }
 
 

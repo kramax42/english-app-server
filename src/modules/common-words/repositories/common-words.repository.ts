@@ -1,6 +1,6 @@
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 import { CommonWordModel } from '@models/common-word.model';
-import { CommonWord, CommonWordWithUserWordResponseDto } from '@interfaces/common-word.interface';
+import { ICommonWord, ICommonWordWithUserWordResponseDto } from '@interfaces/common-word.interface';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
@@ -14,7 +14,7 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		skip: number,
 		limit: number | null,
 		userId?: string
-	): Promise<CommonWordWithUserWordResponseDto[]> {
+	): Promise<ICommonWordWithUserWordResponseDto[]> {
 
 		const aggregate = this.wordModel.aggregate([
 			{ $sort: { _id: 1 } },
@@ -76,11 +76,11 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 
 		// return Promise.all(results);
 
-		const results: CommonWordWithUserWordResponseDto[] = await aggregate.exec();
+		const results: ICommonWordWithUserWordResponseDto[] = await aggregate.exec();
 		return results;
 	}
 
-	async create(createCommonWordDto: CreateCommonWordDto): Promise<CommonWord> {
+	async create(createCommonWordDto: CreateCommonWordDto): Promise<ICommonWord> {
 		const createdWord = await this.wordModel.create(createCommonWordDto);
 		return createdWord;
 	}
@@ -94,12 +94,12 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		return this.wordModel.estimatedDocumentCount().exec();
 	}
 
-	async findById(id: string): Promise<CommonWord | null> {
+	async findById(id: string): Promise<ICommonWord | null> {
 		const foundWord = await this.wordModel.findById(id).exec();
 		return foundWord;
 	}
 
-	async update(id: string, dto: UpdateCommonWordDto): Promise<CommonWord> {
+	async update(id: string, dto: UpdateCommonWordDto): Promise<ICommonWord> {
 		const updatedWord = await this.wordModel
 			.findByIdAndUpdate(id, dto, { new: true })
 			.exec();
@@ -107,7 +107,7 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		return updatedWord;
 	}
 
-	async delete(id: string): Promise<CommonWord> {
+	async delete(id: string): Promise<ICommonWord> {
 		const deletedWord = await this.wordModel.findByIdAndDelete(id).exec();
 		return deletedWord;
 	}

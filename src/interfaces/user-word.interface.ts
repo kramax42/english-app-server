@@ -1,17 +1,17 @@
 import mongoose from "mongoose";
-import { CommonWord, CommonWordResponseDto } from "./common-word.interface";
+import { ICommonWord, ICommonWordResponseDto } from "./common-word.interface";
 
 export enum WordStudyStatus {
   LEARN = 'learn',
   KNOW = 'know',
 }
 
-export interface UserWord extends CommonWord {
+export interface IUserWord extends ICommonWord {
   user: mongoose.Schema.Types.ObjectId;
   studyStatus: WordStudyStatus;
 }
 
-export interface UserWordResponseDto extends CommonWordResponseDto {
+export interface IUserWordResponseDto extends ICommonWordResponseDto {
   userId: string;
   studyStatus: WordStudyStatus;
 }

@@ -1,17 +1,17 @@
-import { UserWord, UserWordResponseDto } from '@/interfaces/user-word.interface';
+import { IUserWord, IUserWordResponseDto } from '@/interfaces/user-word.interface';
 import {
     CreateUserWordDto,
     UpdateUserWordDto,
 } from '@dtos/user-word.dto';
 
 export interface IUsersWordsService {
-    create: (userId: string, wordDto: CreateUserWordDto) => Promise<UserWord>;
-    findAll: (userId: string, skip: number, limit: number | undefined) => Promise<UserWord[]>;
-    find: (userId: string, word: string) => Promise<UserWord>;
-    findById: (userId: string, wordId: string) => Promise<UserWord>;
+    create: (userId: string, wordDto: CreateUserWordDto) => Promise<IUserWord>;
+    findAll: (userId: string, skip: number, limit: number | undefined) => Promise<IUserWord[]>;
+    find: (userId: string, word: string) => Promise<IUserWord>;
+    findById: (userId: string, wordId: string) => Promise<IUserWord>;
     count: (userId: string) => Promise<number>;
-    update: (userId: string, wordId: string, wordDto: UpdateUserWordDto) => Promise<UserWord>;
-    delete: (userId: string, wordId: string) => Promise<UserWord>;
-    transformUserWordForResponseDTO(word: UserWord): UserWordResponseDto;
+    update: (userId: string, wordId: string, wordDto: UpdateUserWordDto) => Promise<IUserWord>;
+    delete: (userId: string, wordId: string) => Promise<IUserWord>;
+    transformUserWordForResponseDTO(word: IUserWord): IUserWordResponseDto;
 }
 

@@ -1,5 +1,5 @@
 import { WordNotFoundException } from '@/exceptions/word-not-found.exceptions';
-import { UserWord, UserWordResponseDto } from '@/interfaces/user-word.interface';
+import { IUserWord, IUserWordResponseDto } from '@/interfaces/user-word.interface';
 import {
 	CreateUserWordDto,
 	UpdateUserWordDto,
@@ -25,7 +25,7 @@ export class UsersWordsService implements IUsersWordsService {
 		userId: string,
 		skip: number = 0,
 		limit: number | undefined
-	): Promise<UserWord[]> {
+	): Promise<IUserWord[]> {
 		const words = await this.usersWordsRepository.findAll(userId, skip, limit);
 		return words;
 	}
@@ -35,7 +35,7 @@ export class UsersWordsService implements IUsersWordsService {
 		return wordsCount;
 	}
 
-	async findById(userId: string, wordId: string): Promise<UserWord> {
+	async findById(userId: string, wordId: string): Promise<IUserWord> {
 		const foundWord = await this.usersWordsRepository.findById(userId, wordId);
 		if (!foundWord) throw new WordNotFoundException();
 		return foundWord;
@@ -44,7 +44,7 @@ export class UsersWordsService implements IUsersWordsService {
 	async update(
 		userId: string, wordId: string,
 		updateUserWordDto: UpdateUserWordDto
-	): Promise<UserWord> {
+	): Promise<IUserWord> {
 		const foundWord = await this.usersWordsRepository.findById(userId, wordId);
 		if (!foundWord) throw new WordNotFoundException();
 
@@ -66,7 +66,7 @@ export class UsersWordsService implements IUsersWordsService {
 		return updatedWord;
 	}
 
-	async delete(userId: string, wordId: string): Promise<UserWord> {
+	async delete(userId: string, wordId: string): Promise<IUserWord> {
 		const foundWord = await this.usersWordsRepository.findById(userId, wordId);
 		if (!foundWord) throw new WordNotFoundException();
 
@@ -78,25 +78,30 @@ export class UsersWordsService implements IUsersWordsService {
 		return this.usersWordsRepository.find(userId, word);
 	}
 
-	transformUserWordForResponseDTO(word: UserWord): UserWordResponseDto {
+	transformUserWordForResponseDTO(word: IUserWord): IUserWordResponseDto {
 		return {
 			id: word._id,
 			studyStatus: word.studyStatus,
 			userId: word.user.toString(),
 			word: word.word,
-			translations: word.translations,
-			definitions: word.definitions,
-			synonyms: word.synonyms,
-			antonyms: word.antonyms,
-			level: word.level,
 			transcription: {
 				uk: word.transcription.uk || null,
 				us: word.transcription.us || null,
 			},
-			usageExamples: word.usageExamples.map(usageExample => {
+			meanings: word.meanings.map(meaning => {
 				return {
-					sentence: usageExample.sentence,
-					translation: usageExample.translation,
+					pos: meaning.pos,
+					translations: meaning.translations,
+					definitions: meaning.definitions,
+					synonyms: meaning.synonyms,
+					antonyms: meaning.antonyms,
+					level: meaning.level,
+					usageExamples: meaning.usageExamples.map(usageExample => {
+						return {
+							sentence: usageExample.sentence,
+							translation: usageExample.translation,
+						}
+					}),
 				}
 			}),
 		}

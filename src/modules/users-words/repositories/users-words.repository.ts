@@ -1,22 +1,21 @@
 import { UserWordModel } from '@models/user-word.model';
-import { UserWord } from '@interfaces/user-word.interface';
+import { IUserWord } from '@interfaces/user-word.interface';
 import { CreateUserWordDto, UpdateUserWordDto } from '@dtos/user-word.dto';
-import { CommonWordModel } from '@/models/common-word.model';
 import { IUsersWordsRepository } from './users-words.repository.interface';
 
 export class UsersWordsRepository implements IUsersWordsRepository {
 	private wordModel = UserWordModel;
 
-	public async findAll(userId: string, documentsToSkip: number = 0,
-		limitOfDocuments: number | undefined): Promise<UserWord[]> {
+	public async findAll(userId: string, skip: number = 0,
+		limit: number | undefined): Promise<IUserWord[]> {
 
 		const findQuery = this.wordModel
 			.find({ user: userId })
 			.sort({ _id: 1 })
-			.skip(documentsToSkip);
+			.skip(skip);
 
-		if (limitOfDocuments) {
-			findQuery.limit(limitOfDocuments);
+		if (limit) {
+			findQuery.limit(limit);
 		}
 
 		// const explain = await findQuery.explain();
@@ -32,7 +31,7 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 		return this.wordModel.countDocuments({ user: userId });
 	}
 
-	public async create(userId: string, createUserWordDto: CreateUserWordDto): Promise<UserWord> {
+	public async create(userId: string, createUserWordDto: CreateUserWordDto): Promise<IUserWord> {
 
 		const createdWord = await this.wordModel.create({
 			user: userId,
@@ -45,7 +44,7 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 		return this.wordModel.findOne({ word, user: userId }).exec();
 	}
 
-	async findById(userId: string, wordId: string): Promise<UserWord | null> {
+	async findById(userId: string, wordId: string): Promise<IUserWord | null> {
 		const foundWord = await this.wordModel
 			.findOne({ user: userId, _id: wordId })
 			.exec();
@@ -56,7 +55,7 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 		userId: string,
 		wordId: string,
 		updateUserWordDto: UpdateUserWordDto
-	): Promise<UserWord> {
+	): Promise<IUserWord> {
 		const updatedWord = await this.wordModel
 			.findOneAndUpdate({ _id: wordId, user: userId }, updateUserWordDto, { new: true })
 			.exec();
@@ -64,7 +63,7 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 		return updatedWord;
 	}
 
-	async delete(userId: string, wordId: string): Promise<UserWord> {
+	async delete(userId: string, wordId: string): Promise<IUserWord> {
 		const deletedWord = await this.wordModel
 			.findOneAndDelete({ _id: wordId, user: userId })
 			.exec();

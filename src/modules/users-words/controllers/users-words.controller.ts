@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response, Router } from 'express';
+import { NextFunction, Response, Router } from 'express';
 import { CreateUserWordDto, UpdateUserWordDto } from '@/dtos/user-word.dto';
-import { UserWord, UserWordResponseDto } from '@/interfaces/user-word.interface';
+import { IUserWord, IUserWordResponseDto } from '@/interfaces/user-word.interface';
 import {
 	bodyValidator,
 	queryValidator,
@@ -45,11 +45,11 @@ export class UsersWordsController implements IController {
 	): Promise<void> => {
 		try {
 			const wordDto = req.validatedBody as CreateUserWordDto;
-			const createdWord: UserWord = await this.usersWordsService.create(
+			const createdWord: IUserWord = await this.usersWordsService.create(
 				req.user._id,
 				wordDto
 			);
-			const createdWordResponseDTO: UserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(createdWord);
+			const createdWordResponseDTO: IUserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(createdWord);
 			res.status(201).json(createdWordResponseDTO);
 		} catch (error) {
 			next(error);
@@ -64,13 +64,13 @@ export class UsersWordsController implements IController {
 
 		const query = req.validatedQuery as PaginationParamsDto;
 		try {
-			const words: UserWord[] = await this.usersWordsService.findAll(
+			const words: IUserWord[] = await this.usersWordsService.findAll(
 				req.user._id,
 				query.skip,
 				query.limit
 			);
 
-			const wordsResponseDTO: UserWordResponseDto[] = words.map(word => {
+			const wordsResponseDTO: IUserWordResponseDto[] = words.map(word => {
 				return this.usersWordsService.transformUserWordForResponseDTO(word);
 			})
 			res.status(200).json(wordsResponseDTO);
@@ -100,11 +100,11 @@ export class UsersWordsController implements IController {
 	): Promise<void> => {
 		try {
 			const wordId = req.params.id;
-			const foundWord: UserWord = await this.usersWordsService.findById(
+			const foundWord: IUserWord = await this.usersWordsService.findById(
 				req.user._id,
 				wordId
 			);
-			const foundWordResponseDTO: UserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(foundWord);
+			const foundWordResponseDTO: IUserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(foundWord);
 			res.status(200).json(foundWordResponseDTO);
 
 		} catch (error) {
@@ -120,13 +120,13 @@ export class UsersWordsController implements IController {
 		try {
 			const wordId = req.params.id;
 			const wordDto = req.validatedBody as UpdateUserWordDto;
-			const updatedWord: UserWord = await this.usersWordsService.update(
+			const updatedWord: IUserWord = await this.usersWordsService.update(
 				req.user._id,
 				wordId,
 				wordDto
 			);
 
-			const updatedWordResponseDTO: UserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(updatedWord);
+			const updatedWordResponseDTO: IUserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(updatedWord);
 			res.status(200).json(updatedWordResponseDTO);
 		} catch (error) {
 			next(error);
@@ -140,12 +140,12 @@ export class UsersWordsController implements IController {
 	): Promise<void> => {
 		try {
 			const wordId = req.params.id;
-			const deletedWord: UserWord = await this.usersWordsService.delete(
+			const deletedWord: IUserWord = await this.usersWordsService.delete(
 				req.user._id,
 				wordId
 			);
 
-			const deletedWordResponseDTO: UserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(deletedWord);
+			const deletedWordResponseDTO: IUserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(deletedWord);
 			res.status(200).json(deletedWordResponseDTO);
 		} catch (error) {
 			next(error);
