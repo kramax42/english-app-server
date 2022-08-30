@@ -58,7 +58,6 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 				$project: {
 					_id: 0,
 					__v: 0,
-					"usageExamples._id": 0,
 					"userWord._id": 0,
 					"userWord.__v": 0,
 					"userWord.user": 0,

@@ -3,14 +3,6 @@ import { IsWordLevel } from '@/utils/validators/word-levell.validator copy';
 import { plainToClass, Transform } from 'class-transformer';
 import { IsString, IsArray, IsOptional, ValidateNested } from 'class-validator';
 
-class UsageExampleDto {
-  @IsString()
-  sentence: string;
-
-  @IsOptional()
-  @IsString()
-  translation: string;
-}
 
 class TranscriptionDto {
   @IsOptional()
@@ -28,6 +20,10 @@ class MeaningDto {
   pos: string;
 
   @IsOptional()
+  @IsString()
+  definition: string;
+
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   translations: string[];
@@ -35,14 +31,7 @@ class MeaningDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  definitions: string[];
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  // Additional validating for correct nested DTO field.
-  @Transform(({ value: values }) => values.map(value => plainToClass(UsageExampleDto, value)))
-  usageExamples: UsageExampleDto[];
+  usageExamples: string[];
 
   @IsOptional()
   @IsArray()

@@ -1,11 +1,7 @@
 import mongoose from 'mongoose';
-import { ICommonWord, IMeaning, ITranscription, IUsageExample, WordLevel } from '@interfaces/common-word.interface';
+import { ICommonWord, IMeaning, ITranscription, PartOfSpeech, WordLevel } from '@interfaces/common-word.interface';
 import { options } from './common/options';
 
-export const usageExampleSchema = new mongoose.Schema<IUsageExample>({
-	sentence: { type: String, default: null },
-	translation: { type: String, default: null },
-}, options);
 
 export const transcriptionSchema = new mongoose.Schema<ITranscription>({
 	uk: { type: String, default: null },
@@ -13,16 +9,20 @@ export const transcriptionSchema = new mongoose.Schema<ITranscription>({
 }, options);
 
 export const meaningSchema = new mongoose.Schema<IMeaning>({
-	pos: { type: String, default: null },
+	definition: { type: String, required: true, default: null },
 	translations: { type: [String], required: true, default: [] },
-	definitions: { type: [String], required: true, default: [] },
-	usageExamples: { type: [usageExampleSchema], default: [] },
+	usageExamples: { type: [String], default: [] },
 	synonyms: { type: [String], default: [] },
 	antonyms: { type: [String], default: [] },
+	pos: {
+		type: String,
+		enum: Object.values(PartOfSpeech),
+		default: null,
+	},
 	level: {
 		type: String,
 		enum: Object.values(WordLevel),
-		default: WordLevel.UNCATEGORIZED,
+		default: WordLevel.Uncategorized,
 	},
 }, options);
 

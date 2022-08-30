@@ -7,13 +7,20 @@ export enum WordLevel {
   B2 = 'B2',
   C1 = 'C1',
   C2 = 'C2',
-  UNCATEGORIZED = 'uncategorized',
+  Uncategorized = 'uncategorized',
 }
 
-export interface IUsageExample {
-  _id: string;
-  sentence: string | null;
-  translation: string | null;
+export enum PartOfSpeech {
+  Noun = 'noun',
+  Pronoun = 'pronoun',
+  Adjective = 'adjective',
+  Verb = 'verb',
+  Adverb = 'adverb',
+  Preposition = 'preposition',
+  Article = 'article',
+  Determiner = 'determiner',
+  Conjunction = 'conjunction',
+  Interjection = 'interjection',
 }
 
 export interface ITranscription {
@@ -23,14 +30,13 @@ export interface ITranscription {
 }
 
 export interface IMeaning {
-  pos: string; // Part of speech.
+  pos: PartOfSpeech | null;
   level: WordLevel;
+  definition: string | null;
   synonyms: string[];
   antonyms: string[];
-  definitions: string[];
   translations: string[];
-  usageExamples: IUsageExample[];
-
+  usageExamples: string[];
 }
 export interface ICommonWord {
   _id: string;
@@ -39,15 +45,10 @@ export interface ICommonWord {
   meanings: IMeaning[];
 }
 
-
-export interface IMeaningResponseDto extends Omit<IMeaning, '_id' | 'usageExamples'> {
-  usageExamples: Omit<IUsageExample, "_id">[];
-}
 export interface ICommonWordResponseDto extends Omit<ICommonWord, '_id' | 'meanings' | 'transcription'> {
   id: string;
-  meanings: IMeaningResponseDto[];
+  meanings: IMeaning[];
   transcription: Pick<ITranscription, 'us' | 'uk'>;
-
 }
 
 export interface ICommonWordWithUserWordResponseDto extends ICommonWordResponseDto {

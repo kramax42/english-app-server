@@ -14,7 +14,7 @@ export const userWordSchema = new mongoose.Schema<IUserWord>({
 	studyStatus: {
 		type: String,
 		enum: Object.values(WordStudyStatus),
-		default: WordStudyStatus.LEARN,
+		default: WordStudyStatus.Learn,
 	},
 }, options
 );

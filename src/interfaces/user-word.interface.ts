@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 import { ICommonWord, ICommonWordResponseDto } from "./common-word.interface";
 
 export enum WordStudyStatus {
-  LEARN = 'learn',
-  KNOW = 'know',
+  Learn = 'learn',
+  Know = 'know',
 }
 
 export interface IUserWord extends ICommonWord {

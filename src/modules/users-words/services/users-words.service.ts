@@ -90,18 +90,13 @@ export class UsersWordsService implements IUsersWordsService {
 			},
 			meanings: word.meanings.map(meaning => {
 				return {
-					pos: meaning.pos,
+					pos: meaning.pos || null,
+					definition: meaning.definition || null,
 					translations: meaning.translations,
-					definitions: meaning.definitions,
 					synonyms: meaning.synonyms,
 					antonyms: meaning.antonyms,
 					level: meaning.level,
-					usageExamples: meaning.usageExamples.map(usageExample => {
-						return {
-							sentence: usageExample.sentence,
-							translation: usageExample.translation,
-						}
-					}),
+					usageExamples: meaning.usageExamples,
 				}
 			}),
 		}
