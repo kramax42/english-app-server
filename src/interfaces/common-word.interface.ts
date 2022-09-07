@@ -41,6 +41,7 @@ export interface IMeaning {
 export interface ICommonWord {
   _id: string;
   word: string;
+  normalizedWord: string;
   transcription: ITranscription;
   meanings: IMeaning[];
 }

@@ -16,8 +16,9 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		userId?: string
 	): Promise<ICommonWordWithUserWordResponseDto[]> {
 
+
 		const aggregate = this.wordModel.aggregate([
-			{ $sort: { _id: 1 } },
+			{ $sort: { normalizedWord: 1 } },
 			{ $skip: skip },
 			{ $limit: limit || 5 },
 			{
@@ -63,7 +64,11 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 					"userWord.user": 0,
 				}
 			}
-		]);
+		], {
+			collation: {
+				locale: "en"
+			}
+		});
 
 		// for (const word of words) {
 		// 	const userWord = await this.userWordModel.findOne({ commonWord: word._id });
@@ -96,6 +101,12 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 	async findById(id: string): Promise<ICommonWord | null> {
 		const foundWord = await this.wordModel.findById(id).exec();
 		return foundWord;
+	}
+
+	async getPageByLetter(letter: string, limit: number): Promise<number> {
+		const indexPosition = await (await this.wordModel.find({ normalizedWord: { "$lt": letter.toLowerCase() } })).length;
+		const page = Math.ceil(indexPosition / limit);
+		return page;
 	}
 
 	async update(id: string, dto: UpdateCommonWordDto): Promise<ICommonWord> {

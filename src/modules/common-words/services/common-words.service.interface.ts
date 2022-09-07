@@ -4,6 +4,7 @@ import { ICommonWord, ICommonWordResponseDto, ICommonWordWithUserWordResponseDto
 export interface ICommonWordsService {
     create: (wordDto: CreateCommonWordDto) => Promise<ICommonWord>;
     findAll: (skip: number, limit: number | null, userId?: string) => Promise<ICommonWordWithUserWordResponseDto[]>;
+    getPageByLetter: (letter: string, limit: number) => Promise<number>;
     count: () => Promise<number>;
     findById: (userId: string) => Promise<ICommonWord>;
     update: (id: string, wordDto: UpdateCommonWordDto) => Promise<ICommonWord>;

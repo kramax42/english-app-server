@@ -10,6 +10,7 @@ import { PaginationParamsDto } from '@/dtos/pagination-params.dto';
 import { IUsersWordsService } from '../services/users-words.service.interface';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import { IController } from '@/interfaces/contoller.interface';
+import { GetPageByLetterDto } from '@/dtos/page-by-letter.dto';
 
 export class UsersWordsController implements IController {
 	public path = '/user-words';
@@ -22,6 +23,7 @@ export class UsersWordsController implements IController {
 	initializeRoutes() {
 		this.router.get(`${this.path}`, authMiddleware(), queryValidator(PaginationParamsDto), this.findAll);
 		this.router.get(`${this.path}/count`, authMiddleware(), this.count);
+		this.router.get(`${this.path}/getPageByLetter`, authMiddleware(), queryValidator(GetPageByLetterDto), this.getPageByLetter);
 		this.router.post(
 			`${this.path}`,
 			authMiddleware(),
@@ -107,6 +109,21 @@ export class UsersWordsController implements IController {
 			const foundWordResponseDTO: IUserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(foundWord);
 			res.status(200).json(foundWordResponseDTO);
 
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	getPageByLetter = async (
+		req: RequestWithUser,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			const letter = req.query.letter;
+			const limit = req.query.limit;
+			const page: number = await this.usersWordsService.getPageByLetter(req.user._id, letter || letter[0], limit || limit[0]);
+			res.status(200).json(page);
 		} catch (error) {
 			next(error);
 		}

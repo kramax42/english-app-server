@@ -54,6 +54,9 @@ export class CreateCommonWordDto {
   @IsString()
   word: string;
 
+  @IsString()
+  normalizedWord: string;
+
   @IsOptional()
   @ValidateNested()
   @Transform(({ value }) => plainToClass(TranscriptionDto, value))
@@ -73,6 +76,9 @@ export class UpdateCommonWordDto {
   @IsOptional()
   @IsString()
   word: string;
+
+  @IsString()
+  normalizedWord: string;
 
   @IsOptional()
   @ValidateNested()

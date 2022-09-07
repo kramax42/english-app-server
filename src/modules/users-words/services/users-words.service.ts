@@ -41,6 +41,11 @@ export class UsersWordsService implements IUsersWordsService {
 		return foundWord;
 	}
 
+	async getPageByLetter(userId: string, letter: string, limit: number): Promise<number> {
+		const page = await this.usersWordsRepository.getPageByLetter(userId, letter, limit);
+		return page;
+	}
+
 	async update(
 		userId: string, wordId: string,
 		updateUserWordDto: UpdateUserWordDto
@@ -84,6 +89,7 @@ export class UsersWordsService implements IUsersWordsService {
 			studyStatus: word.studyStatus,
 			userId: word.user.toString(),
 			word: word.word,
+			normalizedWord: word.normalizedWord,
 			transcription: {
 				uk: word.transcription.uk || null,
 				us: word.transcription.us || null,

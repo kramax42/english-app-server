@@ -51,6 +51,12 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 		return foundWord;
 	}
 
+	async getPageByLetter(userId: string, letter: string, limit: number): Promise<number> {
+		const indexPosition = await (await this.wordModel.find({ user: userId, normalizedWord: { "$lt": letter.toLowerCase() } })).length;
+		const page = Math.ceil(indexPosition / limit);
+		return page;
+	}
+
 	async update(
 		userId: string,
 		wordId: string,

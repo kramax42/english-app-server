@@ -7,6 +7,7 @@ export interface ICommonWordsRepository {
     find: (word: string) => Promise<ICommonWord>;
     count(): Promise<number>;
     findById: (id: string) => Promise<ICommonWord | null>;
+    getPageByLetter: (letter: string, limit: number) => Promise<number>;
     update: (id: string, dto: UpdateCommonWordDto) => Promise<ICommonWord>;
     delete: (id: string) => Promise<ICommonWord>;
 }

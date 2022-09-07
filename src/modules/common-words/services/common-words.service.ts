@@ -50,6 +50,11 @@ export class CommonWordsService implements ICommonWordsService {
 		return foundWord;
 	}
 
+	async getPageByLetter(letter: string, limit: number): Promise<number> {
+		const page = await this.commonWordsRepository.getPageByLetter(letter, limit);
+		return page;
+	}
+
 	async update(id: string, wordDto: UpdateCommonWordDto): Promise<ICommonWord> {
 		const foundWord = await this.commonWordsRepository.findById(id);
 		if (!foundWord) throw new WordNotFoundException();
@@ -74,6 +79,7 @@ export class CommonWordsService implements ICommonWordsService {
 		return {
 			id: word._id,
 			word: word.word,
+			normalizedWord: word.word,
 			transcription: {
 				uk: word.transcription.uk || null,
 				us: word.transcription.us || null,

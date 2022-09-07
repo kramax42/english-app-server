@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import { ICommonWord, IMeaning, ITranscription, PartOfSpeech, WordLevel } from '@interfaces/common-word.interface';
 import { options } from './common/options';
 
-
 export const transcriptionSchema = new mongoose.Schema<ITranscription>({
 	uk: { type: String, default: null },
 	us: { type: String, default: null },
@@ -28,12 +27,13 @@ export const meaningSchema = new mongoose.Schema<IMeaning>({
 
 export const commonWordSchema = new mongoose.Schema<ICommonWord>({
 	word: { type: String, required: true },
+	normalizedWord: { type: String, required: true },
 	transcription: { type: transcriptionSchema, default: { uk: null, us: null } },
 	meanings: { type: [meaningSchema] },
 }, options
 );
 
-commonWordSchema.index({ word: 1 }, { unique: true });
+commonWordSchema.index({ normalizedWord: 1 }, { unique: true });
 
 export const CommonWordModel = mongoose.model<ICommonWord & mongoose.Document>(
 	'CommonWord',

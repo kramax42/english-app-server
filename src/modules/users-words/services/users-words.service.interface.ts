@@ -7,6 +7,7 @@ import {
 export interface IUsersWordsService {
     create: (userId: string, wordDto: CreateUserWordDto) => Promise<IUserWord>;
     findAll: (userId: string, skip: number, limit: number | undefined) => Promise<IUserWord[]>;
+    getPageByLetter: (userId: string, letter: string, limit: number) => Promise<number>;
     find: (userId: string, word: string) => Promise<IUserWord>;
     findById: (userId: string, wordId: string) => Promise<IUserWord>;
     count: (userId: string) => Promise<number>;

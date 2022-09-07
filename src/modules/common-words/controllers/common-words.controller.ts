@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response, Router } from 'express';
+import { NextFunction, query, Request, Response, Router } from 'express';
 import { authMiddleware } from '@middlewares/auth.middleware';
 import {
 	CreateCommonWordDto,
@@ -14,6 +14,7 @@ import { permitTo } from '@middlewares/roles.middleware';
 import { RequestWithUser, Role } from '@interfaces/auth.interface';
 import { ICommonWordsService } from '../services/common-words.service.interface';
 import { IController } from '@/interfaces/contoller.interface';
+import { GetPageByLetterDto } from '@/dtos/page-by-letter.dto';
 export class CommonWordsController implements IController {
 	public path = '/words';
 	public router = Router();
@@ -36,7 +37,8 @@ export class CommonWordsController implements IController {
 			bodyValidator(CreateCommonWordDto),
 			this.create
 		);
-		this.router.get(`${this.path}/:id`, authMiddleware(), this.getById);
+		this.router.get(`${this.path}/getPageByLetter`, queryValidator(GetPageByLetterDto), this.getPageByLetter);
+		this.router.get(`${this.path}/:id`, this.getById);
 		this.router.patch(
 			`${this.path}/:id`,
 			authMiddleware(),
@@ -99,6 +101,21 @@ export class CommonWordsController implements IController {
 			const wordsCount: number = await this.commonWordsService.count();
 
 			res.status(200).json(wordsCount);
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	getPageByLetter = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			const letter = req.query.letter;
+			const limit = req.query.limit;
+			const page: number = await this.commonWordsService.getPageByLetter(letter || letter[0], limit || limit[0]);
+			res.status(200).json(page);
 		} catch (error) {
 			next(error);
 		}
