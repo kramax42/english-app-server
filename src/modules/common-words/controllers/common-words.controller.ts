@@ -65,8 +65,11 @@ export class CommonWordsController implements IController {
 				wordDto
 			);
 
-			const createdWordResponse = this.commonWordsService.transformCommonWordForResponseDto(createdWord);
-			res.status(201).json(createdWordResponse);
+			if (createdWord) {
+				const createdWordResponse = this.commonWordsService.transformCommonWordForResponseDto(createdWord);
+				res.status(201).json(createdWordResponse);
+			}
+			res.status(500);
 		} catch (error) {
 			next(error);
 		}
