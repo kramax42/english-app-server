@@ -1,5 +1,5 @@
 import { WordLevel } from '@/interfaces/common-word.interface';
-import { IsWordLevel } from '@/utils/validators/word-level.validator copy';
+import { IsWordLevel } from '@/utils/validators/word-level.validator';
 import { plainToClass, Transform } from 'class-transformer';
 import { IsString, IsArray, IsOptional, ValidateNested } from 'class-validator';
 
