@@ -79,7 +79,7 @@ export class CommonWordsService implements ICommonWordsService {
 		return {
 			id: word._id,
 			word: word.word,
-			normalizedWord: word.word,
+			normalizedWord: word.word.toLowerCase(),
 			transcription: {
 				uk: word.transcription.uk || null,
 				us: word.transcription.us || null,

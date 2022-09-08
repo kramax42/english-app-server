@@ -6,7 +6,7 @@ import {
 	UpdateCommonWordDto,
 } from '@dtos/common-word.dto';
 import { ICommonWordsRepository } from './common-words.repository.interface';
-import { IWordsInfo, WordsInfoModel } from '@/models/words-info.model';
+import { ILetterPosition, IWordsInfo, WordsInfoModel } from '@/models/words-info.model';
 
 export class CommonWordsRepository implements ICommonWordsRepository {
 	private wordModel = CommonWordModel;
@@ -124,51 +124,69 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		const wordsInfoDoc = await this.getWordsInfoDoc();
 
 		const letterPositions = wordsInfoDoc.commonWords.letterPositions;
+
+		const createWordInLetterPositions = async (letter: string, letterPositions: ILetterPosition[]) => {
+			// Check existence letter in letterPositions array
+			if (!(letterPositions.filter(lp => lp.letter === letter).length > 0)) {
+				letterPositions.push({
+					letter: letter,
+					position: await (await this.wordModel.find({ normalizedWord: { "$lt": letter } })).length,
+					wordsAmount: 0,
+				})
+			}
+
+			const newLetterPositions = letterPositions.map(letterPosition => {
+				const newLetterPosition = letterPosition;
+
+				if (letterPosition.letter == letter) {
+					newLetterPosition.wordsAmount = ++letterPosition.wordsAmount;
+				}
+
+				if (letterPosition.letter > letter) {
+					newLetterPosition.position = ++letterPosition.position;
+				}
+				return newLetterPosition;
+			}).sort((a, b) => a.letter.localeCompare(b.letter));
+
+			return newLetterPositions;
+		}
+
+		const deleteWordInLetterPositions = async (letter: string, letterPositions: ILetterPosition[]) => {
+			const newLetterPositions = letterPositions.map((letterPosition) => {
+				const newLetterPosition = letterPosition;
+
+				if (letterPosition.letter == letter) {
+					newLetterPosition.wordsAmount = --letterPosition.wordsAmount;
+				}
+				if (letterPosition.letter >= letter) {
+					newLetterPosition.position = --letterPosition.position;
+				}
+				return newLetterPosition;
+			})
+				.filter(lp => lp.wordsAmount > 0)
+				.sort((a, b) => a.letter.localeCompare(b.letter));
+
+			return newLetterPositions;
+		}
+
+
+
 		let newLetterPositions = letterPositions;
 
 		switch (updateMode) {
 			case 'create':
-				// Check existence letter in letterPositions array
-				if (!(letterPositions.filter(lp => lp.letter === letter).length > 0)) {
-					letterPositions.push({
-						letter: letter,
-						position: await (await this.wordModel.find({ normalizedWord: { "$lt": letter } })).length,
-						wordsAmount: 0,
-					})
-				}
-
-				newLetterPositions = letterPositions.map(letterPosition => {
-					const newLetterPosition = letterPosition;
-
-					if (letterPosition.letter == letter) {
-						newLetterPosition.wordsAmount = ++letterPosition.wordsAmount;
-					}
-
-					if (letterPosition.letter > letter) {
-						newLetterPosition.position = ++letterPosition.position;
-					}
-					return newLetterPosition;
-				}).sort((a, b) => a.letter.localeCompare(b.letter));
+				newLetterPositions = await createWordInLetterPositions(letter, letterPositions);
 				break;
 			case 'delete':
-				// Check existence letter in letterPositions array
-				newLetterPositions = letterPositions.map((letterPosition, index) => {
-					const newLetterPosition = letterPosition;
-
-					if (letterPosition.letter == letter) {
-						newLetterPosition.wordsAmount = --letterPosition.wordsAmount;
-					}
-					if (letterPosition.letter >= letter) {
-						newLetterPosition.position = --letterPosition.position;
-					}
-					return newLetterPosition;
-				})
-					.filter(lp => lp.wordsAmount > 0)
-					.sort((a, b) => a.letter.localeCompare(b.letter));
+				newLetterPositions = await deleteWordInLetterPositions(letter, letterPositions);
+				break;
+			case 'update':
+				if (prevLetter) {
+					const letterPositionsAfterDelete = await deleteWordInLetterPositions(prevLetter, letterPositions);
+					newLetterPositions = await createWordInLetterPositions(letter, letterPositionsAfterDelete);
+				}
 				break;
 		}
-
-
 
 		wordsInfoDoc.commonWords.letterPositions = newLetterPositions;
 		await wordsInfoDoc.save();
@@ -254,11 +272,25 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 	}
 
 	async update(id: string, dto: UpdateCommonWordDto): Promise<ICommonWord> {
-		const updatedWord = await this.wordModel
-			.findByIdAndUpdate(id, dto, { new: true })
-			.exec();
+		const session: ClientSession = await mongoose.startSession();
 
-		return updatedWord;
+		session.startTransaction();
+		const existedWord = await this.wordModel.findById(id)
+		const updatedWord = await this.wordModel.findByIdAndUpdate(id, dto, { new: true })
+		try {
+			const prevLetter = existedWord.normalizedWord.charAt(0);
+			const letter = updatedWord.normalizedWord.charAt(0);
+			if (letter !== prevLetter) {
+				await this.updateWordInfoLetterPositions({ letter, prevLetter, updateMode: 'update' });
+			}
+			await session.commitTransaction();
+		} catch (error) {
+			await session.abortTransaction();
+			throw error;
+		} finally {
+			session.endSession();
+			return updatedWord;
+		}
 	}
 
 	async delete(id: string): Promise<ICommonWord | null> {
