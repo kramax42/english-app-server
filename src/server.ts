@@ -17,6 +17,7 @@ import { UsersWordsRepository } from '@modules/users-words/repositories/users-wo
 import { UsersWordsService } from '@modules/users-words/services/users-words.service';
 import { SystemStatusController } from '@modules/system-status/controllers/system-status.controller';
 import { SystemStatusService } from '@modules/system-status/services/system-status.service';
+import { WordsInfoRepository } from './modules/words-info/repositories/words-info.repository';
 
 
 validateEnv();
@@ -25,7 +26,7 @@ const app = new App([
 	new SystemStatusController(new SystemStatusService()),
 	new AuthController(new AuthService(new UsersRepository())),
 	new UsersController(new UsersService(new UsersRepository())),
-	new CommonWordsController(new CommonWordsService(new CommonWordsRepository())),
+	new CommonWordsController(new CommonWordsService(new CommonWordsRepository(new WordsInfoRepository()))),
 	new UsersWordsController(new UsersWordsService(new UsersWordsRepository())),
 ]);
 

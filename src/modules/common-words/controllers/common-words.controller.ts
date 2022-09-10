@@ -88,7 +88,7 @@ export class CommonWordsController implements IController {
 				query.limit || null,
 				req?.user?._id,
 			);
-
+				
 			res.status(200).json(words);
 		} catch (error) {
 			next(error);

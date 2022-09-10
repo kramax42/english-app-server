@@ -7,6 +7,7 @@ import {
 import { AlreadyExistsException } from '@/exceptions/already-exist.exception';
 import { IUsersWordsService } from './users-words.service.interface';
 import { IUsersWordsRepository } from '../repositories/users-words.repository.interface';
+import { WordLevel } from '@/interfaces/common-word.interface';
 
 export class UsersWordsService implements IUsersWordsService {
 
@@ -101,7 +102,7 @@ export class UsersWordsService implements IUsersWordsService {
 					translations: meaning.translations,
 					synonyms: meaning.synonyms,
 					antonyms: meaning.antonyms,
-					level: meaning.level,
+					level: meaning.level.toUpperCase() as WordLevel,
 					usageExamples: meaning.usageExamples,
 				}
 			}),

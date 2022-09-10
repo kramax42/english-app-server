@@ -1,5 +1,5 @@
 import { WordNotFoundException } from '@/exceptions/word-not-found.exceptions';
-import { ICommonWord, ICommonWordResponseDto, ICommonWordWithUserWordResponseDto } from '@/interfaces/common-word.interface';
+import { ICommonWord, ICommonWordResponseDto, ICommonWordWithUserWordResponseDto, WordLevel } from '@/interfaces/common-word.interface';
 import {
 	CreateCommonWordDto,
 	UpdateCommonWordDto,
@@ -91,7 +91,7 @@ export class CommonWordsService implements ICommonWordsService {
 					translations: meaning.translations,
 					synonyms: meaning.synonyms,
 					antonyms: meaning.antonyms,
-					level: meaning.level,
+					level: meaning.level.toUpperCase() as WordLevel,
 					usageExamples: meaning.usageExamples,
 				}
 			}),

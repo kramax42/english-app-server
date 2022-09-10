@@ -19,7 +19,22 @@ export interface ICommonWordsInfo {
     letterPositions: ILetterPosition[];
 }
 
+
 const commonWordsInfoSchema = new mongoose.Schema<ICommonWordsInfo>({
+    amount: { type: Number, required: true, default: 0 },
+    letterPositions: { type: [letterPositionSchema], default: [] }
+}, optionsWithoutTimeStampsAndId
+);
+
+export interface IUserWordsInfo extends ICommonWordsInfo {
+    user: mongoose.Schema.Types.ObjectId;
+}
+
+const userWordsInfoSchema = new mongoose.Schema<IUserWordsInfo>({
+    user: {
+        ref: 'User',
+        type: mongoose.Schema.Types.ObjectId,
+    },
     amount: { type: Number, required: true, default: 0 },
     letterPositions: { type: [letterPositionSchema], default: [] }
 }, optionsWithoutTimeStampsAndId
@@ -27,6 +42,7 @@ const commonWordsInfoSchema = new mongoose.Schema<ICommonWordsInfo>({
 
 export interface IWordsInfo {
     commonWords: ICommonWordsInfo;
+    userWords: IUserWordsInfo[];
 }
 
 export const wordsInfoSchema = new mongoose.Schema<IWordsInfo>({
@@ -37,6 +53,7 @@ export const wordsInfoSchema = new mongoose.Schema<IWordsInfo>({
             letterPositions: []
         }
     },
+    userWords: { type: [userWordsInfoSchema] },
 }, options
 );
 
