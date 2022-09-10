@@ -39,12 +39,6 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 
 	public async create(userId: mongoose.Types.ObjectId, createUserWordDto: CreateUserWordDto): Promise<IUserWord> {
 
-		// const createdWord = await this.wordModel.create({
-		// 	user: userId,
-		// 	...createUserWordDto,
-		// });
-		// return createdWord;
-
 		const session: ClientSession = await mongoose.startSession();
 
 		session.startTransaction();
@@ -56,14 +50,14 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 			});
 
 			let wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc(userId);
+
 			if (wordsInfoDoc) {
-				wordsInfoDoc.amount = wordsInfoDoc.amount + 1;
-				await wordsInfoDoc.save();
+				await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: createdWord.normalizedWord.charAt(0), updateMode: 'create', userId, wordsInfoDoc });
 			} else {
 				await this.wordsInfoRepository.fullUpdateWordsMap(userId);
-				wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc(userId);
+				wordsInfoDoc.amount = wordsInfoDoc.amount + 1;
+				await wordsInfoDoc.save();
 			}
-			await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: createdWord.normalizedWord.charAt(0), updateMode: 'create', userId, wordsInfoDoc });
 			await session.commitTransaction();
 		} catch (error) {
 			await session.abortTransaction();
@@ -96,11 +90,34 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 		wordId: string,
 		updateUserWordDto: UpdateUserWordDto
 	): Promise<IUserWord> {
-		const updatedWord = await this.wordModel
-			.findOneAndUpdate({ _id: wordId, user: userId }, updateUserWordDto, { new: true })
-			.exec();
+		// const updatedWord = await this.wordModel
+		// 	.findOneAndUpdate({ _id: wordId, user: userId }, updateUserWordDto, { new: true })
+		// 	.exec();
 
-		return updatedWord;
+		// return updatedWord;
+
+
+		const session: ClientSession = await mongoose.startSession();
+
+		session.startTransaction();
+		const existedWord = await this.wordModel.findById(wordId)
+		const updatedWord = await this.wordModel.findByIdAndUpdate(wordId, updateUserWordDto, { new: true })
+		try {
+			const prevLetter = existedWord.normalizedWord.charAt(0);
+			const letter = updatedWord.normalizedWord.charAt(0);
+			if (letter !== prevLetter) {
+				const wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc(userId);
+				await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter, prevLetter, updateMode: 'update', wordsInfoDoc, userId });
+			}
+			await session.commitTransaction();
+		} catch (error) {
+			await session.abortTransaction();
+			throw error;
+		} finally {
+			session.endSession();
+			return updatedWord;
+		}
+
 	}
 
 	async delete(userId: mongoose.Types.ObjectId, wordId: string): Promise<IUserWord> {

@@ -109,15 +109,15 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 			createdWord = await this.wordModel.create(createCommonWordDto);
 
 			let wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
+
 			if (wordsInfoDoc) {
-				wordsInfoDoc.amount = wordsInfoDoc.amount + 1;
-				await wordsInfoDoc.save();
+				await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: createdWord.normalizedWord.charAt(0), updateMode: 'create', wordsInfoDoc });
 			} else {
 				await this.wordsInfoRepository.fullUpdateWordsMap();
-				wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
+				wordsInfoDoc.amount = wordsInfoDoc.amount + 1;
+				await wordsInfoDoc.save();
 			}
 
-			await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: createdWord.normalizedWord.charAt(0), updateMode: 'create', wordsInfoDoc });
 			await session.commitTransaction();
 		} catch (error) {
 			await session.abortTransaction();
@@ -134,10 +134,7 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 	}
 
 	async count(): Promise<number> {
-		// await this.wordsInfoRepository.fullUpdateWordsMap();
-		// return this.wordModel.estimatedDocumentCount().exec();
 		const wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
-		// const wordsInfoDoc = await this.wor
 		return wordsInfoDoc.amount;
 	}
 
@@ -147,13 +144,11 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 	}
 
 	async getPageByLetter(letter: string, limit: number): Promise<number> {
-		// const indexPosition = await (await this.wordModel.find({ normalizedWord: { "$lt": letter.toLowerCase() } })).length;
 		const wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
 		const indexPosition = wordsInfoDoc.letterPositions.filter(lp => lp.letter == letter.toLowerCase())[0].position;
 		const page = Math.ceil((indexPosition + 1) / limit);
 		return page;
 	}
-
 
 
 	async update(id: string, dto: UpdateCommonWordDto): Promise<ICommonWord> {
