@@ -27,7 +27,7 @@ const commonWordsInfoSchema = new mongoose.Schema<ICommonWordsInfo>({
 );
 
 export interface IUserWordsInfo extends ICommonWordsInfo {
-    user: mongoose.Schema.Types.ObjectId;
+    user: mongoose.Types.ObjectId;
 }
 
 const userWordsInfoSchema = new mongoose.Schema<IUserWordsInfo>({
@@ -53,7 +53,7 @@ export const wordsInfoSchema = new mongoose.Schema<IWordsInfo>({
             letterPositions: []
         }
     },
-    userWords: { type: [userWordsInfoSchema] },
+    userWords: { type: [userWordsInfoSchema], default: [] },
 }, options
 );
 

@@ -32,7 +32,7 @@ export class WordsInfoRepository implements IWordsInfoRepository {
 
         // const wordModel = userId ? UserWordModel : CommonWordModel;
         const letterPositions = userId
-            ? wordsInfoDoc.userWords.filter(uw => uw.user.toString() == userId)[0].letterPositions
+            ? wordsInfoDoc.userWords.filter(uw => uw.user == userId)[0].letterPositions
             : wordsInfoDoc.commonWords.letterPositions
 
         const createWordInLetterPositions = async (letter: string, letterPositions: ILetterPosition[]) => {
@@ -114,7 +114,7 @@ export class WordsInfoRepository implements IWordsInfoRepository {
         return wordsInfoDoc;
     }
 
-    async fullUpdateWordsMap(userId?: string): Promise<Map<string, number>> {
+    async fullUpdateWordsMap(userId?: mongoose.Types.ObjectId): Promise<Map<string, number>> {
         const letterPositions = new Map<string, number>();
         const words = userId
             ? await UserWordModel.find({ user: userId }).sort({ normalizedWord: 1 })
@@ -166,14 +166,30 @@ export class WordsInfoRepository implements IWordsInfoRepository {
                     commonWords: {
                         letterPositions: newLetterPositions,
                         amount,
-                    }
+                    },
+                    userWords: []
                 })
             }
             return letterPositions;
         }
+        console.log(newLetterPositions);
+        // Check existence user words info for this user.
+        if (wordsInfoDoc.userWords.filter(uw => uw.user == userId).length == 0) {
+
+
+            wordsInfoDoc.userWords = [{
+                letterPositions: newLetterPositions,
+                amount,
+                user: userId
+            }];
+
+            await wordsInfoDoc.save();
+            return letterPositions;
+        }
+
         if (userId) {
-            const arrayIndex = wordsInfoDoc.userWords.findIndex(uw => uw.user.toString() == userId);
-            wordsInfoDoc.userWords[arrayIndex] = { letterPositions: newLetterPositions, amount, user: new mongoose.Schema.Types.ObjectId(userId) };
+            const arrayIndex = wordsInfoDoc.userWords.findIndex(uw => uw.user == userId);
+            wordsInfoDoc.userWords[arrayIndex] = { letterPositions: newLetterPositions, amount, user: userId };
         } else {
             wordsInfoDoc.commonWords = { letterPositions: newLetterPositions, amount };
         }

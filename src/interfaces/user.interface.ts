@@ -1,7 +1,8 @@
+import mongoose from "mongoose";
 import { Role } from "./auth.interface";
 
-export interface User {
-	_id: string;
+export interface User extends mongoose.Document {
+	// _id: mongoose.Types.ObjectId;
 	name: string;
 	email: string;
 	password: string;

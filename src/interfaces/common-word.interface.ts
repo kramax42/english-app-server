@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { IUserWord } from "./user-word.interface";
 
 export enum WordLevel {
@@ -23,8 +24,7 @@ export enum PartOfSpeech {
   Interjection = 'interjection',
 }
 
-export interface ITranscription {
-  _id: string;
+export interface ITranscription extends mongoose.Document {
   uk: string | null;
   us: string | null;
 }
@@ -38,8 +38,8 @@ export interface IMeaning {
   translations: string[];
   usageExamples: string[];
 }
-export interface ICommonWord {
-  _id: string;
+export interface ICommonWord extends mongoose.Document {
+  // _id: mongoose.Types.ObjectId;
   word: string;
   normalizedWord: string;
   transcription: ITranscription;

@@ -11,7 +11,6 @@ import { IWordsInfoRepository } from '@/modules/words-info/repositories/words-in
 
 export class CommonWordsRepository implements ICommonWordsRepository {
 	private wordModel = CommonWordModel;
-	private wordsInfoModel = WordsInfoModel;
 
 	constructor(private readonly wordsInfoRepository: IWordsInfoRepository) { }
 

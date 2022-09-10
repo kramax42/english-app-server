@@ -27,7 +27,7 @@ const app = new App([
 	new AuthController(new AuthService(new UsersRepository())),
 	new UsersController(new UsersService(new UsersRepository())),
 	new CommonWordsController(new CommonWordsService(new CommonWordsRepository(new WordsInfoRepository()))),
-	new UsersWordsController(new UsersWordsService(new UsersWordsRepository())),
+	new UsersWordsController(new UsersWordsService(new UsersWordsRepository(new WordsInfoRepository()))),
 ]);
 
 app.listen();

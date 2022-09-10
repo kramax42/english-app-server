@@ -7,7 +7,7 @@ export enum WordStudyStatus {
 }
 
 export interface IUserWord extends ICommonWord {
-  user: mongoose.Schema.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
   studyStatus: WordStudyStatus;
 }
 

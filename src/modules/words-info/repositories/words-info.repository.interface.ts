@@ -4,13 +4,14 @@ import {
     CreateUserWordDto,
     UpdateUserWordDto,
 } from '@dtos/user-word.dto';
+import mongoose from 'mongoose';
 
 
 export interface IUpdateWordInfoLetterPositions {
     letter: string,
     prevLetter?: string,
     updateMode: 'create' | 'update' | 'delete',
-    userId?: string;
+    userId?: mongoose.Types.ObjectId;
 }
 
 export interface IWordsInfoRepository {
@@ -23,6 +24,6 @@ export interface IWordsInfoRepository {
 
     getWordsInfoDoc();
 
-    fullUpdateWordsMap(userId?: string): Promise<Map<string, number>>
+    fullUpdateWordsMap(userId?: mongoose.Types.ObjectId): Promise<Map<string, number>>
 }
 
