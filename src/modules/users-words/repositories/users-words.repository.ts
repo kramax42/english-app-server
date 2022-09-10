@@ -53,10 +53,11 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 
 			if (wordsInfoDoc) {
 				await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: createdWord.normalizedWord.charAt(0), updateMode: 'create', userId, wordsInfoDoc });
-			} else {
-				await this.wordsInfoRepository.fullUpdateWordsMap(userId);
 				wordsInfoDoc.amount = wordsInfoDoc.amount + 1;
 				await wordsInfoDoc.save();
+			} else {
+				await this.wordsInfoRepository.fullUpdateWordsMap(userId);
+
 			}
 			await session.commitTransaction();
 		} catch (error) {
@@ -90,13 +91,6 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 		wordId: string,
 		updateUserWordDto: UpdateUserWordDto
 	): Promise<IUserWord> {
-		// const updatedWord = await this.wordModel
-		// 	.findOneAndUpdate({ _id: wordId, user: userId }, updateUserWordDto, { new: true })
-		// 	.exec();
-
-		// return updatedWord;
-
-
 		const session: ClientSession = await mongoose.startSession();
 
 		session.startTransaction();
@@ -121,10 +115,31 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 	}
 
 	async delete(userId: mongoose.Types.ObjectId, wordId: string): Promise<IUserWord> {
-		const deletedWord = await this.wordModel
-			.findOneAndDelete({ _id: wordId, user: userId })
-			.exec();
-		return deletedWord;
+		// const deletedWord = await this.wordModel
+		// 	.findOneAndDelete({ _id: wordId, user: userId })
+		// 	.exec();
+		// return deletedWord;
+
+		const session: ClientSession = await mongoose.startSession();
+		session.startTransaction();
+		let deletedWord = null;
+		try {
+			deletedWord = await this.wordModel.findByIdAndDelete(wordId).exec();
+
+			const wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc(userId);
+			wordsInfoDoc.amount = wordsInfoDoc.amount - 1;
+			await wordsInfoDoc.save();
+
+			await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: deletedWord.normalizedWord.charAt(0), updateMode: 'delete', wordsInfoDoc, userId });
+			await session.commitTransaction();
+		} catch (error) {
+			await session.abortTransaction();
+			throw error;
+		} finally {
+			session.endSession();
+			return deletedWord;
+		}
+
 	}
 }
 

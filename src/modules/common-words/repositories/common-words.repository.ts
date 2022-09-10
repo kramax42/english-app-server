@@ -112,10 +112,10 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 
 			if (wordsInfoDoc) {
 				await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: createdWord.normalizedWord.charAt(0), updateMode: 'create', wordsInfoDoc });
-			} else {
-				await this.wordsInfoRepository.fullUpdateWordsMap();
 				wordsInfoDoc.amount = wordsInfoDoc.amount + 1;
 				await wordsInfoDoc.save();
+			} else {
+				await this.wordsInfoRepository.fullUpdateWordsMap();
 			}
 
 			await session.commitTransaction();
@@ -194,7 +194,6 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 			session.endSession();
 			return deletedWord;
 		}
-
 	}
 }
 
