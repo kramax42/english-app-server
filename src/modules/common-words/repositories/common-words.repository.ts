@@ -108,11 +108,16 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		try {
 			createdWord = await this.wordModel.create(createCommonWordDto);
 
-			const wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
-			wordsInfoDoc.commonWords.amount = wordsInfoDoc.commonWords.amount + 1;
-			await wordsInfoDoc.save();
+			let wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
+			if (wordsInfoDoc) {
+				wordsInfoDoc.amount = wordsInfoDoc.amount + 1;
+				await wordsInfoDoc.save();
+			} else {
+				await this.wordsInfoRepository.fullUpdateWordsMap();
+				wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
+			}
 
-			await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: createdWord.normalizedWord.charAt(0), updateMode: 'create' });
+			await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: createdWord.normalizedWord.charAt(0), updateMode: 'create', wordsInfoDoc });
 			await session.commitTransaction();
 		} catch (error) {
 			await session.abortTransaction();
@@ -123,16 +128,17 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 		}
 	}
 
-	
+
 	async find(word: string) {
 		return this.wordModel.findOne({ word }).exec();
 	}
 
 	async count(): Promise<number> {
-		// this.fullUpdateWordsMap();
+		// await this.wordsInfoRepository.fullUpdateWordsMap();
 		// return this.wordModel.estimatedDocumentCount().exec();
 		const wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
-		return wordsInfoDoc.commonWords.amount;
+		// const wordsInfoDoc = await this.wor
+		return wordsInfoDoc.amount;
 	}
 
 	async findById(id: string): Promise<ICommonWord | null> {
@@ -143,12 +149,12 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 	async getPageByLetter(letter: string, limit: number): Promise<number> {
 		// const indexPosition = await (await this.wordModel.find({ normalizedWord: { "$lt": letter.toLowerCase() } })).length;
 		const wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
-		const indexPosition = wordsInfoDoc.commonWords.letterPositions.filter(lp => lp.letter == letter.toLowerCase())[0].position;
+		const indexPosition = wordsInfoDoc.letterPositions.filter(lp => lp.letter == letter.toLowerCase())[0].position;
 		const page = Math.ceil((indexPosition + 1) / limit);
 		return page;
 	}
 
-	
+
 
 	async update(id: string, dto: UpdateCommonWordDto): Promise<ICommonWord> {
 		const session: ClientSession = await mongoose.startSession();
@@ -160,7 +166,8 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 			const prevLetter = existedWord.normalizedWord.charAt(0);
 			const letter = updatedWord.normalizedWord.charAt(0);
 			if (letter !== prevLetter) {
-				await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter, prevLetter, updateMode: 'update' });
+				const wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
+				await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter, prevLetter, updateMode: 'update', wordsInfoDoc });
 			}
 			await session.commitTransaction();
 		} catch (error) {
@@ -180,10 +187,10 @@ export class CommonWordsRepository implements ICommonWordsRepository {
 			deletedWord = await this.wordModel.findByIdAndDelete(id).exec();
 
 			const wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
-			wordsInfoDoc.commonWords.amount = wordsInfoDoc.commonWords.amount - 1;
+			wordsInfoDoc.amount = wordsInfoDoc.amount - 1;
 			await wordsInfoDoc.save();
 
-			await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: deletedWord.normalizedWord.charAt(0), updateMode: 'delete' });
+			await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: deletedWord.normalizedWord.charAt(0), updateMode: 'delete', wordsInfoDoc });
 			await session.commitTransaction();
 		} catch (error) {
 			await session.abortTransaction();

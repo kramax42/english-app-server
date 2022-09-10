@@ -1,5 +1,5 @@
 import { IUserWord, IUserWordResponseDto } from '@/interfaces/user-word.interface';
-import { ILetterPosition } from '@/models/words-info.model';
+import { ILetterPosition, IWordsInfo } from '@/models/words-info.model';
 import {
     CreateUserWordDto,
     UpdateUserWordDto,
@@ -12,6 +12,7 @@ export interface IUpdateWordInfoLetterPositions {
     prevLetter?: string,
     updateMode: 'create' | 'update' | 'delete',
     userId?: mongoose.Types.ObjectId;
+    wordsInfoDoc: IWordsInfo;
 }
 
 export interface IWordsInfoRepository {
@@ -22,7 +23,7 @@ export interface IWordsInfoRepository {
         userId,
     }: IUpdateWordInfoLetterPositions) => Promise<void>;
 
-    getWordsInfoDoc();
+    getWordsInfoDoc(userId?: mongoose.Types.ObjectId): Promise<IWordsInfo>;
 
     fullUpdateWordsMap(userId?: mongoose.Types.ObjectId): Promise<Map<string, number>>
 }

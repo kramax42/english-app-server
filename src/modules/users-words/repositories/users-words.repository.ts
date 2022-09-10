@@ -11,7 +11,7 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 
 	constructor(private readonly wordsInfoRepository: IWordsInfoRepository) { }
 
-	public async findAll(userId: string, skip: number = 0,
+	public async findAll(userId: mongoose.Types.ObjectId, skip: number = 0,
 		limit: number | undefined): Promise<IUserWord[]> {
 
 		const findQuery = this.wordModel
@@ -31,13 +31,13 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 		return words;
 	}
 
-	async count(userId: string): Promise<number> {
-		await this.wordsInfoRepository.fullUpdateWordsMap(userId);
+	async count(userId: mongoose.Types.ObjectId): Promise<number> {
+
 		// return (await this.wordModel.find({ user: userId }).exec()).length;
 		return this.wordModel.countDocuments({ user: userId });
 	}
 
-	public async create(userId: string, createUserWordDto: CreateUserWordDto): Promise<IUserWord> {
+	public async create(userId: mongoose.Types.ObjectId, createUserWordDto: CreateUserWordDto): Promise<IUserWord> {
 
 		// const createdWord = await this.wordModel.create({
 		// 	user: userId,
@@ -55,12 +55,15 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 				...createUserWordDto,
 			});
 
-			const wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc();
-			const userWordIndex = wordsInfoDoc.userWords.findIndex(uw => uw.user.toString() == userId);
-			wordsInfoDoc.userWords[userWordIndex].amount = wordsInfoDoc.userWords[userWordIndex].amount + 1;
-			await wordsInfoDoc.save();
-
-			await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: createdWord.normalizedWord.charAt(0), updateMode: 'create', userId });
+			let wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc(userId);
+			if (wordsInfoDoc) {
+				wordsInfoDoc.amount = wordsInfoDoc.amount + 1;
+				await wordsInfoDoc.save();
+			} else {
+				await this.wordsInfoRepository.fullUpdateWordsMap(userId);
+				wordsInfoDoc = await this.wordsInfoRepository.getWordsInfoDoc(userId);
+			}
+			await this.wordsInfoRepository.updateWordInfoLetterPositions({ letter: createdWord.normalizedWord.charAt(0), updateMode: 'create', userId, wordsInfoDoc });
 			await session.commitTransaction();
 		} catch (error) {
 			await session.abortTransaction();
@@ -71,25 +74,25 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 		}
 	}
 
-	async find(userId: string, word: string) {
+	async find(userId: mongoose.Types.ObjectId, word: string) {
 		return this.wordModel.findOne({ word, user: userId }).exec();
 	}
 
-	async findById(userId: string, wordId: string): Promise<IUserWord | null> {
+	async findById(userId: mongoose.Types.ObjectId, wordId: string): Promise<IUserWord | null> {
 		const foundWord = await this.wordModel
 			.findOne({ user: userId, _id: wordId })
 			.exec();
 		return foundWord;
 	}
 
-	async getPageByLetter(userId: string, letter: string, limit: number): Promise<number> {
+	async getPageByLetter(userId: mongoose.Types.ObjectId, letter: string, limit: number): Promise<number> {
 		const indexPosition = await (await this.wordModel.find({ user: userId, normalizedWord: { "$lt": letter.toLowerCase() } })).length;
 		const page = Math.ceil(indexPosition / limit);
 		return page;
 	}
 
 	async update(
-		userId: string,
+		userId: mongoose.Types.ObjectId,
 		wordId: string,
 		updateUserWordDto: UpdateUserWordDto
 	): Promise<IUserWord> {
@@ -100,7 +103,7 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 		return updatedWord;
 	}
 
-	async delete(userId: string, wordId: string): Promise<IUserWord> {
+	async delete(userId: mongoose.Types.ObjectId, wordId: string): Promise<IUserWord> {
 		const deletedWord = await this.wordModel
 			.findOneAndDelete({ _id: wordId, user: userId })
 			.exec();

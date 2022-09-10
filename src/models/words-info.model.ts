@@ -14,46 +14,20 @@ const letterPositionSchema = new mongoose.Schema<ILetterPosition>({
 }, optionsWithoutTimeStampsAndId);
 
 
-export interface ICommonWordsInfo {
+export interface IWordsInfo extends mongoose.Document{
+    user: mongoose.Types.ObjectId;
     amount: number;
     letterPositions: ILetterPosition[];
 }
 
-
-const commonWordsInfoSchema = new mongoose.Schema<ICommonWordsInfo>({
-    amount: { type: Number, required: true, default: 0 },
-    letterPositions: { type: [letterPositionSchema], default: [] }
-}, optionsWithoutTimeStampsAndId
-);
-
-export interface IUserWordsInfo extends ICommonWordsInfo {
-    user: mongoose.Types.ObjectId;
-}
-
-const userWordsInfoSchema = new mongoose.Schema<IUserWordsInfo>({
+const wordsInfoSchema = new mongoose.Schema<IWordsInfo>({
     user: {
         ref: 'User',
         type: mongoose.Schema.Types.ObjectId,
+        default: null,
     },
     amount: { type: Number, required: true, default: 0 },
     letterPositions: { type: [letterPositionSchema], default: [] }
-}, optionsWithoutTimeStampsAndId
-);
-
-export interface IWordsInfo {
-    commonWords: ICommonWordsInfo;
-    userWords: IUserWordsInfo[];
-}
-
-export const wordsInfoSchema = new mongoose.Schema<IWordsInfo>({
-    commonWords: {
-        type: commonWordsInfoSchema,
-        default: {
-            amount: 0,
-            letterPositions: []
-        }
-    },
-    userWords: { type: [userWordsInfoSchema], default: [] },
 }, options
 );
 

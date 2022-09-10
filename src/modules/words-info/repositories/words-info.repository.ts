@@ -2,7 +2,7 @@ import { ICommonWord } from "@/interfaces/common-word.interface";
 import { IUserWord } from "@/interfaces/user-word.interface";
 import { CommonWordModel } from "@/models/common-word.model";
 import { UserWordModel } from "@/models/user-word.model";
-import { ILetterPosition, WordsInfoModel } from "@/models/words-info.model";
+import { ILetterPosition, IWordsInfo, WordsInfoModel } from "@/models/words-info.model";
 import mongoose from "mongoose";
 import { IUpdateWordInfoLetterPositions, IWordsInfoRepository } from "./words-info.repository.interface";
 
@@ -26,14 +26,22 @@ export class WordsInfoRepository implements IWordsInfoRepository {
         prevLetter,
         updateMode,
         userId,
+        wordsInfoDoc,
     }: IUpdateWordInfoLetterPositions) {
         // Promise<ILetterPosition[]> {
-        const wordsInfoDoc = await this.getWordsInfoDoc();
+        // const wordsInfoDoc = await this.getWordsInfoDoc();
 
-        // const wordModel = userId ? UserWordModel : CommonWordModel;
-        const letterPositions = userId
-            ? wordsInfoDoc.userWords.filter(uw => uw.user == userId)[0].letterPositions
-            : wordsInfoDoc.commonWords.letterPositions
+
+        // const letterPositions = userId
+        //     ? wordsInfoDoc.userWords.filter(uw => uw.user == userId)[0].letterPositions
+        //     : wordsInfoDoc.commonWords.letterPositions
+
+        // const wordsInfoDoc = await this.getWordsInfoDoc();
+        // const letterPositions = userId
+        //     ? (await this.wordsInfoModel.findOne({ user: userId })).letterPositions
+        //     : (await this.wordsInfoModel.findOne({ user: null })).letterPositions
+
+        const letterPositions = wordsInfoDoc.letterPositions;
 
         const createWordInLetterPositions = async (letter: string, letterPositions: ILetterPosition[]) => {
             // Check existence letter in letterPositions array
@@ -56,7 +64,7 @@ export class WordsInfoRepository implements IWordsInfoRepository {
 
                 if (letterPosition.letter > letter) {
                     newLetterPosition.position = ++letterPosition.position;
-                }
+                } wordsInfoDoc
                 return newLetterPosition;
             }).sort((a, b) => a.letter.localeCompare(b.letter));
 
@@ -103,14 +111,23 @@ export class WordsInfoRepository implements IWordsInfoRepository {
                 break;
         }
 
-        wordsInfoDoc.commonWords.letterPositions = newLetterPositions;
+        wordsInfoDoc.letterPositions = newLetterPositions;
         await wordsInfoDoc.save();
     }
 
 
-    async getWordsInfoDoc() {
+    async getWordsInfoDoc(userId: mongoose.Types.ObjectId = null): Promise<IWordsInfo> {
         // Only one document in commonwords collection.
-        const wordsInfoDoc = (await this.wordsInfoModel.find({}))[0];
+        const wordsInfoDoc = await this.wordsInfoModel.findOne({ user: userId });
+        // if (!wordsInfoDoc) {
+        //     const newWordsInfoDoc = await this.wordsInfoModel.create({
+        //         user: userId,
+        //         amount: 0,
+        //         letterPositions: [],
+        //     })
+
+        //     return newWordsInfoDoc;
+        // }
         return wordsInfoDoc;
     }
 
@@ -159,40 +176,43 @@ export class WordsInfoRepository implements IWordsInfoRepository {
             });
 
 
-        const wordsInfoDoc = await this.getWordsInfoDoc();
+        const wordsInfoDoc = await this.wordsInfoModel.findOne({ user: userId });
         if (!wordsInfoDoc) {
-            if (!userId) {
-                await this.wordsInfoModel.create({
-                    commonWords: {
-                        letterPositions: newLetterPositions,
-                        amount,
-                    },
-                    userWords: []
-                })
-            }
-            return letterPositions;
-        }
-        console.log(newLetterPositions);
-        // Check existence user words info for this user.
-        if (wordsInfoDoc.userWords.filter(uw => uw.user == userId).length == 0) {
-
-
-            wordsInfoDoc.userWords = [{
+            // if (!userId) {
+            await this.wordsInfoModel.create({
                 letterPositions: newLetterPositions,
                 amount,
-                user: userId
-            }];
-
-            await wordsInfoDoc.save();
+                user: userId,
+            })
+            // }
             return letterPositions;
         }
 
-        if (userId) {
-            const arrayIndex = wordsInfoDoc.userWords.findIndex(uw => uw.user == userId);
-            wordsInfoDoc.userWords[arrayIndex] = { letterPositions: newLetterPositions, amount, user: userId };
-        } else {
-            wordsInfoDoc.commonWords = { letterPositions: newLetterPositions, amount };
-        }
+        // // Check existence user words info for this user.
+        // if (wordsInfoDoc.userWords.filter(uw => uw.user == userId).length == 0) {
+
+
+        //     wordsInfoDoc.userWords = [{
+        //         letterPositions: newLetterPositions,
+        //         amount,
+        //         user: userId
+        //     }];
+
+        //     await wordsInfoDoc.save();
+        //     return letterPositions;
+        // }
+
+        // if (userId) {
+        //     const arrayIndex = wordsInfoDoc.userWords.findIndex(uw => uw.user == userId);
+        //     wordsInfoDoc.userWords[arrayIndex] = { letterPositions: newLetterPositions, amount, user: userId };
+        // } else {
+        //     wordsInfoDoc.commonWords = { letterPositions: newLetterPositions, amount };
+        // }
+
+        // const arrayIndex = wordsInfoDoc.userWords.findIndex(uw => uw.user == userId);
+        // { letterPositions: newLetterPositions, amount, user: userId };
+        wordsInfoDoc.letterPositions = newLetterPositions;
+        wordsInfoDoc.amount = amount;
 
         await wordsInfoDoc.save();
 
