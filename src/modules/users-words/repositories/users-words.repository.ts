@@ -16,7 +16,7 @@ export class UsersWordsRepository implements IUsersWordsRepository {
 
 		const findQuery = this.wordModel
 			.find({ user: userId })
-			.sort({ _id: 1 })
+			.sort({ normalizedWord: 1 })
 			.skip(skip);
 
 		if (limit) {
