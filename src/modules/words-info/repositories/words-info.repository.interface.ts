@@ -11,7 +11,7 @@ export interface IUpdateWordInfoLetterPositions {
     letter: string,
     prevLetter?: string,
     updateMode: 'create' | 'update' | 'delete',
-    userId?: mongoose.Types.ObjectId;
+    userId?: string;
     wordsInfoDoc: IWordsInfo;
 }
 
@@ -23,8 +23,8 @@ export interface IWordsInfoRepository {
         userId,
     }: IUpdateWordInfoLetterPositions) => Promise<void>;
 
-    getWordsInfoDoc(userId?: mongoose.Types.ObjectId): Promise<IWordsInfo>;
+    getWordsInfoDoc(userId?: string): Promise<IWordsInfo>;
 
-    fullUpdateWordsMap(userId?: mongoose.Types.ObjectId): Promise<Map<string, number>>
+    fullUpdateWordsMap(userId?: string): Promise<Map<string, number>>
 }
 

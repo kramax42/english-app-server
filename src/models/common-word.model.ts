@@ -8,8 +8,8 @@ export const transcriptionSchema = new mongoose.Schema<ITranscription>({
 }, options);
 
 export const meaningSchema = new mongoose.Schema<IMeaning>({
-	definition: { type: String, required: true, default: null },
-	translations: { type: [String], required: true, default: [] },
+	definition: { type: String, default: null },
+	translations: { type: [String], default: [] },
 	usageExamples: { type: [String], default: [] },
 	synonyms: { type: [String], default: [] },
 	antonyms: { type: [String], default: [] },

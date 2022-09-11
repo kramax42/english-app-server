@@ -8,9 +8,9 @@ export const permitTo =
     (req: RequestWithUser, res: Response, next: NextFunction) => {
       const user = req.user;
 
-      console.log(allowedRoles);
-      console.log(user.role);
-      console.log(allowedRoles.includes(user.role));
+      // console.log(allowedRoles);
+      // console.log(user.role);
+      // console.log(allowedRoles.includes(user.role));
       if (!allowedRoles.includes(user.role)) {
         return next(
           new ForbiddenException()

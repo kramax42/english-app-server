@@ -39,17 +39,18 @@ export interface IMeaning {
   usageExamples: string[];
 }
 export interface ICommonWord extends mongoose.Document {
-  // _id: mongoose.Types.ObjectId;
   word: string;
   normalizedWord: string;
   transcription: ITranscription;
   meanings: IMeaning[];
 }
 
-export interface ICommonWordResponseDto extends Omit<ICommonWord, '_id' | 'meanings' | 'transcription'> {
+export interface ICommonWordResponseDto {
   id: string;
-  meanings: IMeaning[];
+  word: string;
+  normalizedWord: string;
   transcription: Pick<ITranscription, 'us' | 'uk'>;
+  meanings: IMeaning[];
 }
 
 export interface ICommonWordWithUserWordResponseDto extends ICommonWordResponseDto {

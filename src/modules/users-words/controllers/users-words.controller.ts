@@ -47,10 +47,13 @@ export class UsersWordsController implements IController {
 	): Promise<void> => {
 		try {
 			const wordDto = req.validatedBody as CreateUserWordDto;
+			
+
 			const createdWord: IUserWord = await this.usersWordsService.create(
 				req.user._id,
 				wordDto
 			);
+			
 			const createdWordResponseDTO: IUserWordResponseDto = this.usersWordsService.transformUserWordForResponseDTO(createdWord);
 			res.status(201).json(createdWordResponseDTO);
 		} catch (error) {

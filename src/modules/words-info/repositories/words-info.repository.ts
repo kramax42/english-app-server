@@ -116,7 +116,7 @@ export class WordsInfoRepository implements IWordsInfoRepository {
     }
 
 
-    async getWordsInfoDoc(userId: mongoose.Types.ObjectId = null): Promise<IWordsInfo> {
+    async getWordsInfoDoc(userId: string = null): Promise<IWordsInfo> {
         // Only one document in commonwords collection.
         const wordsInfoDoc = await this.wordsInfoModel.findOne({ user: userId });
         // if (!wordsInfoDoc) {
@@ -131,7 +131,7 @@ export class WordsInfoRepository implements IWordsInfoRepository {
         return wordsInfoDoc;
     }
 
-    async fullUpdateWordsMap(userId?: mongoose.Types.ObjectId): Promise<Map<string, number>> {
+    async fullUpdateWordsMap(userId?: string): Promise<Map<string, number>> {
         const letterPositions = new Map<string, number>();
         const words = userId
             ? await UserWordModel.find({ user: userId }).sort({ normalizedWord: 1 })

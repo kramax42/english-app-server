@@ -18,6 +18,7 @@ export class UsersWordsService implements IUsersWordsService {
 		if (existedWord) {
 			throw new AlreadyExistsException();
 		}
+		
 		const createdWord = await this.usersWordsRepository.create(userId, createUserWordDto);
 		return createdWord;
 	}

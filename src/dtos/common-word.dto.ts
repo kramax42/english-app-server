@@ -43,6 +43,7 @@ class MeaningDto {
   @IsString({ each: true })
   antonyms: string[];
 
+  @IsOptional()
   @IsWordLevel({
     message: "Incorrect word level."
   })
