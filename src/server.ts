@@ -19,16 +19,16 @@ import { SystemStatusController } from '@modules/system-status/controllers/syste
 import { SystemStatusService } from '@modules/system-status/services/system-status.service';
 import { WordsInfoRepository } from './modules/words-info/repositories/words-info.repository';
 
-
 validateEnv();
 
 const app = new App([
 	new SystemStatusController(new SystemStatusService()),
 	new AuthController(new AuthService(new UsersRepository())),
 	new UsersController(new UsersService(new UsersRepository())),
-	new CommonWordsController(new CommonWordsService(new CommonWordsRepository(new WordsInfoRepository()))),
-	new UsersWordsController(new UsersWordsService(new UsersWordsRepository(new WordsInfoRepository()))),
+	new CommonWordsController(new CommonWordsService(new CommonWordsRepository(new WordsInfoRepository()), new WordsInfoRepository())),
+	new UsersWordsController(new UsersWordsService(new UsersWordsRepository(new WordsInfoRepository()), new WordsInfoRepository())),
 ]);
 
 app.listen();
+
 

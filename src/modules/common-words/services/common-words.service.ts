@@ -7,10 +7,13 @@ import {
 import { AlreadyExistsException } from '@/exceptions/already-exist.exception';
 import { ICommonWordsService } from './common-words.service.interface';
 import { ICommonWordsRepository } from '../repositories/common-words.repository.interface';
+import { IWordsInfoRepository } from '@/modules/words-info/repositories/words-info.repository.interface';
 
 export class CommonWordsService implements ICommonWordsService {
 
-	constructor(private readonly commonWordsRepository: ICommonWordsRepository) { }
+	constructor(
+		private readonly commonWordsRepository: ICommonWordsRepository,
+		private readonly wordsInfoRepository: IWordsInfoRepository) { }
 
 	async create(wordDto: CreateCommonWordDto) {
 		const existedWord = await this.find(wordDto.word);
@@ -41,6 +44,11 @@ export class CommonWordsService implements ICommonWordsService {
 	async count(): Promise<number> {
 		const wordsCount = await this.commonWordsRepository.count();
 		return wordsCount;
+	}
+
+	async getActiveLetters(): Promise<string[]> {
+		const activeLetters = await this.wordsInfoRepository.getActiveLetters();
+		return activeLetters;
 	}
 
 	async findById(userId: string): Promise<ICommonWord> {

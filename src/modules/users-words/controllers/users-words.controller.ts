@@ -23,7 +23,8 @@ export class UsersWordsController implements IController {
 	initializeRoutes() {
 		this.router.get(`${this.path}`, authMiddleware(), queryValidator(PaginationParamsDto), this.findAll);
 		this.router.get(`${this.path}/count`, authMiddleware(), this.count);
-		this.router.get(`${this.path}/getPageByLetter`, authMiddleware(), queryValidator(GetPageByLetterDto), this.getPageByLetter);
+		this.router.get(`${this.path}/active-letters`, authMiddleware(), this.getActiveLetters);
+		this.router.get(`${this.path}/page-by-letter`, authMiddleware(), queryValidator(GetPageByLetterDto), this.getPageByLetter);
 		this.router.post(
 			`${this.path}`,
 			authMiddleware(),
@@ -79,6 +80,19 @@ export class UsersWordsController implements IController {
 				return this.usersWordsService.transformUserWordForResponseDTO(word);
 			})
 			res.status(200).json(wordsResponseDTO);
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	getActiveLetters = async (
+		req: RequestWithUser,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			const activeLetters: string[] = await this.usersWordsService.getActiveLetters(req.user?._id);
+			res.status(200).json(activeLetters);
 		} catch (error) {
 			next(error);
 		}

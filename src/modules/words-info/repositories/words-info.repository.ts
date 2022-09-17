@@ -72,8 +72,6 @@ export class WordsInfoRepository implements IWordsInfoRepository {
         }
 
 
-
-
         const deleteWordInLetterPositions = async (letter: string, letterPositions: ILetterPosition[]) => {
             const newLetterPositions = letterPositions.map((letterPosition, index) => {
                 const newLetterPosition = letterPosition;
@@ -91,7 +89,6 @@ export class WordsInfoRepository implements IWordsInfoRepository {
 
             return newLetterPositions;
         }
-
 
 
         let newLetterPositions = letterPositions;
@@ -117,17 +114,7 @@ export class WordsInfoRepository implements IWordsInfoRepository {
 
 
     async getWordsInfoDoc(userId: string = null): Promise<IWordsInfo> {
-        // Only one document in commonwords collection.
         const wordsInfoDoc = await this.wordsInfoModel.findOne({ user: userId });
-        // if (!wordsInfoDoc) {
-        //     const newWordsInfoDoc = await this.wordsInfoModel.create({
-        //         user: userId,
-        //         amount: 0,
-        //         letterPositions: [],
-        //     })
-
-        //     return newWordsInfoDoc;
-        // }
         return wordsInfoDoc;
     }
 
@@ -217,5 +204,11 @@ export class WordsInfoRepository implements IWordsInfoRepository {
         await wordsInfoDoc.save();
 
         return letterPositions;
+    }
+
+    async getActiveLetters(userId?: string): Promise<string[]> {
+        const wordsInfoDoc = await this.getWordsInfoDoc(userId);
+        const activeLetters = wordsInfoDoc.letterPositions.map(lp => lp.letter);
+        return activeLetters;
     }
 }

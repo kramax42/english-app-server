@@ -8,17 +8,20 @@ import { AlreadyExistsException } from '@/exceptions/already-exist.exception';
 import { IUsersWordsService } from './users-words.service.interface';
 import { IUsersWordsRepository } from '../repositories/users-words.repository.interface';
 import { WordLevel } from '@/interfaces/common-word.interface';
+import { IWordsInfoRepository } from '@/modules/words-info/repositories/words-info.repository.interface';
 
 export class UsersWordsService implements IUsersWordsService {
 
-	constructor(private readonly usersWordsRepository: IUsersWordsRepository) { }
+	constructor(
+		private readonly usersWordsRepository: IUsersWordsRepository,
+		private readonly wordsInfoRepository: IWordsInfoRepository) { }
 
 	async create(userId: string, createUserWordDto: CreateUserWordDto) {
 		const existedWord = await this.find(userId, createUserWordDto.word);
 		if (existedWord) {
 			throw new AlreadyExistsException();
 		}
-		
+
 		const createdWord = await this.usersWordsRepository.create(userId, createUserWordDto);
 		return createdWord;
 	}
@@ -30,6 +33,11 @@ export class UsersWordsService implements IUsersWordsService {
 	): Promise<IUserWord[]> {
 		const words = await this.usersWordsRepository.findAll(userId, skip, limit);
 		return words;
+	}
+
+	async getActiveLetters(userId: string): Promise<string[]> {
+		const activeLetters = await this.wordsInfoRepository.getActiveLetters(userId);
+		return activeLetters;
 	}
 
 	async count(userId: string): Promise<number> {

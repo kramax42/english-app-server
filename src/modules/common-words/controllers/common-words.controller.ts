@@ -37,7 +37,8 @@ export class CommonWordsController implements IController {
 			bodyValidator(CreateCommonWordDto),
 			this.create
 		);
-		this.router.get(`${this.path}/getPageByLetter`, queryValidator(GetPageByLetterDto), this.getPageByLetter);
+		this.router.get(`${this.path}/active-letters`, authMiddleware(false), this.getActiveLetters);
+		this.router.get(`${this.path}/page-by-letter`, queryValidator(GetPageByLetterDto), this.getPageByLetter);
 		this.router.get(`${this.path}/:id`, this.getById);
 		this.router.patch(
 			`${this.path}/:id`,
@@ -88,7 +89,7 @@ export class CommonWordsController implements IController {
 				query.limit || null,
 				req?.user?._id,
 			);
-				
+
 			res.status(200).json(words);
 		} catch (error) {
 			next(error);
@@ -102,8 +103,20 @@ export class CommonWordsController implements IController {
 	): Promise<void> => {
 		try {
 			const wordsCount: number = await this.commonWordsService.count();
-
 			res.status(200).json(wordsCount);
+		} catch (error) {
+			next(error);
+		}
+	};
+
+	getActiveLetters = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			const activeLetters: string[] = await this.commonWordsService.getActiveLetters();
+			res.status(200).json(activeLetters);
 		} catch (error) {
 			next(error);
 		}

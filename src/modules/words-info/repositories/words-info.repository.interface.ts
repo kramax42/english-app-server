@@ -25,6 +25,8 @@ export interface IWordsInfoRepository {
 
     getWordsInfoDoc(userId?: string): Promise<IWordsInfo>;
 
+    getActiveLetters(userId?: string): Promise<string[]>;
+
     fullUpdateWordsMap(userId?: string): Promise<Map<string, number>>
 }
 
