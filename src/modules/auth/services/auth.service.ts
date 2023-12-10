@@ -32,7 +32,7 @@ export class AuthService implements IAuthService {
 	async signIn({
 		email,
 		password,
-	}: LoginDto): Promise<{ cookie: string; foundUser: User; accessToken: string }> {
+	}: LoginDto): Promise<{ cookie: string; foundUser: User; accessToken: string, refreshToken: string }> {
 
 		const foundUser = await this.usersRepository.findByEmail(email);
 		if (!foundUser) throw new WrongCredentialsException();
@@ -49,7 +49,7 @@ export class AuthService implements IAuthService {
 		const tokenData = this.createToken(foundUser);
 		const cookie = this.createCookie(tokenData);
 
-		return { cookie, foundUser, accessToken: tokenData.token };
+		return { cookie, foundUser, accessToken: tokenData.token, refreshToken: '' };
 	}
 
 	async logOut(email: string): Promise<User> {

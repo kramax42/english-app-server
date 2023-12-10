@@ -8,7 +8,13 @@ import { UserModel } from '@models/user.model';
 export const authMiddleware = (throwError: boolean = true) => async (req: RequestWithUser, res: Response, next: NextFunction) => {
 
   try {
-    const Authorization = req.cookies['Authorization'].split('Bearer ')[1] || req.header('Authorization').split('Bearer ')[1] || null;
+    const cookieAuth = req.cookies['Authorization']?.split('Bearer ')[1]
+    const headerAuth =  req.headers['authorization']?.split('Bearer ')[1].slice(1,-1)
+    const Authorization = cookieAuth || headerAuth || null;
+
+    console.log('cookie', cookieAuth);
+    console.log('header',  headerAuth);
+
     if (Authorization) {
       const secretKey: string = config.get('secretKey');
       const verificationResponse = (await jwt.verify(Authorization, secretKey)) as DataStoredInToken;

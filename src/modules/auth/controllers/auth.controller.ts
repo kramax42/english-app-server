@@ -53,12 +53,12 @@ export class AuthController implements IController {
 	): Promise<void> => {
 		try {
 			const user = req.validatedBody as CreateUserDto;
-			const { cookie, foundUser, accessToken } = await this.authService.signIn(
+			const { cookie, foundUser, accessToken, refreshToken } = await this.authService.signIn(
 				user
 			);
 			const foundUserResponseDTO: UserResponseDTO = this.authService.transformUserForResponseDTO(foundUser);
 
-			res.setHeader('Set-Cookie', cookie);
+			// res.setHeader('Set-Cookie', cookie);
 			res.status(200).json({ user: foundUserResponseDTO, accessToken });
 		} catch (error) {
 			next(error);
